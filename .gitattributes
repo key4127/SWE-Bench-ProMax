@@ -1,4 +1,1 @@
-result/preds_result/v0 filter=lfs diff=lfs merge=lfs -text
-result/preds_result/v1 filter=lfs diff=lfs merge=lfs -text
-result/preds_result/v2 filter=lfs diff=lfs merge=lfs -text
-result/preds_result/v3 filter=lfs diff=lfs merge=lfs -text
+result/preds_result/** filter=lfs diff=lfs merge=lfs -text
