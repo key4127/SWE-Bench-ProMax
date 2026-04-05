@@ -1,0 +1,408 @@
+{
+  "input": "/home/keyist/project/refactor-data/result/strengthen/v3/not_cursor_fuzzy.json",
+  "output": "/home/keyist/project/refactor-data/result/strengthen/v3/problem_statement_test_patch_alignment_check.json",
+  "model": "claude-opus-4-6-think",
+  "summary": {
+    "total": 39,
+    "aligned_count": 38,
+    "not_aligned_count": 0,
+    "aligned_ratio": 0.9744,
+    "hardcoded_content_complete_count": 38,
+    "hardcoded_content_missing_count": 0,
+    "hardcoded_content_complete_ratio": 0.9744,
+    "unknown_count": 1
+  },
+  "rows": [
+    {
+      "instance_id": "kubernetes__kubernetes-133982",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 详细描述了将 unchanged-data guard 从类型函数移到调用点、Subfield 增加 equality 参数、注释文本变更、import 清理等要求，test_patch 中的 golden file 变更完全对应这些要求。所有关键字面量（如注释文本、函数名 validate.DirectEqualPtr/SemanticDeepEqual 等）在 problem_statement 中均有提及。",
+      "confidence": 0.93,
+      "problem_statement_length": 2676,
+      "test_patch_length": 196186
+    },
+    {
+      "instance_id": "plantuml__plantuml-c_1c912de",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 详尽描述了所有组件的 API、行为和格式（如 Segment.toString 格式、Fraction 常量、各工厂方法签名等），与 test_patch 验证的行为完全一致。测试中的具体日期/时间计算结果均可从描述的逻辑推导得出。",
+      "confidence": 0.9,
+      "problem_statement_length": 4616,
+      "test_patch_length": 152224
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_bab5a7a",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "test_patch 验证的行为与 problem_statement 一致：将 SOC_I2S_ATTR(INST_NUM) 替换为 I2S_LL_GET(INST_NUM)，并从 DAC 测试的 PRIV_REQUIRES 中移除 esp_hal_i2s。problem_statement 中明确给出了所有关键信息。",
+      "confidence": 0.95,
+      "problem_statement_length": 2131,
+      "test_patch_length": 2663
+    },
+    {
+      "instance_id": "OpenListTeam__OpenList-1001",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 详细描述了 Buffer ReadAt 和 FileStream RangeRead 的所有测试场景，包括具体的偏移量、长度、期望内容和错误条件，与 test_patch 完全一致。",
+      "confidence": 0.95,
+      "problem_statement_length": 1672,
+      "test_patch_length": 4336
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_a3c63f3",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 与 test_patch 完全一致，四项变更均有明确描述，包括具体路径、组件名、CMake 变量用法等关键信息。",
+      "confidence": 0.97,
+      "problem_statement_length": 1619,
+      "test_patch_length": 2722
+    },
+    {
+      "instance_id": "go-gitea__gitea-35775",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 中的7个具体问题与 test_patch 验证的行为完全一致，所有关键硬编码值（SHA、文件名、大小、时间戳、分支名等）均在问题描述中明确给出。",
+      "confidence": 0.96,
+      "problem_statement_length": 3235,
+      "test_patch_length": 13131
+    },
+    {
+      "instance_id": "hibernate__hibernate-orm-c_5bde39f",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 描述的两个问题（EntityGraph treated subgraph 和 MappedSuperclass id 查询）与 test_patch 验证的行为完全一致，期望的行数(1, 2, 0)和初始化状态等关键信息均已在描述中给出。",
+      "confidence": 0.93,
+      "problem_statement_length": 1545,
+      "test_patch_length": 5668
+    },
+    {
+      "instance_id": "albumentations-team__albumentations-2495",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "问题描述与测试补丁在所有主要功能点上一致：LabelEncoder更新机制、无标签bbox/keypoint验证、Crop填充输出形状、Mosaic各功能函数、关键点fixture修正(0.5/2.5)、空标注返回numpy数组形状等。测试中的具体期望值可从问题描述的功能规格推导得出。",
+      "confidence": 0.88,
+      "problem_statement_length": 5992,
+      "test_patch_length": 85753
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_b2b2df1",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 明确说明了 DVP 需添加 output_data_color_type 字段、CSI 需修复格式转换逻辑，并给出了各测试用例所需的具体颜色格式常量（CAM_CTLR_COLOR_RGB565、CAM_CTLR_COLOR_RAW8），与 test_patch 一致。",
+      "confidence": 0.95,
+      "problem_statement_length": 1728,
+      "test_patch_length": 4291
+    },
+    {
+      "instance_id": "TecharoHQ__anubis-1308",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "问题描述与测试补丁高度一致，涵盖了FCrDNS错误处理、DNS工具函数（含arpaReverseIP的精确输入输出）、regexSafe示例、CEL环境变更、DNS缓存及TTL配置验证、DNS查找间接层以及波兰语本地化移除，所有关键硬编码值均在问题描述中给出。",
+      "confidence": 0.93,
+      "problem_statement_length": 3296,
+      "test_patch_length": 22652
+    },
+    {
+      "instance_id": "huggingface__lerobot-2808",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 描述了 context manager（__enter__调connect, __exit__调disconnect）和 read_latest（返回缓存帧、max_age_ms参数、超时抛TimeoutError、未连接抛DeviceNotConnectedError），test_patch 验证的正是这些行为，关键信息在描述中均已给出。",
+      "confidence": 0.93,
+      "problem_statement_length": 1135,
+      "test_patch_length": 16763
+    },
+    {
+      "instance_id": "aviggiano__redis-roaring-129",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 中给出的 AND、OR、ANDOR 具体示例（输入值、预期结果、基数）与 test_patch 中单元测试使用的值完全一致，fuzz 测试验证的也是同一类别名安全问题。",
+      "confidence": 0.95,
+      "problem_statement_length": 1517,
+      "test_patch_length": 58603
+    },
+    {
+      "instance_id": "aviggiano__redis-roaring-118",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 详细描述了所有缺失函数、测试用例的具体输入输出值（如 NOT {2,3}→{0,1}、OR {4},{2},{0,3}→{0,2,3,4} 等）以及断言宏的改进要求，与 test_patch 验证的行为完全一致，所有关键硬编码内容均已提供。",
+      "confidence": 0.93,
+      "problem_statement_length": 3083,
+      "test_patch_length": 40883
+    },
+    {
+      "instance_id": "aviggiano__redis-roaring-117",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 描述的 bitmap64_range_int_array 错误行为和测试用例完全一致，测试覆盖了所有提到的场景（基本提取、非零偏移、大64位值、提前终止、空位图、超出偏移、零请求、单元素、去重），具体测试值和期望输出在 problem_statement 中均有语义等价的线索。",
+      "confidence": 0.88,
+      "problem_statement_length": 2116,
+      "test_patch_length": 42094
+    },
+    {
+      "instance_id": "angular__angular-c_0362665",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 明确列出了所有需要移除 `resolveHostDirectivesForDef` 符号的 golden 文件路径，与 test_patch 完全一致。",
+      "confidence": 0.97,
+      "problem_statement_length": 985,
+      "test_patch_length": 5589
+    },
+    {
+      "instance_id": "aviggiano__redis-roaring-123",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 详细列出了所有测试场景的输入、输出和预期基数，与 test_patch 中的集成测试和单元测试完全对应，包括函数名 bitmap_andnot/bitmap64_andnot、操作名 DIFF、所有具体数值。",
+      "confidence": 0.95,
+      "problem_statement_length": 3109,
+      "test_patch_length": 37054
+    },
+    {
+      "instance_id": "confident-ai__deepeval-c_ce72651",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 描述的所有改动点（构造参数 model 替代 model_id、name 属性、require_dependency 加载 \"aiobotocore.session\" 和 \"botocore\"、ClientError 结构化构造与 ThrottlingException/AccessDeniedException 判定、settings.edit(persist=False) 管理重试开关）均与 test_patch 验证的行为一致，关键硬编码内容在描述中均有语义等价的线索。",
+      "confidence": 0.93,
+      "problem_statement_length": 2532,
+      "test_patch_length": 5101
+    },
+    {
+      "instance_id": "nasa__fprime-4041",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement详细描述了所有测试所需的行为：异步列目录、事件名称、m_listState状态机、schedIn驱动、assertSuccess(OPCODE_LISTDIRECTORY, 5)等关键信息与test_patch完全一致。",
+      "confidence": 0.92,
+      "problem_statement_length": 3168,
+      "test_patch_length": 10231
+    },
+    {
+      "instance_id": "huggingface__transformers-38332",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 详细描述了 T5Gemma 模型架构的所有组件、配置字段、行为要求，与 test_patch 验证的内容完全一致。测试中使用的类名、配置字段、输出形状、cache 结构等关键信息在 problem_statement 中均有明确说明。",
+      "confidence": 0.92,
+      "problem_statement_length": 4196,
+      "test_patch_length": 76986
+    },
+    {
+      "instance_id": "astral-sh__ruff-20221",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 详细描述了参数逆变位置的 materialization 行为，并给出了与 test_patch 中 reveal_type 注释完全一致的预期输出（Never/object 的方向、函数/方法/属性场景）。",
+      "confidence": 0.96,
+      "problem_statement_length": 1793,
+      "test_patch_length": 2204
+    },
+    {
+      "instance_id": "astral-sh__ruff-19884",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 精确描述了两个问题：1) 条件声明的类属性需产生 possibly-unbound-attribute 诊断并揭示 int | str 联合类型，与 test_patch 中 unbound.md 新增测试一致；2) await 操作数应为可等待对象以避免无关错误，与 test_patch 中将 await 1 替换为 await baz()/await C()/await elements(1) 一致。关键常量和行为均有语义等价的线索。",
+      "confidence": 0.9,
+      "problem_statement_length": 2004,
+      "test_patch_length": 3655
+    },
+    {
+      "instance_id": "ant-design__ant-design-54813",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 详细描述了 useMergeSemantic 的合并行为（含/不含 schema）、Button 动态 classNames/styles 函数的输入输出、以及 demo 文件中各按钮的具体 classNames/styles 值，与 test_patch 验证的行为和硬编码值完全一致。",
+      "confidence": 0.92,
+      "problem_statement_length": 2851,
+      "test_patch_length": 7184
+    },
+    {
+      "instance_id": "angular__angular-c_d47cf58",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement明确要求将ComponentDebugMetadata重命名为AngularComponentDebugMetadata，test_patch正是验证这一重命名，所有关键信息（新旧类型名、字段名、导入路径）都在描述中给出。",
+      "confidence": 0.96,
+      "problem_statement_length": 1034,
+      "test_patch_length": 1484
+    },
+    {
+      "instance_id": "davidesantangelo__krep-c_1eb6a4a",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 详细描述了需要创建 test_compat.h、修改 test_krep.h 和两个测试文件的具体要求，与 test_patch 完全一致。所有关键信息（函数名、参数签名、false/NULL、宏重定义、TESTING 守卫、平台条件编译宏等）均已在描述中给出。",
+      "confidence": 0.95,
+      "problem_statement_length": 1626,
+      "test_patch_length": 6839
+    },
+    {
+      "instance_id": "astral-sh__ruff-19799",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 描述了 RUF052 应扩展到推导式和生成器表达式中检测下划线前缀哑变量的使用，test_patch 新增的测试文件和快照完全验证了这一行为，包括列表/字典/集合推导、生成器表达式、嵌套推导、过滤子句等场景，与描述一致。",
+      "confidence": 0.95,
+      "problem_statement_length": 1785,
+      "test_patch_length": 47427
+    },
+    {
+      "instance_id": "astral-sh__ruff-21108",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 详细描述了 API 变更（ConstraintSet.range、~操作符、implies_subtype_of、always/never 方法、文件重命名），test_patch 完全对应这些变更，所有方法名、类名、revealed type 格式等硬编码内容在 problem_statement 中均有明确说明。",
+      "confidence": 0.97,
+      "problem_statement_length": 1797,
+      "test_patch_length": 36747
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_78919af",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 详细描述了所有测试用例的输入、预期输出、API名称和行为规则，与 test_patch 完全一致。所有关键字面量（如文档注释文本、变量名、方法名）均在描述中给出。",
+      "confidence": 0.97,
+      "problem_statement_length": 3173,
+      "test_patch_length": 5551
+    },
+    {
+      "instance_id": "angular__angular-c_f320700",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 详细描述了解析行为、错误信息文本、AST 结构变化，与 test_patch 验证的内容完全一致，所有关键字面量（错误消息、输入模板、期望输出）均可从描述中获取。",
+      "confidence": 0.95,
+      "problem_statement_length": 1955,
+      "test_patch_length": 4092
+    },
+    {
+      "instance_id": "ETLCPP__etl-c_10f21a0",
+      "aligned": null,
+      "hardcoded_content_complete": null,
+      "missing_hardcoded_items": [],
+      "reason_zh": "",
+      "confidence": 0.0,
+      "problem_statement_length": 3015,
+      "test_patch_length": 116299,
+      "error": "Expecting ',' delimiter: line 1 column 254 (char 253)"
+    },
+    {
+      "instance_id": "ETLCPP__etl-c_2e66865",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 详细描述了所有 _ext_t 类型别名、构造方式、API（set_storage、data、value、迭代器、Size/Endian 静态成员、相等/不等运算符、移动语义后 data() 返回 nullptr 等），与 test_patch 验证的行为完全一致，所有关键硬编码信息均已覆盖。",
+      "confidence": 0.93,
+      "problem_statement_length": 3237,
+      "test_patch_length": 116299
+    },
+    {
+      "instance_id": "prometheus__prometheus-16893",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 详细描述了四类 bug 及精确的示例直方图（spans 和 buckets 的具体值），与 test_patch 中的关键测试用例完全一致。测试中其他辅助用例的期望值可从直方图 span/bucket 语义推导得出，不需要额外硬编码线索。",
+      "confidence": 0.92,
+      "problem_statement_length": 2835,
+      "test_patch_length": 21743
+    },
+    {
+      "instance_id": "angular__angular-c_6960ec0",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement明确给出了三组输入/输出示例，与test_patch中的三条expect断言完全对应，包括精确的TCB输出格式。",
+      "confidence": 0.97,
+      "problem_statement_length": 1418,
+      "test_patch_length": 945
+    },
+    {
+      "instance_id": "angular__angular-c_4f8ab4f",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 完整描述了 test_patch 验证的所有行为：字符串 \"4\" 的数值验证、\"4f\" 跳过、null 跳过、实际数字正常验证，以及 value()?.toString() 的空安全处理。所有关键常量和预期输出均已涵盖。",
+      "confidence": 0.95,
+      "problem_statement_length": 1300,
+      "test_patch_length": 4423
+    },
+    {
+      "instance_id": "ETLCPP__etl-c_5c5e5df",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 详细描述了 deferred locked timer 的所有行为要求，包括类模板签名、tick/handle_deferred 分离、priority 排序、各种定时器操作，与 test_patch 验证的行为完全一致。关键硬编码内容（如头文件路径、模板参数、priority 测试的期望值 {0,1,2}、NO_TIMER 常量等）均在 problem_statement 中有明确说明。",
+      "confidence": 0.92,
+      "problem_statement_length": 2591,
+      "test_patch_length": 42593
+    },
+    {
+      "instance_id": "pandas-dev__pandas-61244",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 描述的两个问题与 test_patch 验证的行为完全一致：1) scatter与line的xticks对齐检查；2) datetime.time数据不再抛异常。所需的关键常量和逻辑在描述中均有体现。",
+      "confidence": 0.95,
+      "problem_statement_length": 1854,
+      "test_patch_length": 1775
+    },
+    {
+      "instance_id": "stanfordnlp__dspy-9047",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 描述的问题与 test_patch 验证的行为完全一致：toDict() 需递归转换 History 为普通 dict，JSON/CSV 序列化不报错。测试中的具体值（messages 内容等）属于测试自造数据，不需要 problem_statement 提供。",
+      "confidence": 0.95,
+      "problem_statement_length": 1097,
+      "test_patch_length": 6163
+    },
+    {
+      "instance_id": "angular__angular-64903",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 详细描述了所有六个场景，test_patch 逐一验证，关键行为和期望值（keys、entries、迭代顺序、primitive 抛异常等）均可从描述中推导，无缺失硬编码内容。",
+      "confidence": 0.95,
+      "problem_statement_length": 1677,
+      "test_patch_length": 2514
+    },
+    {
+      "instance_id": "angular__angular-c_b973c5b",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 描述的行为与 test_patch 验证的行为一致，包括 selectorless component/directive 的 IdentifierKind、selector: null、plain element 上的 usedDirectives 为空、bound expression 产生 Property 标识符、模板引用的 target 关联，以及 DirectiveHostIdentifier 类型的使用。所有关键常量和行为在 problem_statement 中都有语义等价的描述。",
+      "confidence": 0.92,
+      "problem_statement_length": 1681,
+      "test_patch_length": 9223
+    },
+    {
+      "instance_id": "adafruit__tinyuf2-c_712343c",
+      "aligned": true,
+      "hardcoded_content_complete": true,
+      "missing_hardcoded_items": [],
+      "reason_zh": "problem_statement 明确描述了要删除 family_add_tinyusb 调用之后的约40行注释代码块，与 test_patch 完全一致，不需要额外硬编码内容。",
+      "confidence": 0.97,
+      "problem_statement_length": 510,
+      "test_patch_length": 1489
+    }
+  ]
+}

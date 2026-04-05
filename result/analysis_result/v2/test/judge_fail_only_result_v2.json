@@ -1,0 +1,2470 @@
+[
+  {
+    "instance_id": "CESNET__libyang-c_8d3d805",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试只精确校验对外可见的错误码与日志前缀，与问题描述中声明的预期行为一致，并未强行限定内部实现细节。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述要求对多种类型插件和回调签名进行全面重构，而当前测试仅覆盖其中部分可见行为，因此描述并非通过测试的充要条件。",
+    "language": "c"
+  },
+  {
+    "instance_id": "adafruit__tinyuf2-c_712343c",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试仅检查是否删除无用的注释块和保持有效构建逻辑，不限定具体实现细节或额外无关修改，未表现出过窄测试特征。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述清晰指向清理 CMake 文件中已失效的大块注释代码，与标准答案和测试补丁的修改范围和意图一致，能构成测试通过的充要条件。",
+    "language": "c"
+  },
+  {
+    "instance_id": "arkq__bluez-alsa-c_7dcad21",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试仅通过公共函数接口验证成功与失败场景，并未限定内部实现方式或具体代码结构，因此不算过窄。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述要求通用的属性获取语义和完整属性字典返回，但测试只验证接口存在性和错误码等子集行为，两者不构成严格的充要关系。",
+    "language": "c"
+  },
+  {
+    "instance_id": "aviggiano__redis-roaring-117",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试仅通过公开 API 比较返回值和零填充等外部行为，并未强制具体实现方式或命名等细节，不会误杀功能上正确的实现。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述基本完整地覆盖了 bitmap64_range_int_array 的语义及 32/64 位相关用例，并与测试中验证的行为一致，无明显缺漏或额外无关约束。",
+    "language": "c"
+  },
+  {
+    "instance_id": "aviggiano__redis-roaring-118",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试主要检验公开 API 的功能行为（含新增函数和测试框架行为），未强行限定内部算法或实现细节，未体现过窄测试特征。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述中对部分行为仅给出笼统“需要测试/需要独立实现”等要求，却未明确如空位图字符串表示等具体语义，而测试却固定了这些细节，因此描述不足且与测试条件不完全对等。",
+    "language": "c"
+  },
+  {
+    "instance_id": "aviggiano__redis-roaring-123",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述对 BITOP DIFF 的语义、边界条件及底层 bitmap_andnot/bitmap64_andnot 行为（空/多源、链式调用、dest 兼作源等）与测试用例覆盖基本一一对应，无明显缺失或多余约束。",
+    "language": "c"
+  },
+  {
+    "instance_id": "aviggiano__redis-roaring-126",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试只检查各命令在键不存在时返回统一的指定错误字符串，未限定内部实现细节或多余约束，不能视为过窄测试。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述还要求修复集群路由、OPTIMIZE 复制和文档等多项行为，而测试仅覆盖不存在键时的错误信息，因此描述不是通过测试的充要条件。",
+    "language": "c"
+  },
+  {
+    "instance_id": "aviggiano__redis-roaring-129",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试主要验证位图 API 的正确性和内存安全，并未强行限定具体修复方式或代码结构，不属于过窄测试。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "测试除了别名导致的多输入位运算内存安全问题外，还通过 fuzz 和序列化/Jaccard 等不变量检查了额外行为，而问题描述只聚焦别名 memcpy-param-overlap，二者不构成充要条件关系。",
+    "language": "c"
+  },
+  {
+    "instance_id": "aws__s2n-tls-5464",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试只检查问题描述中已经声明的行为约束（错误码、0 和越界参数处理、版本连续性以及两个具体枚举值可用），并未强制特定内部数据结构或实现细节，不属于过窄测试。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述除了约束 s2n_security_policy_get 及相关枚举/宏的行为外，还强制新增并重构配置与连接级别 API，这些内容并未在 test patch 中被验证，因此不是通过测试的充要条件。",
+    "language": "c"
+  },
+  {
+    "instance_id": "aws__s2n-tls-5552",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "test patch中硬编码的细节（EpochSecret::construct_message方法名及签名、receiver::PskReceiver模块路径、PskProvider作为set_connection_initializer参数、PskReceiver作为set_client_hello_callback参数）均在问题描述中被明确要求，属于豁免范围，不构成过窄测试。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详细指定了模块路径(crate::receiver)、方法名(construct_message)、错误信息格式、Clone派生等关键实现要求，与test patch所验证的行为高度一致；虽然包含README/文档更新等未被测试覆盖的内容，但核心技术要求构成了test patch的充分必要条件，额外内容不会导致理解偏差。",
+    "__retried__": true,
+    "language": "c"
+  },
+  {
+    "instance_id": "betaflight__betaflight-14156",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试只验证配置重置模板中使用指定的新字段名，这一点在问题描述中被明确作为必须满足的实现细节，并未比描述本身更收紧实现空间。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述除了字段重命名外还要求大量枚举前缀替换、接口与结构重构等额外约束，而当前测试补丁仅检查重置模板中三个字段名是否改为指定新名，无法覆盖这些额外要求，因而不能构成通过测试的充要条件。",
+    "language": "c"
+  },
+  {
+    "instance_id": "betaflight__betaflight-14174",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "测试硬编码了函数名ioPreinitByIO，但问题描述中未指定该命名，功能正确但使用其他命名的实现会因桩函数不匹配而失败",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述过于宽泛（涉及16引脚限制、error code 5、非SPI支持等测试未验证的内容），且未提及测试实际检查的具体函数名ioPreinitByIO，既非充分条件也非必要条件",
+    "__retried__": true,
+    "language": "c"
+  },
+  {
+    "instance_id": "betaflight__betaflight-14229",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试补丁只是将 thrHover8 纳入现有结构体初始化流程，依赖的正是题面中已声明的字段存在及顺序要求，没有额外绑定具体算法或其它实现细节。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "题目明确规定了 thrHover8 字段的名称、类型、在结构体中的位置及默认值，并给出其在油门曲线中的语义，与标准补丁实现保持一致，足以构成对测试需求的精确描述。",
+    "language": "c"
+  },
+  {
+    "instance_id": "betaflight__betaflight-c_9230c5f",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "题面本身就要求使用指定的新字段名和协议枚举名，因此测试若据此检查这些精确标识符并未超出题意去额外限定实现细节。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "题面明确给出了需重命名的字段、枚举及其传播范围，与补丁所涉及的配置与测试模板变化一致，未见明显遗漏或无关约束。",
+    "language": "c"
+  },
+  {
+    "instance_id": "betaflight__betaflight-c_d3c113b",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试只检查描述中已要求的字段重命名是否正确传播到参数组重置模板这一处遗漏，并未额外限定实现细节。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述准确给出了字段重命名及抽象化重构的范围，与标准补丁一致，既不过少也不过多。",
+    "language": "c"
+  },
+  {
+    "instance_id": "davidesantangelo__krep-c_1eb6a4a",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试仅验证在 track_positions 关闭时匹配计数行为保持不变，没有强制具体内部实现或多余细节，不属于过窄测试。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述准确要求在测试端提供 6→8 参数的兼容层并为新增参数传入 false/NULL，与 test patch 的修改完全对应且无多余约束。",
+    "language": "c"
+  },
+  {
+    "instance_id": "davidesantangelo__krep-c_5beabe2",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试只要求新增参数存在并以 SIZE_MAX 形式传入，未限定内部实现方式或多余细节，不构成过窄测试。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述完整涵盖了接口参数变更、测试声明与调用以及头文件包含的同步需求，与两份补丁中的改动基本一一对应。",
+    "language": "c"
+  },
+  {
+    "instance_id": "davidesantangelo__krep-c_89ec7fd",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试中硬编码的所有实现细节（字段名、函数名、头文件包含、匹配计数值）均在问题描述中被明确要求，属于需求验证而非实现限定",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详细指定了字段名ac_trie、API函数名ac_trie_build/ac_trie_free、头文件迁移要求及具体匹配计数，与test patch的验证内容构成充要对应关系",
+    "__retried__": true,
+    "language": "c"
+  },
+  {
+    "instance_id": "driftregion__iso14229-107",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了 Doxyfile、PROJECT_NUMBER、BUILD 导出、UDS_LIB_VERSION 命名与格式、三处版本一致及 test 扩展方式，与 test patch 的通过条件一一对应，构成充要关系。",
+    "language": "c"
+  },
+  {
+    "instance_id": "espressif__esp-idf-c_5812b19",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试仅验证 expected_dep_violations 字典中 spi_flash 条目从三项缩减为仅 bootloader_support，这正是问题描述中明确要求的最终状态，未限定任何问题描述未提及的实现细节",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述完整说明了需移除的依赖（esp_driver_gpio、app_update）及原因，并明确指出修复后 spi_flash 预期违规项仅应保留 bootloader_support、其他 G1 组件不变，与测试验证内容构成充要关系",
+    "__retried__": true,
+    "language": "c"
+  },
+  {
+    "instance_id": "espressif__esp-idf-c_5d49a68",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试中硬编码的所有细节（宏名 PARLIO_LL_GET/PARLIO_LL_SUPPORT、组件名 esp_hal_parlio、包含路径 hal/parlio_periph.h 和 hal/parlio_ll.h、构建配置引用等）均在问题描述中被明确要求，属于豁免范围",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详尽地说明了组件名称(esp_hal_parlio)、宏命名模式(PARLIO_LL_GET/PARLIO_LL_SUPPORT)、具体替换映射、包含路径变更(hal/parlio_periph.h)等所有关键细节，与 test patch 验证的内容完全对应，构成充要条件",
+    "__retried__": true,
+    "language": "c"
+  },
+  {
+    "instance_id": "espressif__esp-idf-c_67a738d",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试补丁只要求新增组件依赖与包含路径等结构性约束，没有比问题描述更进一步强制实现细节。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述包含许可证规范、文档配置等额外要求，这些在 test patch 中没有对应检查，超出了通过测试所需的最小条件。",
+    "language": "c"
+  },
+  {
+    "instance_id": "espressif__esp-idf-c_6b4f08c",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确要求对 TWAI 相关寄存器进行构建期半字读写静态检查，并用 CONFIG_SOC_TWAI_SUPPORT_FD 条件编译 FD 测试源文件，与测试补丁中新增的 CMake 检查和条件编译逻辑一一对应，构成通过测试的充要条件。",
+    "language": "c"
+  },
+  {
+    "instance_id": "espressif__esp-idf-c_7023f5b",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试仅检查新前缀寄存器宏和新头文件是否可用，并未强行约束生产代码具体重构方式或内部实现结构，更多是约束不足而非过窄。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "题面要求对全部 Xtensa 特殊寄存器和头文件进行全局迁移与统一命名，而当前测试补丁只涉及极少数寄存器和测试文件，存在大量实现可通过测试却不满足题面要求的情况，无法构成充要条件。",
+    "language": "c"
+  },
+  {
+    "instance_id": "espressif__esp-idf-c_8dbf236",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试主要约束头文件包含路径与公开 API 使用方式等可观测行为，没有额外钉死实现细节或命名方式，不属于过于限定具体实现的过窄测试。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述要求了大量头文件重组和类型声明迁移等“必须”改动，但这些细节并未全部由 test patch 中的测试强制验证，因此不是通过测试的充要条件。",
+    "language": "c"
+  },
+  {
+    "instance_id": "espressif__esp-idf-c_a3c63f3",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试仅检查新组件依赖、头文件包含路径和构建元数据等与重构目标直接相关的约束，没有额外限定实现细节。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述包含大量关于文件迁移与文档配置的结构性要求，但测试只覆盖其中部分改动，因此描述不是通过测试的充要条件。",
+    "language": "c"
+  },
+  {
+    "instance_id": "espressif__esp-idf-c_b2b2df1",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试主要验证在特定颜色格式和新增配置字段下驱动能正常初始化，没有对内部实现方式作硬性限定，不属于过窄测试。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述要求的颜色格式转换能力和参数校验范围明显大于当前测试实际覆盖的行为，因此无法构成通过测试的充要条件。",
+    "language": "c"
+  },
+  {
+    "instance_id": "espressif__esp-idf-c_b385b6e",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "测试硬编码了问题描述中未提及的具体 API 名称（esp_lcd_dpi_panel_enable_dma2d/disable_dma2d、esp_lcd_dpi_panel_register_hooks、esp_lcd_panel_draw_bitmap_2d）和数据结构（esp_lcd_panel_hooks_t、esp_lcd_draw_bitmap_hook_data_t），功能等价但命名不同的正确实现将无法通过测试",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述未提及 draw_bitmap_2d 部分位图绘制 API 的需求，也未指明新增 API 的命名（如 esp_lcd_dpi_panel_enable_dma2d、esp_lcd_dpi_panel_register_hooks 等），不构成 test patch 的充要条件",
+    "__retried__": true,
+    "language": "c"
+  },
+  {
+    "instance_id": "espressif__esp-idf-c_b59b366",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了宏名、各芯片引脚取值及#error要求，与 test patch 的通过条件（提供 LP_I2C_SDA_IO/LP_I2C_SCL_IO 并用于默认配置）一致，构成充要且无多余硬性约束。",
+    "language": "c"
+  },
+  {
+    "instance_id": "espressif__esp-idf-c_bab5a7a",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述规定了比通过 test patch 更多的约束（如从各 target 的 soc_caps_full.h 完全移除 I2S 定义、hal 不再公开依赖 soc/esp_rom、esp_hal_lcd 依赖改为 PRIV_REQUIRES 等），与「满足描述当且仅当能通过测试」的充要条件不一致，存在描述过严或过多实现细节。",
+    "language": "c"
+  },
+  {
+    "instance_id": "espressif__esp-idf-c_c4d7b1c",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试主要通过将若干测试文件的包含改为 esp_rom_serial_output.h 来验证接口命名与头文件路径，未额外限定实现细节，因此不属于过窄测试。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述强制要求新头文件、实现文件重命名及大量核心源码改动，而测试仅验证部分测试应用中头文件包含是否为 esp_rom_serial_output.h，两者并非充要对应关系。",
+    "language": "c"
+  },
+  {
+    "instance_id": "espressif__esp-idf-c_cd41b6a",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "从 golden_patch 与 test_patch 的差异来看，并未体现出测试强行限定特定实现细节的迹象，更像是测试仅覆盖了问题描述中的部分改动点而非过窄。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述要求在多个组件和测试应用中统一精细化依赖与路径修正，但 golden_patch 和 test_patch 只覆盖了其中一部分场景，描述范围明显大于通过测试所必需的条件，无法构成充要条件。",
+    "language": "c"
+  },
+  {
+    "instance_id": "espressif__esp-idf-c_dcca718",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试断言的宏名和组件名都在题面中被明确指定，没有对题面之外的实现细节施加额外约束。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "题面包含大量统一 HAL 与宏定义等实现细节，而测试只覆盖其中少数宏替换与组件注册，因此题面并非通过测试的充要条件。",
+    "language": "c"
+  },
+  {
+    "instance_id": "espressif__esp-idf-c_de60680",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述要求完整抽取组件、更新 hal 与下游依赖等大量内容，而测试仅验证在 g1_components 的 esp_hal_components 列表中添加 esp_hal_pmu，通过测试不等价于满足描述，存在描述过量",
+    "language": "c"
+  },
+  {
+    "instance_id": "espressif__esp-idf-c_e94d9ce",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "测试强制要求使用特定类型名 soc_clk_freq_calculation_src_t 与特定常量名（CLK_CAL_RTC_SLOW 等），功能等价但命名不同的实现会被判为无效。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述中加入了大量与通过当前测试无直接关系的实现约束（如 rtc_clk_cal_internal 改为 static、新增 clk_ll 辅助函数、向后兼容宏等），易造成理解偏差或误判。",
+    "__retried__": true,
+    "language": "c"
+  },
+  {
+    "instance_id": "espressif__esp-idf-c_f007553",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "test patch所检查的所有实现细节（组件名esp_hal_i2c、函数名get_all_esp_hal_components()、file(GLOB esp_hal_*)模式、PRIV_REQUIRES声明、build-test-rules路径等）均在问题描述中被明确指定，属于豁免范围，不构成过窄测试。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详尽地指定了组件名称、路径、CMakeLists内容、PRIV_REQUIRES声明、G1验证函数名及glob模式等，构成了test patch所验证内容的充分条件；虽然描述中包含了test patch未验证的部分（如源文件迁移、文档更新等），但这些是整体重构任务的必要上下文，不会造成理解偏差。",
+    "__retried__": true,
+    "language": "c"
+  },
+  {
+    "instance_id": "espressif__esp-idf-c_f24c115",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述完整规定了 FourCC 枚举、配置字段与 API 变更、测试参数名与取值、RTL 目录扩展等，与 test patch 内容一一对应，构成充要条件且无多余或缺失约束。",
+    "language": "c"
+  },
+  {
+    "instance_id": "radare2__radareorg-24332",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确要求解除对 console 的依赖、在无 console 环境下可运行并将结果以调用方可管理的形式交付，与测试所验证的「无 console 调用且返回正确字符串」构成充要关系，未缺漏也未强加无关实现细节。",
+    "language": "c"
+  },
+  {
+    "instance_id": "radare2__radareorg-24830",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述给出了帮助文案的精确措辞、子命令帮助与无效子命令行为、help_match 返回 int 的 API 要求以及各 pattern 在给定条件下的精确输出，与 test patch 的断言一致且构成充要条件。",
+    "language": "c"
+  },
+  {
+    "instance_id": "ETLCPP__etl-955",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述要求将基类 tick 改为虚函数并保持 callback_timer_locked 行为，但测试仅针对新类且未验证该部分，描述包含与通过测试无关的约束。",
+    "language": "c++"
+  },
+  {
+    "instance_id": "ETLCPP__etl-c_acad52a",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述完整规定了新类名、头文件、接口、延迟执行与优先级语义及与现有基础设施的兼容性，与 test patch 所验证的行为一致，构成通过测试的充要条件。",
+    "language": "c++"
+  },
+  {
+    "instance_id": "Icinga__icinga2-10516",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述与测试所验证的行为与约束一致，充分覆盖测试要点；所含实现层面约定（类名、文件、方法签名）符合本重构任务目标，未明显造成充要性偏离或理解偏差。",
+    "language": "c++"
+  },
+  {
+    "instance_id": "LMMS__lmms-7454",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了 Timeline 的接口（setTicks/incrementTicks/ticks/getElapsedSeconds）、信号名与发射顺序（setTicks 先 positionJumped 再 positionChanged，incrementTicks 仅 positionChanged）以及 elapsed 计算公式，与 test patch 所验证的行为一致，构成充要条件且无显著描述不足或多余导致误判。",
+    "language": "c++"
+  },
+  {
+    "instance_id": "OpenOrienteering__mapper-2343",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "约束判定方法 isAreaTooSmall/isLineTooShort 与 symbol 最小值的比较公式（如 0.001 倍换算）在描述中未明确，仅说明无 symbol 或最小值为零时返回 false，导致按描述正确实现可能无法通过测试。",
+    "language": "c++"
+  },
+  {
+    "instance_id": "QuEST-Kit__QuEST-653",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "描述完整覆盖测试所需条件（环境变量、isGpuSharingEnabled 字段、越界错误信息子串），且无与通过测试相悖的多余约束或缺失要件。",
+    "language": "c++"
+  },
+  {
+    "instance_id": "WasmEdge__WasmEdge-4340",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了头文件路径、命名空间、类名（IFStream/OFStream）及关键方法名（如 setChunkSize），与 test patch 所测的公开 API 一致，且未添加与通过测试无关的多余约束，构成通过测试的充要条件。",
+    "language": "c++"
+  },
+  {
+    "instance_id": "at-wat__mcl_3dl-435",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了参数类名、成员名、构造签名与 refreshParameters 等接口约定，与 test patch 使用的接口一致，构成充要条件且无多余或缺失约束。",
+    "language": "c++"
+  },
+  {
+    "instance_id": "bloomberg__blazingmq-827",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述包含大量 test patch 未验证的实现细节（如 ClusterQueueHelper 的 dispatcher 注册与配置顺序、Queue::configure 取消线程断言、Queue 构造函数不再预设 dispatcher 等），仅 test patch 要求的 QueueEngineTester 处「先 configure 再单参 registerQueue」被测试覆盖，描述与测试不等价，存在过多与通过测试无关的内容。",
+    "language": "c++"
+  },
+  {
+    "instance_id": "catchorg__Catch2-c_0e8112a",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试所验证的精确字符串（{Unknown expression after the reported line}）及各报告格式的输出细节均已在问题描述中明确要求，属于需求的一部分，符合豁免条件",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详细覆盖了所有报告格式的预期输出变化，并明确指定了占位字符串的精确措辞，构成了测试补丁的充要条件；虽含部分内部实现细节（如成员变量替换、5%性能开销）未被测试直接验证，但不构成误导",
+    "__retried__": true,
+    "language": "c++"
+  },
+  {
+    "instance_id": "danmar__cppcheck-8030",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试仅通过公共 API 验证功能行为（如 NOT/AND/OR/XOR 的结果正确性、各边界条件下的 getbit/setbit 行为等），所检查的函数名和行为均在问题描述中明确提及，未硬编码问题描述之外的实现细节。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详尽地指定了需要新增的函数（bitmap64_not、bitmap64_not_array、bitmap64_get_nth_element_not_present_slow）及各 Bitmap64 操作的测试覆盖场景和测试框架改进要求，与 test patch 内容高度吻合，构成充要条件。",
+    "__retried__": true,
+    "language": "c++"
+  },
+  {
+    "instance_id": "deskflow__deskflow-c_05f377e",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述要求 generic 不再处理 --name、下游从 Settings 读取等多项约束，但 test patch 仅验证 CoreArgParser 将 --name/-n 写入 Settings::Core::ScreenName，未验证其余约束，描述与测试不等价，不构成充要条件。",
+    "language": "c++"
+  },
+  {
+    "instance_id": "deskflow__deskflow-c_2cb3677",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了从 Settings 统一读写、移除旧 flag、新选项名 --languageSync 及 true/1/false/0 的解析语义，与 test patch 验证的行为一致，构成充要条件。",
+    "language": "c++"
+  },
+  {
+    "instance_id": "deskflow__deskflow-c_5fa70d0",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了将 process mode 迁入 Settings、移除 IAppConfig.processMode() 及 mock、使用 Settings::ProcessMode 与 Core::ProcessMode 的充要约束，与 test patch 的修改一致，无描述不足或多余无关内容。",
+    "language": "c++"
+  },
+  {
+    "instance_id": "deskflow__deskflow-c_6fa8ba0",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "描述明确给出 --remoteHost 选项、Settings::Client::RemoteHost 键及移除 positional 的逻辑，与 test patch 验证的行为一致，无多余约束或明显遗漏",
+    "language": "c++"
+  },
+  {
+    "instance_id": "deskflow__deskflow-c_9601180",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确要求将 XBase 重命名为 BaseException 并更新所有引用与单元测试，与 test patch 对 BaseException/BaseExceptionTests 的期望一致，构成充要条件且无多余或不足。",
+    "language": "c++"
+  },
+  {
+    "instance_id": "deskflow__deskflow-c_a78959e",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述要求移除 client 端 --invert-scroll、ClientScrollDirection 及 CoreProcess 注入逻辑，但 test patch 仅验证 core 端 --invertScrollDirection 与 Settings 写入，未验证上述移除，满足描述与通过测试非充要。",
+    "language": "c++"
+  },
+  {
+    "instance_id": "deskflow__deskflow-c_a8348b1",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出从通用层移除、在 CoreArgParser 中注册并写入 Settings、下游仅从 Settings 读取等充要约束，与 test patch 的断言一致。",
+    "language": "c++"
+  },
+  {
+    "instance_id": "deskflow__deskflow-c_bee0f84",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确要求从 IAppConfig 及实现（含 test mocks）中移除 tlsKeyLength/setTlsKeyLength 并改用集中式 Settings，与 test patch 仅修改 mock 以反映接口删除的充要条件一致。",
+    "language": "c++"
+  },
+  {
+    "instance_id": "deskflow__deskflow-c_c2ee366",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述中关于 GUI 不再注入该参数、各平台 Screen 必须从 Settings 读取等约束在 test patch 中未被验证，描述比测试更严，不构成充要条件。",
+    "language": "c++"
+  },
+  {
+    "instance_id": "deskflow__deskflow-c_cfedfc2",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述包含通过测试的充要条件之外的多余约束（如选项须精确命名为 peerCertCheck、支持 \"1\" 与大小写不敏感、移除旧参数等），测试仅验证 --peerCertCheck true/false 对 Settings 的写入结果，二者不等价。",
+    "language": "c++"
+  },
+  {
+    "instance_id": "deskflow__deskflow-c_f456aab",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述要求使用 build-time project identifier、与 client 一致等实现层面约束，而 test patch 仅验证 IAppConfig 移除 coreServerName 导致 mock 同步删除，通过测试不蕴含满足描述，存在描述中过多约束。",
+    "language": "c++"
+  },
+  {
+    "instance_id": "nasa__fprime-3422",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述包含大量与测试验证无关的实现要求（FPP 迁移、平台目录、CMake、requirements、BasicTypes 等），测试仅验证部分文件中 include 的替换；通过测试不要求完成描述中的全部内容，故不构成 test patch 的充要条件。",
+    "language": "c++"
+  },
+  {
+    "instance_id": "nasa__fprime-3642",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试验证的模块命名、依赖列表、API语法及运行时行为（good_implementation/good_override/static_assert）均已在问题描述中明确说明，符合豁免条件；且test_implementation.py移除了旧的库路径硬编码检查，测试反而变得更宽松。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述中包含大量关于 Svc/FileManager 异步目录列表功能的无关内容（ListDirectory命令、schedIn端口、事件名/数量等），在golden patch和test patch中均不涉及，属于过多添加与通过测试无关的内容，可能导致理解偏差。",
+    "__retried__": true,
+    "language": "c++"
+  },
+  {
+    "instance_id": "nasa__fprime-4041",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试访问的内部状态（m_listState、LISTING_IN_PROGRESS）及事件名称等实现细节均已在问题描述中明确指定，属于豁免范围，不构成过窄测试。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述包含将所有现有命令和事件中硬编码 256 替换为 FileNameStringSize 的大段要求，但 test patch 完全未验证该重构，导致描述非 test patch 的充要条件，可能误导开发者在未被测试的重构上分散精力。",
+    "__retried__": true,
+    "language": "c++"
+  },
+  {
+    "instance_id": "nasa__fprime-4340",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "描述完整给出 size_out 超限时的行为（事件名、参数、格式、归还 buffer、不输出帧、三种状态一致），与测试验证的要点一致且无多余约束。",
+    "language": "c++"
+  },
+  {
+    "instance_id": "OpenListTeam__OpenList-1001",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试检查的 3 个字段名（motorProtocol、motorInversion、useContinuousUpdate）在问题描述中已被明确指定为必须使用的名称，属于豁免范围",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述远超测试范围：描述涵盖枚举前缀重命名、新建 motor_types.h、vtable 扩展、设备指针模型变更及全平台驱动更新等大量内容，但测试仅验证 motorDevConfig_t 中 3 个字段的重命名，描述不构成测试的充要条件",
+    "__retried__": true,
+    "language": "go"
+  },
+  {
+    "instance_id": "TecharoHQ__anubis-1308",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试所检查的每个细节（宏名 UDS_LIB_VERSION、PROJECT_NUMBER 提取模式、一致性校验、诊断/确认消息）均在问题描述中被明确指定，不存在硬编码问题描述未提及的实现细节",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述完整覆盖了 test patch 所检查的所有要点（宏重命名、Doxyfile 引入、BUILD 依赖、版本一致性校验逻辑），额外的文档基础设施背景属于动机说明，不会导致理解偏差",
+    "__retried__": true,
+    "language": "go"
+  },
+  {
+    "instance_id": "TecharoHQ__anubis-158",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出 Cleanup 与 Len 的语义、并发安全及示例（3 条中 2 条过期后 Len 为 1），与 test patch 验证场景一致，构成充要条件。",
+    "language": "go"
+  },
+  {
+    "instance_id": "TecharoHQ__anubis-368",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述要求重定向时必须尊重 RedirectDomains 校验并拒绝不在白名单的 forwarded host，但 test patch 未覆盖该场景，构成与通过测试无关的额外约束。",
+    "language": "go"
+  },
+  {
+    "instance_id": "TecharoHQ__anubis-370",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试仅检查构建级结构属性（半字访问模式缺失和条件编译守卫），均为问题描述中明确指定的内容，不强制任何问题描述未提及的具体实现细节",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述准确覆盖了 test patch 验证的两个要点：TWAI 相关模块不应存在半字寄存器访问模式（含具体模块列表）以及 FD 测试源文件应受 CONFIG_SOC_TWAI_SUPPORT_FD 条件守卫，描述与测试构成充要对应关系",
+    "__retried__": true,
+    "language": "go"
+  },
+  {
+    "instance_id": "TecharoHQ__anubis-619",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确要求提供可配置关闭XFF私网地址剥离的机制，与 test patch 所验证的「关闭剥离时保留私网IP」行为构成充要关系，未缺失约束也未添加与通过测试无关的多余内容。",
+    "language": "go"
+  },
+  {
+    "instance_id": "TecharoHQ__anubis-657",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试通过反序列化后对比结构或检查关键字段来验证行为，聚焦功能语义而非特定代码结构或命名，不属于强行限定实现细节的过窄测试。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "题目描述中包含 CLI 输入输出方式等多项要求，但当前测试仅覆盖解析与规则转换/序列化行为，无法构成相互充要的精确对应关系。",
+    "language": "go"
+  },
+  {
+    "instance_id": "antonmedv__fx-c_294e473",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试仅通过调用 DeleteNode 检查删除后的节点结构、索引与 Size 等行为结果，没有约束具体内部实现细节或额外修改。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述中包含如返回节点选择策略和逗号维护等额外语义，而这些在 test patch 的测试中未被检验，因此不构成通过测试的必要条件。",
+    "language": "go"
+  },
+  {
+    "instance_id": "cli__cli-10354",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了 sentinel 错误（如 ErrNoGitRepository）、在 stderr 含「fatal: not a git repository」时包装该 sentinel 以及定义位置，与 test patch 的断言构成充要关系。",
+    "language": "go"
+  },
+  {
+    "instance_id": "cli__cli-10720",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了重构目标、导出字段的精确名称与类型、内部与依赖处改为直接字段访问、以及 IOStreams.ColorScheme() 的返回方式，与 test patch 的充要条件一致，无描述不足或多余约束。",
+    "language": "go"
+  },
+  {
+    "instance_id": "cli__cli-10960",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述给出了类型名、字段、访问器、构造函数及接口等实现规格，与 golden/test patch 一致，足以作为通过测试的充要指导，未发现明显不足或多余导致误判。",
+    "language": "go"
+  },
+  {
+    "instance_id": "cli__cli-11018",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试硬编码验证的所有细节（VerifyConfig/VerifyAssetConfig 结构体类型、cfg.Opts.TagName 等字段路径、NewMockVerifier 构造函数、各错误消息子串）均在问题描述中被明确指定为需求，属于豁免范围",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详尽指定了测试所检查的所有结构体名称、字段路径、构造函数签名及错误消息格式，构成了 test patch 的充分条件；虽包含少量测试未验证的细节（SAN 正则实际匹配、Sigstore 内部构造），但不足以导致理解偏差",
+    "__retried__": true,
+    "language": "go"
+  },
+  {
+    "instance_id": "cli__cli-11668",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试硬编码的所有实现细节（精确错误字符串、接口/mock命名、Session导出字段、package-level变量、分页query参数、节点ID编码值等）均已在问题描述中明确要求，属于豁免范围，不构成过窄测试。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详细指定了错误信息格式、接口名称(CapiClient)、方法签名、mock类型(CapiClientMock)、Session结构体重构、defaultSessionsPerPage变量化、分页终止条件、GraphQL查询名(FetchPRsForAgentTaskSessions)、节点ID编码示例等，这些恰好是test patch所验证的全部内容，构成充要条件。",
+    "__retried__": true,
+    "language": "go"
+  },
+  {
+    "instance_id": "cli__cli-11752",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "描述明确给出了 stderr 的精确格式、顺序、覆盖的 tool 类型及无错误时 stderr 为空等要求，与 test 用例的期望文件一致，构成通过测试的充分条件；仅渲染失败时 raw fallback 在测试中未覆盖，属轻微多余约束。",
+    "language": "go"
+  },
+  {
+    "instance_id": "cli__cli-12526",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "描述明确给出了结构体名称、四个字段及所有需修改的接口与调用点，与 test patch 的编译与行为要求一致，构成充要条件；虽含较多背景与动机叙述，但核心要求清晰。",
+    "language": "go"
+  },
+  {
+    "instance_id": "cli__cli-c_6d14840",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试验证的所有具体实现细节（fd别名、Detector类型、AdvancedIssueSearchUnsupported构造函数、参数位置、\"type\":\"ISSUE\"精确匹配等）均已在问题描述中明确指定为规范要求，符合豁免条件",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详细且准确地覆盖了测试补丁所验证的所有接口变更和行为要求，包括函数签名变更、fd.Detector参数、fd.AdvancedIssueSearchUnsupported()用法、\"type\":\"ISSUE\"断言及ListURLWithQuery布尔参数，构成测试的充要条件",
+    "__retried__": true,
+    "language": "go"
+  },
+  {
+    "instance_id": "containers__podman-26553",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试仅校验 NewWSLCommand 的契约行为（Path 含 wsl、Args[1:] 正确），未硬编码导入或限定具体实现方式，功能正确的实现可通过。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述要求了全量调用点重构、辅助函数改签名与错误信息使用 Args[1:] 等大量约束，而 test patch 仅验证 NewWSLCommand 的 Path 含 wsl 且 Args[1:] 等于传入参数，满足描述可过测但过测不必满足描述，非充要。",
+    "language": "go"
+  },
+  {
+    "instance_id": "derailed__k9s-3517",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述要求配置不安全时给予运行时反馈（如警告），但 test patch 仅验证浮点类型与低于 2 秒时限制为 2.0 的行为，未对运行时反馈做断言，存在与通过测试无关的约束。",
+    "language": "go"
+  },
+  {
+    "instance_id": "gitleaks__gitleaks-1831",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试检查的所有实现细节（包路径detect/codec、构造函数NewDecoder、导出方法Decode、指针类型*EncodedSegment、标签格式decoded:<name>/decode-depth:N及其顺序、导出函数名等）均已在问题描述中明确指定，属于需求的一部分，符合豁免条件，不构成过窄测试。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详细覆盖了codec子包重构、三种编码类型支持、标签格式与顺序、导出API命名（NewDecoder/Decode/EncodedSegment/Tags/CurrentLine/AdjustMatchIndex/SegmentsWithDecodedOverlap）、配置文件重命名及正则更新等所有测试验证的关键行为，构成test patch的充要条件。",
+    "__retried__": true,
+    "language": "go"
+  },
+  {
+    "instance_id": "go-gitea__gitea-33861",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出用 *ServeHeaderOptions 替代 filePath、options 作为 reader 之后最后一参，以及更新 setServeHeadersByFile、所有调用处与测试的要求，与 test patch 的修改范围一致，构成通过测试的充要条件。",
+    "language": "go"
+  },
+  {
+    "instance_id": "go-gitea__gitea-34154",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试所验证的所有实现细节（包名、类型名、常量名、内部字段、方法签名等）均在问题描述中被明确要求，符合豁免条件",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详尽地规定了新包的类型、方法、常量及测试要求，虽然包含调用方迁移等测试未直接覆盖的内容，但不会导致理解偏差或误判",
+    "__retried__": true,
+    "language": "go"
+  },
+  {
+    "instance_id": "go-gitea__gitea-34412",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述包含大量与通过测试无直接关系的现象与根因叙述，易造成理解偏差或误判，存在描述中过多添加不需要内容的情况。",
+    "language": "go"
+  },
+  {
+    "instance_id": "go-gitea__gitea-35775",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述与 test patch 基本构成充要关系：统一 API、无效路径不 panic、TreeEntry.Size 正确、FindLFSFile 正确、--batch-command 与回退、测试 helper 与 t.Cleanup 均在测试中有对应验证，描述未增加与通过测试矛盾的约束。",
+    "language": "go"
+  },
+  {
+    "instance_id": "grpc__grpc-go-8750",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了字段名ResolverEndpoint与函数名setHostname的约定及原因，与 test patch 中测试对上述名称的引用一致，构成通过测试的充要条件，无描述不足或多余约束。",
+    "language": "go"
+  },
+  {
+    "instance_id": "grpc__grpc-go-8779",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试所检查的所有具体实现细节（如枚举值 LCD_COLOR_FMT_YUV422_YUYV/UYVY、结构体 esp_lcd_color_conv_yuv_config_t、字段 in_color_format/out_color_format/conv_std、函数名 esp_lcd_dpi_panel_set_yuv_conversion、RTL 目录扩展等）均已在问题描述中被明确指定为需求的一部分，属于豁免范围，不构成过窄测试。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述非常详尽，明确指定了所有新枚举值名称、新结构体名称、字段名称、函数重命名、参数类型变更以及构建系统更新等细节，与 test patch 所验证的内容构成充要条件关系，既无遗漏也无多余的无关约束。",
+    "__retried__": true,
+    "language": "go"
+  },
+  {
+    "instance_id": "hugo__gohugoio-13982",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试所验证的实现细节（配置字段名、哈希前缀值、迁移行为、禁用时直通文本等）均已在问题描述中明确指定，属于需求的一部分而非对未提及实现细节的强制约束",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详尽地给出了配置字段名（enable/enableAutoIDPrefix）、三种行为模式、具体哈希前缀格式与值（h + xxHash hex）、向后兼容迁移逻辑及默认值，与 test patch 验证的内容一一对应，构成充要条件",
+    "__retried__": true,
+    "language": "go"
+  },
+  {
+    "instance_id": "jesseduffield__lazygit-4318",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了性能根因、必须的 API 变更（RenameYamlKey/Walk/TransformNode 接受 *yaml.Node 及回调签名、导出 YamlMarshal）与迁移流程（解析一次、按节点传递、最后序列化），与 test patch 对新 API 的调用及 benchmark 一致，构成通过测试的充要条件；所含实现建议（如变更检测方式）不构成与测试矛盾的约束。",
+    "language": "go"
+  },
+  {
+    "instance_id": "jesseduffield__lazygit-4953",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试所检查的实现细节（字段名pagerConfig、构造函数NewPagerConfig、config包路径）均在问题描述中明确指定，属于豁免范围",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述包含大量GUI层要求（Gui结构体字段、IStateAccessor接口方法GetPagerConfig、PTY代码重构等），但test patch完全不验证这些内容，构成与通过测试无关的多余约束，不满足充要条件",
+    "__retried__": true,
+    "language": "go"
+  },
+  {
+    "instance_id": "livekit__livekit-4198",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述包含多处测试未验证的实现细节（如 buffer 层 SetAudioLevelConfig、stream restart 时重建 audio level 实例等），不构成通过当前 test patch 的充要条件。",
+    "language": "go"
+  },
+  {
+    "instance_id": "pingcap__tidb-59644",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了三参数 API 替换、删除 option 系类型及各调用点的替换方式，与 golden/test patch 一致，构成通过测试的充要条件，无显著遗漏或多余约束。",
+    "language": "go"
+  },
+  {
+    "instance_id": "prometheus__prometheus-16893",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "描述完整覆盖 test patch 所验证的三大类行为（span 扩展非连续 insert 拆分、合并 span 位置索引、insert 同位置与尾部处理），与通过测试的充要条件一致，无显著描述不足或多余约束。",
+    "language": "go"
+  },
+  {
+    "instance_id": "restic__restic-5173",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试硬编码验证的所有细节（WarmupFn/WarmupWaitFn字段名、S3Restore flag、配置默认值、构造函数参数位置、HandleCount/Wait接口）均在问题描述中被明确指定，属于豁免范围",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详尽地规定了所有接口签名、字段名、默认值和行为契约，与测试验证的各项要求一致；虽包含测试未覆盖的额外实现细节，但不导致理解偏差或误判",
+    "__retried__": true,
+    "language": "go"
+  },
+  {
+    "instance_id": "restic__restic-5241",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试仅检查接口方法从mock中移除，这是问题描述明确要求的结构变更，未限定问题描述之外的实现细节",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述详细规定了集中式Settings迁移方案、特定设置键名及默认值2048等实现细节，但测试补丁仅验证mock中移除了tlsKeyLength/setTlsKeyLength两个方法，大量描述内容与通过测试无关，不构成充要条件",
+    "__retried__": true,
+    "language": "go"
+  },
+  {
+    "instance_id": "restic__restic-5494",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确规定了包路径、导出符号的精确名称及测试位置与导入方式，与 test patch 所验证内容一致，构成充要条件；描述中虽有少量与测试无直接关系的细节，但不影响判读。",
+    "language": "go"
+  },
+  {
+    "instance_id": "restic__restic-5550",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试仅将三处 ReadData 调用替换为 ReadPacks(ctx, identity filter, nil, errCh)，未硬编码函数名、未限定实现细节，任何提供相同 API 且行为正确的实现均可通过。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了 ReadPacks 改为接受 filter 函数、Checker 不缓存 pack、零 pack 时 byte-size 子集需优雅处理等约束，与 test patch 仅验证「用 identity filter 调用 ReadPacks 替代 ReadData」的充要条件一致，无显著描述不足或多余约束。",
+    "language": "go"
+  },
+  {
+    "instance_id": "restic__restic-c_b7bbb40",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述中包含了测试未验证的实现细节（如 LoadIndex 不再计算/存储 pack sizes、Packs 现场计算、cmd 层 buildPacksFilter 等），易造成对实现方式的过度限定或理解偏差。",
+    "language": "go"
+  },
+  {
+    "instance_id": "rqlite__rqlite-2057",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述要求重构所有列出的 HTTP 端点并统一错误处理，但 test patch 仅验证 Service.LeaderAddr() 与 LeaderAPIAddr() 的行为，未验证任何端点是否被重构，描述相对测试包含多余约束，不构成充要条件。",
+    "language": "go"
+  },
+  {
+    "instance_id": "rqlite__rqlite-2145",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试中对具体类型断言(*aws.S3Client/*gcp.GCSClient)、内部字段访问(cli.cfg)及GCSConfig字段名验证等看似严格的检查，均已在问题描述中被明确要求，符合豁免条件",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详尽地指定了函数名(NewStorageClient)、返回类型(StorageClient接口)、具体客户端类型(*aws.S3Client/*gcp.GCSClient)、GCSConfig字段名(Bucket/Name/ProjectID/Endpoint/CredentialsPath)以及内部存储字段名(cfg)等所有测试所验证的细节，与test patch构成充要条件关系",
+    "__retried__": true,
+    "language": "go"
+  },
+  {
+    "instance_id": "spf13__cobra-2231",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了 Completion 类型别名、CompletionWithDesc 辅助函数、[]Completion 签名、混合使用示例以及两种请求模式下的精确输出格式，与 test patch 验证内容一致，构成充要条件。",
+    "language": "go"
+  },
+  {
+    "instance_id": "spf13__viper-c_d8387f6",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试仅通过类型断言验证错误类型，所有硬编码的类型名和字段名均在问题描述中被明确要求",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述完整覆盖了测试验证的所有场景和类型名称，虽包含接口及错误消息等额外细节但不会导致理解偏差或误判",
+    "__retried__": true,
+    "language": "go"
+  },
+  {
+    "instance_id": "trufflesecurity__trufflehog-3134",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试硬编码的 DefaultChunkSize/DefaultPeekSize 名称在问题描述中已明确要求，符合豁免条件",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述包含大量关于 WithFileSize、自适应分块、Docker/Git 集成等内容，但 test patch 完全不测试这些功能，仅验证常量重命名，描述远超测试范围，违反充要条件原则",
+    "__retried__": true,
+    "language": "go"
+  },
+  {
+    "instance_id": "trufflesecurity__trufflehog-3938",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确了 key 格式（约 85–88 字符、base64、以 == 结尾）、URL 模式（.management.azure-api.net）、composite 表示、验证行为及 GCP 集成测试依赖，与 test patch 的检测/验证/无匹配场景及 secret 来源一致，构成通过测试的充要条件。",
+    "language": "go"
+  },
+  {
+    "instance_id": "apache__calcite-4390",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "测试要求方法名必须为defaultSchemaName()，但问题描述中仅表达了'能获取默认schema名'的需求，未指定具体方法名，使用如getDefaultSchemaName()等不同命名的功能正确实现会被误判失败。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述完整覆盖了解耦核心需求（去除CalciteConnection依赖、仅接受根Schema、暴露defaultSchema元数据、消除副作用），行为意图清晰，基本构成test patch的充要条件。",
+    "__retried__": true,
+    "language": "java"
+  },
+  {
+    "instance_id": "apache__fesod-567",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试中硬编码的类名（ParameterUtil、StringUtils）、方法名（getAutoTrimFlag/getAutoStripFlag/strip/isBlankChar）及Unicode码点等细节均在问题描述中被明确要求，属于需求的一部分，符合豁免条件，不构成过窄测试。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详尽地指定了所有需要新增的类（ParameterUtil）、方法（strip/isBlankChar）、字段（autoStrip）、优先级逻辑（autoStrip > autoTrim > 不处理）及默认值（FALSE），与测试验证的内容完全对应，构成充要条件，无遗漏也无多余误导内容。",
+    "__retried__": true,
+    "language": "java"
+  },
+  {
+    "instance_id": "apache__fesod-658",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了截断位置、长度限制、getSheetName() 返回截断名等与 test patch 验证行为一致的充要条件，无描述不足或多余约束。",
+    "language": "java"
+  },
+  {
+    "instance_id": "apache__hbase-7340",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述给出了 coprocessor 路径记录、多 RPC 聚合等行为约束，但 test patch 仅移除 RpcCall mock 中的两个方法以适配接口变更，未验证这些行为，描述不构成测试的充要条件且包含通过测试所不需要的约束。",
+    "language": "java"
+  },
+  {
+    "instance_id": "apache__hbase-7540",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试所检查的实现细节（fetchGetLevelResponse/fetchSetLevelResponse 方法名、MASTER_UI_READONLY_CONF_KEY 常量名、Effective level 响应格式等）均在问题描述中明确指定，属于豁免范围",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述全面覆盖了测试验证的所有行为和实现细节（方法名、常量名、错误信息、响应格式），构成了 test patch 的充要条件",
+    "__retried__": true,
+    "language": "java"
+  },
+  {
+    "instance_id": "apache__hbase-7584",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述强制规定实现细节（如 DummyServer 必须继承 MockNoopMasterServices 且强调类名重要、错误信息必须完全匹配等），超出“通过测试”的充要条件，存在过多约束易导致理解偏差或误判。",
+    "language": "java"
+  },
+  {
+    "instance_id": "apache__iceberg-12167",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了将 PhysicalType 提取为顶层枚举的包位置、枚举名与常量名（OBJECT/STRING/INT32/DATE/DECIMAL4 等）及引用与 import 的更新要求，与 test patch 中的断言和引用方式一致，构成通过测试的充要条件。",
+    "language": "java"
+  },
+  {
+    "instance_id": "apache__iceberg-13631",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了 manageSnapshots 修复、appendUpdate 统一逻辑及 protected 可扩展性要求，与 test patch 中 testExtendBaseTransaction 验证的子类调用 appendUpdate 并正确提交 main/branch 的充要条件一致，无显著描述不足或多余约束。",
+    "language": "java"
+  },
+  {
+    "instance_id": "apache__maven-10975",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "描述明确要求异常信息包含问题数量、严重级别、受影响模块及每问题的描述与位置信息，与测试所验证的行为一致，无多余约束也无明显遗漏。",
+    "language": "java"
+  },
+  {
+    "instance_id": "apache__maven-11322",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试硬编码的fromModel方法名在问题描述中已被明确指定为必需API名称，符合豁免条件；测试未限定问题描述之外的实现细节",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述的核心需求（创建fromModel工厂方法并迁移调用点）与test patch验证的内容一致，额外的归一化/验证逻辑属于背景动机说明，不构成误导",
+    "__retried__": true,
+    "language": "java"
+  },
+  {
+    "instance_id": "apache__maven-9311",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试中硬编码的枚举名ConsoleIcon、常量名(SUCCESS/ERROR/WARNING/DETAIL/ACTION)、Unicode字符、ASCII回退串、方法签名(getIcon/getUnicodeChar/getAsciiFallback)以及错误计数精确等于1等细节，均已在问题描述中被明确要求，属于豁免范围，不构成过窄测试。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述覆盖了四个修复点（外部parent保护、.mvn目录创建、降级报错、ConsoleIcon枚举），对每个点给出了明确的行为要求，与test patch验证内容构成充要条件关系，无遗漏也无多余约束。",
+    "__retried__": true,
+    "language": "java"
+  },
+  {
+    "instance_id": "apache__pinot-16709",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述完整规定了类名、方法签名、优先级与边界行为（如不 trim header、仅 Bearer、JWT 解析失败返回 null），与 test patch 的断言一致，构成通过测试的充要条件；未出现明显描述不足或多余约束导致误判。",
+    "language": "java"
+  },
+  {
+    "instance_id": "apache__pinot-16723",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": null,
+    "problem_description_reason": "",
+    "language": "java"
+  },
+  {
+    "instance_id": "bazelbuild__bazel-c_2be8c98",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出三点修复目标（bare * 不 NPE、keyword 参数标识符被访问、三处遍历顺序），与 test patch 中 assertIdentsAre 覆盖的用例一一对应，且末尾子类更新说明仅为实现提示，不构成通过测试的额外约束。",
+    "language": "java"
+  },
+  {
+    "instance_id": "bazelbuild__bazel-c_37a74a7",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述规定了大量与通过测试无关的实现细节（如抽象类与方法的精确命名与包路径、Velocity 模板变量名、addMember 命名等），测试仅验证 getMembers()、MemberDoc 类型及构造器顺序与类型，存在描述过多导致理解偏差或误判。",
+    "language": "java"
+  },
+  {
+    "instance_id": "bazelbuild__bazel-c_42746c3",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出裸 list/dict 应等价于 list[Any]/dict[Any,Any] 的行为要求，与 test patch 的断言一致，构成充要条件。",
+    "language": "java"
+  },
+  {
+    "instance_id": "bazelbuild__bazel-c_4ddd782",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了接口名、包与BUILD目标、方法签名、SerializationModule/Workspace 的改造以及调用点超时与异常要求，与 test_patch 的验证方式一致，构成通过测试的充要条件，无描述不足或无关约束。",
+    "language": "java"
+  },
+  {
+    "instance_id": "bazelbuild__bazel-c_50e228b",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了 API 契约、绝对路径要求、序列化与 prefetcher 行为以及测试参数化方式（ResolvedPathDepth），与 test patch 验证内容一致，构成充要条件。",
+    "language": "java"
+  },
+  {
+    "instance_id": "bazelbuild__bazel-c_63f32ce",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述给出了多文件支持、构造函数签名、前置条件及精确异常消息、聚合语义等充要条件，与 test patch 验证的行为一致，无描述不足或多余约束。",
+    "language": "java"
+  },
+  {
+    "instance_id": "bazelbuild__bazel-c_78919af",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述完整规定了 docCommentsMap 的填充规则、getText/getDocCommentText 的语义、多行/元组/行尾/未使用注释等场景，与 test patch 所测行为一致，构成充要条件且无多余约束或明显遗漏。",
+    "language": "java"
+  },
+  {
+    "instance_id": "bazelbuild__bazel-c_7fa303e",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "描述明确给出了 VersionedChangesValidator、createNestedMatchResult、BUILD 目标名、NestedDependencies 构造器及行为语义与场景，与 test patch 验证内容一致，构成充要条件。",
+    "language": "java"
+  },
+  {
+    "instance_id": "bazelbuild__bazel-c_85055a4",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "描述明确给出四种无 active directories 场景、精确警告文案及 DUMP 模式下 full serialization 时 manifest 简化的要求，与 test patch 断言一致，构成充要条件；虽有背景性叙述但未引入与通过测试相悖的约束。",
+    "language": "java"
+  },
+  {
+    "instance_id": "bazelbuild__bazel-c_944ca5f",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述完整规定了 Builder API、mnemonic 参与 key、progress message 由 builder 设置等，与 test patch 的验收点一致，构成充要条件且无多余约束。",
+    "language": "java"
+  },
+  {
+    "instance_id": "bazelbuild__bazel-c_b411e14",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出五条 API 变更（Operation 重命名、ResponseSink、CallbackMultiplexer 及 done 回调顺序、createBatchExecutionStrategy、PerResponseMultiplexer 的 ImmutableList），与 test patch 所验证的类型、签名与行为一致，构成充要条件；描述中虽有少量内部实现提及，未引入与通过测试无关的额外约束或易导致误判的多余内容。",
+    "language": "java"
+  },
+  {
+    "instance_id": "bazelbuild__bazel-c_b64c511",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述与 test patch 一致，覆盖 resolveTypeSyntax 行为、redeclaration 与 cast 错误格式、newModuleHook 签名及子类修改等，构成测试的充要条件。",
+    "language": "java"
+  },
+  {
+    "instance_id": "bazelbuild__bazel-c_c24f247",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述与测试一致：均要求反序列化后输入发现相关内部状态被正确重置、不保留残留引用或缓存；描述未缺约束也未添加与通过测试无关的细节。",
+    "language": "java"
+  },
+  {
+    "instance_id": "bazelbuild__bazel-c_c5b4e33",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了包迁移、常量名、错误消息措辞、getFunctionType()、Types.callable 参数及 toSignatureString 的精确格式与示例，与 test patch 所验证内容一一对应，构成充要条件。",
+    "language": "java"
+  },
+  {
+    "instance_id": "bazelbuild__bazel-c_da2c551",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述给出了完整重构需求，但测试仅验证两处 PackagePiece builder 接受 PackageOverheadEstimator 参数，描述相对测试有多余且未验证的约束（如接口改为 Packageoid、hook 顺序、getTargets/getShortDescription 上移等），不构成充要条件，易导致误判或理解偏差。",
+    "language": "java"
+  },
+  {
+    "instance_id": "bazelbuild__bazel-c_db9c87f",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述与 test patch 一致：要求统一为单一 Sequence 接口、支持 Artifact 与 (Artifact,Label)、消除首元素类型嗅探；test 仅验证构造与 addSources(Sequence) 的调用方式，无多余或缺失约束。",
+    "language": "java"
+  },
+  {
+    "instance_id": "google__gson-2948",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述完整给出了各类型的 JSON 结构、ZoneId 双分支、复合类型委托、注册顺序及空值与未知字段等约束，与 test patch 的断言一一对应，构成充要条件。",
+    "language": "java"
+  },
+  {
+    "instance_id": "google__gson-2951",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试只验证 SQL_TYPE_FACTORIES 的公开契约（常量名、列表内容与顺序），与问题描述中的规格一致，未硬编码具体实现细节（如内部类、导入或集合实现方式）。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "测试仅验证 SqlTypesSupport.SQL_TYPE_FACTORIES 的存在与顺序，问题描述却包含大量未被该测试覆盖的重构内容（long/float/double/AtomicLong 等迁移、BigDecimal/BigInteger/LazilyParsedNumber factory 等），描述过多与通过测试无关的内容，易导致理解偏差或误判。",
+    "language": "java"
+  },
+  {
+    "instance_id": "hibernate__hibernate-orm-c_5687749",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述第四点要求实现 addMapKeySubgraph 与 addTreatedMapKeySubgraph，但 test patch 未包含对 map key 子图的任何测试，描述与“通过测试”非充要，描述多了未被测试覆盖的约束。",
+    "language": "java"
+  },
+  {
+    "instance_id": "hibernate__hibernate-orm-c_5bde39f",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出 EntityGraph addTreatedSubgraph 的三种预期行为与 @MappedSuperclass 下 HQL 对 id 解析的预期，与 test patch 覆盖场景一致，构成测试通过的充要条件，无描述不足或多余约束。",
+    "language": "java"
+  },
+  {
+    "instance_id": "hibernate__hibernate-orm-c_8509166",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确区分测试辅助方法修复与合并逻辑修复，与 test patch 及通过 merge/areEqual 验证的测试一致，构成充要条件",
+    "language": "java"
+  },
+  {
+    "instance_id": "nacos__alibaba-13142",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "测试硬编码了问题描述未提及的实现细节：要求Embedded*PersistServiceImpl必须使用特定构造函数签名(DatabaseOperate参数)，以及ConditionOnLdapAuth必须位于condition子包路径，功能正确但实现方式不同的提交会被误判",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述过于笼统抽象，仅描述了广泛的架构问题，未指明测试实际验证的具体变更（构造函数签名改造、包路径重构、废弃常量移除等），既非测试的充分条件也非必要条件",
+    "__retried__": true,
+    "language": "java"
+  },
+  {
+    "instance_id": "nacos__alibaba-13207",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试中硬编码的所有实现细节（NacosServerLoaderService 类名与包路径、构造函数参数顺序、方法名、离散 groupName/serviceName 参数、地址格式 1.1.1.1:8848 等）均在问题描述中已明确指定，属于需求验证而非过窄限制。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述覆盖了 test patch 验证的所有细节（类名、方法签名、构造函数参数顺序、地址格式、离散参数传递等），虽含少量未被测试覆盖的额外内容（SubscribeManager 精确匹配、静态资源映射），但不会导致对测试部分的理解偏差或误判。",
+    "__retried__": true,
+    "language": "java"
+  },
+  {
+    "instance_id": "plantuml__plantuml-2173",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "描述明确 destroy 标记应走样式管道并可被自定义，与测试期望（样式生效后默认颜色）一致，无多余实现约束。",
+    "language": "java"
+  },
+  {
+    "instance_id": "plantuml__plantuml-c_15fa06c",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试中硬编码的所有细节（CliParser.parse2的枚举常量名AUTHOR/GRAPHVIZ_DOT/T_SVG/DEFINE/FTP、EnumMap toString格式、CliOptions/CliParser类名与方法签名、ColorTrieNode对dark-blue返回null及darkblue返回Color(0x00008B)）均在问题描述中被明确指定，属于需求本身的一部分，不构成过窄测试。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述大量添加了与通过测试无关的实现细节（如GlobalConfig/GlobalConfigKey体系、OptionFlags删除、所有调用点从OptionFlags迁移到GlobalConfig、OptionPrint迁移等），这些内容均未被test patch验证，导致描述远超test patch的充要条件，容易误导实现方向。",
+    "__retried__": true,
+    "language": "java"
+  },
+  {
+    "instance_id": "spring-projects__spring-security-17825",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述要求移除 PasswordEncoderFactories 中四个 password4j 注册，但 test patch 未对该行为做任何断言，属于与通过测试无关的多余约束，不构成充要条件。",
+    "language": "java"
+  },
+  {
+    "instance_id": "swagger-api__swagger-core-5042",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确要求为 resolveRequiredMode 提供属性的 JavaType 以便子类实现类型感知逻辑，与 test patch 验证的扩展点签名与行为一致，构成充要条件且无不足或多余约束。",
+    "language": "java"
+  },
+  {
+    "instance_id": "AtsushiSakai__PythonRobotics-1211",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述要求将内部函数 precasting 重命名为 pre_casting 并更新调用处，但 test patch 仅验证导入路径（from Mapping.ray_casting_grid_map import ray_casting_grid_map as m），不验证该内部重命名，描述包含与通过测试无关的约束。",
+    "language": "python"
+  },
+  {
+    "instance_id": "albumentations-team__albumentations-2325",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试中硬编码验证的所有实现细节（fd.Detector 参数、fd.AdvancedIssueSearchUnsupported()、\"type\": \"ISSUE\" 等）均在问题描述中明确要求，属于豁免范围",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详细指定了包路径、函数签名、参数位置、类型字段值和测试要求，与 test patch 的所有检查点一致，构成充要条件；额外的生产代码细节是完整功能描述的合理部分，不致误导",
+    "__retried__": true,
+    "language": "python"
+  },
+  {
+    "instance_id": "albumentations-team__albumentations-2337",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述与 test patch 一一对应：规定了 HEStain 接口、functional 模块中组件名称与签名、NMF/归一化/apply_he_stain_augmentation 的行为及排除的测试项，构成通过测试的充要条件，无描述不足或多余约束。",
+    "language": "python"
+  },
+  {
+    "instance_id": "albumentations-team__albumentations-2495",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试验证的函数签名变更和输出正确性均在问题描述明确要求的范围内，不存在硬编码问题描述之外的实现细节。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述虽冗长但完整说明了渲染函数需从 map[string]string 改为接受 Repository 对象、以及日期测试需设置生产模式，构成 test patch 的充要条件。",
+    "__retried__": true,
+    "language": "python"
+  },
+  {
+    "instance_id": "camel-ai__camel-3015",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "第三段关于 headless/无 GUI、不用 tkinter、可配置命令白名单、session 清理等大量内容在 test patch 中未被测试，属于与通过测试无关的额外约束，易造成理解偏差或误判。",
+    "language": "python"
+  },
+  {
+    "instance_id": "confident-ai__deepeval-2345",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试硬编码验证的所有细节（函数名require_dependency、各模块provider_label精确值、install_hint精确字符串、patch路径）均已在问题描述中明确要求，属于豁免范围",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详细指定了函数名、provider_label、install_hint、patch路径等全部测试所验证的实现细节，构成test patch的充要条件，虽极其具体但不存在矛盾或误导",
+    "__retried__": true,
+    "language": "python"
+  },
+  {
+    "instance_id": "confident-ai__deepeval-c_08844c8",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试虽然在单元级别验证了内部 API（expandIntSpansAndBuckets、expandFloatSpansAndBuckets、insert、adjustForInserts）的输出，但这些内部 API 的行为约束在问题描述中均有明确说明，且端到端测试（TestIntHistogramEmptyBucketsWithGaps、TestFloatHistogramEmptyBucketsWithGaps）仅验证追加和迭代的正确性，不限定具体实现方式，任何功能正确的修复均可通过。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详细且准确地覆盖了 test patch 所验证的所有缺陷维度：span 展开例程对非连续插入的错误合并、合并 span 的正确性、adjustForInserts 中尾部插入使用位置索引而非原始桶索引、bucket 插入例程对同一位置多次插入和尾部插入的处理，以及整数和浮点直方图双路径的对称性，构成了 test patch 的充要条件。",
+    "__retried__": true,
+    "language": "python"
+  },
+  {
+    "instance_id": "confident-ai__deepeval-c_ce72651",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述包含大量与测试无关的内容（如所有11个provider的返回类型统一、Settings字段的SecretStr/PositiveFloat类型、region归一化等），过度描述导致不构成test patch的充要条件",
+    "__retried__": true,
+    "language": "python"
+  },
+  {
+    "instance_id": "crewAIInc__crewAI-3289",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述完整规定了类名、模块、方法签名、URL 规范化、请求路径与 headers、必填字段、五个配置键及 set 顺序、错误时 SystemExit，与 test patch 验证的行为一一对应，构成充要条件。",
+    "language": "python"
+  },
+  {
+    "instance_id": "crewAIInc__crewAI-3420",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述中加入了与通过测试无直接关系的实现约束（如 ToolsHandler 类型注解、常量集中到 constants 模块、正则预编译等），通过测试仅依赖 parser 模块的 parse/_clean_action/_safe_repair_json 及错误消息子串，故不构成充要。",
+    "language": "python"
+  },
+  {
+    "instance_id": "django__django-19643",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试所硬编码验证的所有实现细节（PartialTemplate 类名及其 _render/render/source/find_partial_source/get_exception_info 方法签名、DeferredSubDict 类及行为、extra_data[\"partials\"] 存储路径、.template.source/.template.engine 属性、各精确错误消息子串等）均在问题描述中被明确要求，属于需求本身而非对未提及实现细节的硬编码限定。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述极其详细，涵盖了 test patch 所验证的所有行为：标签语法、PartialTemplate 类结构与方法、DeferredSubDict 工具类、#寻址语法、缓存加载器、错误消息精确文本、调试信息传播、模板继承/包含兼容性等，基本构成 test patch 的充要条件；唯一瑕疵是描述称给出'exact messages'但 inline 错误消息实际是 golden patch 完整消息的前缀子串，不过不影响实现者通过测试。",
+    "__retried__": true,
+    "language": "python"
+  },
+  {
+    "instance_id": "google__adk-python-1200",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了与 test patch 一致的充要条件：模块路径、函数名、ID 格式、内部方法名与 NotFoundError 等均与测试断言一一对应，无描述不足或多余约束导致与测试脱节。",
+    "language": "python"
+  },
+  {
+    "instance_id": "google__adk-python-1424",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试检查的所有细节（类型名 Completion、函数名 CompletionWithDesc、混合切片 []string{\"apple\", Completion(\"banana\"), CompletionWithDesc(\"orange\", \"orange are orange\")} 的用法、两种模式下的精确输出格式）均在问题描述中明确指定，未硬编码任何问题描述之外的实现细节。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述准确涵盖了测试验证的核心行为（Completion 类型别名、CompletionWithDesc 辅助函数、混合切片兼容性、描述模式与无描述模式的精确输出格式），虽包含测试未直接验证的内部方法签名更新等额外细节，但这些额外内容不会导致理解偏差或误判。",
+    "__retried__": true,
+    "language": "python"
+  },
+  {
+    "instance_id": "google__adk-python-2388",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述未说明测试或其它文件中从 base_tool 导入这三类时也需改为从 tool_configs 导入，按描述只更新所列 6 个文件会漏改 test_tool_config.py，导致测试仍失败，存在描述不足。",
+    "language": "python"
+  },
+  {
+    "instance_id": "google__adk-python-c_0487eea",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "测试硬编码了大量问题描述中未提及的实现细节：方法名run_debug、默认ID值debug_user_id/debug_session_id、精确输出格式如[Calling tool: ...]和[Tool result: ...]、截断阈值50/100字符等，任何功能等价但API设计不同的实现均会被误判为无效",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述仅阐述了简化样板代码的痛点和动机，未给出任何具体API设计（方法名、参数名、默认值、输出格式等），无法作为test patch的充分条件——按描述正确实现的任何替代方案都会无法通过测试",
+    "__retried__": true,
+    "language": "python"
+  },
+  {
+    "instance_id": "google__adk-python-c_19315fe",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试中硬编码的模块路径、函数名和精确消息字符串均在问题描述中被明确要求，符合豁免条件，不构成过窄测试。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详细指定了模块路径(mcp_auth_utils)、函数名(get_mcp_auth_headers)、参数签名、各类凭证的处理逻辑及精确的警告/错误消息文本，与 test patch 验证的内容高度对应，构成充要条件。",
+    "__retried__": true,
+    "language": "python"
+  },
+  {
+    "instance_id": "google__adk-python-c_5b7c8c0",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试验证的所有细节（确切类名、从metric_evaluator_registry导入、各metric值域范围、ResponseEvaluatorMetricInfoProvider的构造参数）均在问题描述中被明确要求，属于需求本身而非实现细节的硬编码",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详尽指定了8个provider的确切类名、所属模块(metric_info_providers)、从metric_evaluator_registry re-export的要求、各metric的值域范围以及ResponseEvaluatorMetricInfoProvider需在构造时接受metric_name参数，这些恰好构成test patch所验证内容的充要条件",
+    "__retried__": true,
+    "language": "python"
+  },
+  {
+    "instance_id": "google__adk-python-c_8b3ed05",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述覆盖了测试所验证的四个行为（事务内状态递进、会话创建时状态合并、按 scope 区分 app/user/session 并排除 temp、partial 事件不持久化），与 test patch 的断言一致，且未引入与通过测试无关的硬性约束。",
+    "language": "python"
+  },
+  {
+    "instance_id": "google__langextract-239",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "描述与测试要点一致，明确给出 FormatHandler、常量迁移、API 与错误/警告子串等约束，构成通过测试的充要条件。",
+    "language": "python"
+  },
+  {
+    "instance_id": "huggingface__lerobot-2808",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出 context manager（__enter__/__exit__）与 read_latest（立即返回最新帧、max_age_ms 超龄抛 TimeoutError、未连接抛 DeviceNotConnectedError、高频返回同一缓存帧）的充要行为，与 test patch 所验证的 with 用法及 read_latest 的四种场景一致，无显著描述不足或多余约束。",
+    "language": "python"
+  },
+  {
+    "instance_id": "huggingface__transformers-38332",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试遵循HuggingFace Transformers库的标准模型测试模式和命名规范，所有类名及内部结构检查均为库中编解码器模型的标准做法，未硬编码问题描述未提及的特殊实现约束",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述完整覆盖了测试所验证的各项功能（配置类、编解码器模型、序列/标记分类、纯编码器模型），额外的架构和训练细节属于合理背景信息，不会导致实现偏差",
+    "__retried__": true,
+    "language": "python"
+  },
+  {
+    "instance_id": "huggingface__transformers-38788",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试所检查的所有细节——类名、checkpoint路径、输入格式、输出shape、logits[0,100:103]的期望值及容差——均在问题描述中被明确指定，不存在硬编码问题描述未提及的实现细节的情况。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详细且全面，涵盖了测试所验证的所有行为（类名VJEPA2ForVideoClassification、logits形状(1,174)、特定logit数值及容差），虽然包含auto-mapping条目、FX tracing等实现细节，但这些均为标准框架集成的实际需求且被ModelTesterMixin间接测试，不构成误导。",
+    "__retried__": true,
+    "language": "python"
+  },
+  {
+    "instance_id": "hummingbot__hummingbot-c_1ce05af",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试中硬编码检查的所有实现细节（如类名 AuditUrlPathFilter、方法签名 isExcluded、getter/setter 名称、配置键 pinot.audit.url.filter.exclude.patterns、三参数构造函数等）均在问题描述中被明确指定，属于豁免范围，不构成过窄测试。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详细且完整地给出了配置键名、类名、方法签名、glob/regex前缀行为、错误处理策略等所有测试所验证的需求，构成了 test patch 的充要条件，无明显不足或多余内容。",
+    "__retried__": true,
+    "language": "python"
+  },
+  {
+    "instance_id": "icloud-photos-downloader__icloud_photos_downloader-c_f52826c",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试中硬编码的接口名、方法名和返回类型等细节均在问题描述中被明确要求，属于豁免范围",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述详细指定了接口名、方法签名、包路径等关键细节，与测试补丁所验证的重构内容一致；虽然包含了未被测试验证的超时行为描述，但不会导致对核心重构需求的理解偏差",
+    "__retried__": true,
+    "language": "python"
+  },
+  {
+    "instance_id": "langchain-ai__langchain-32996",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试中硬编码验证的所有具体细节（方法名 getResolvedPath/createFromExistingWithResolvedPath/setResolvedPath、枚举名 ResolvedPathDepth、createForRemoteFileWithMaterializationData 去除路径参数、resolvedPath 必须为绝对路径、ActionOutputMetadataStore.create 不再需要 execRoot、downloadedFiles 包含 fs.getPath(resolvedPath) 等）均在问题描述中被明确指定，属于需求的一部分，符合豁免条件。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述非常详尽，覆盖了 test patch 中所有被测试的 API 名称（getResolvedPath、createFromExistingWithResolvedPath、setResolvedPath、ResolvedPathDepth 枚举等）、绝对路径要求、序列化往返、prefetcher 行为以及 ActionOutputMetadataStore 去除 execRoot 参数等契约，与测试构成充要关系；虽然包含部分未被直接测试的内部实现细节（如私有类名 ResolvedSymlinkArtifactValue、嵌套装饰坍缩、couldBeModifiedSince 设为 final 等），但这些细节与测试一致，不会导致理解偏差或误判。",
+    "__retried__": true,
+    "language": "python"
+  },
+  {
+    "instance_id": "langchain-ai__langchain-33364",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了新签名、state/runtime 迁入 ToolCallRequest、compose_two 的包装语义及 ToolNode 的 execute 调用方式，与 test patch 的充要条件一致，无多余约束或明显遗漏。",
+    "language": "python"
+  },
+  {
+    "instance_id": "mikf__gallery-dl-7872",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试所检查的类名(LeakgalleryPostExtractor等)、模块导入路径、元数据字段(creator/id)及CDN URL模式均在问题描述中被明确要求，属于需求本身而非未提及的实现细节，符合豁免条件。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确指定了模块名(leakgallery)、四个提取器类名、各自匹配的URL模式、CDN URL格式、元数据字段(creator/id)以及注册要求，与test patch所验证的内容构成充要关系。",
+    "__retried__": true,
+    "language": "python"
+  },
+  {
+    "instance_id": "optuna__optuna-6166",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述与 test patch 一致，明确给出了 GPRegressor 与 acquisition 类层次的新 API（类名、构造参数、方法签名等），测试仅依赖该公开接口且不检查内部实现，按描述实现即可通过测试，无描述不足或多余约束导致误判。",
+    "language": "python"
+  },
+  {
+    "instance_id": "optuna__optuna-6197",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试所检查的所有具体实现细节（私有函数/属性命名、枚举重命名、字典构造函数、实例方法名）均在问题描述中被明确指定，属于需求本身而非额外的实现约束，符合豁免条件。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述精确指定了所有重命名（ScaleType→_ScaleType、函数加下划线前缀）、私有属性名（_scale_types/_bounds/_steps）、公有属性名（dim/is_categorical/discrete_indices/continuous_indices）、实例方法签名及构造函数接受字典参数的要求，与 test patch 验证的内容一一对应，构成充要条件。",
+    "__retried__": true,
+    "language": "python"
+  },
+  {
+    "instance_id": "pandas-dev__pandas-59636",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述中加入了与通过测试无关的实现细节（如 _construct_result、__finalize__ 的调用方式及 xfail 等），可能引起理解偏差或误判",
+    "language": "python"
+  },
+  {
+    "instance_id": "pandas-dev__pandas-61244",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出散点与折线在共享轴上的对齐要求及对 datetime.time 的支持要求，与测试所验证的 xtick 对齐和 datetime.time 不报错一一对应，无多余或缺失约束。",
+    "language": "python"
+  },
+  {
+    "instance_id": "pypa__pipenv-6373",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述要求将所有 call sites 重构为使用 virtualenv_scripts_dir，但 test patch 仅断言该函数在两类环境下的返回值，未验证是否在项目各处使用该函数，存在与通过测试无关的过多约束。",
+    "language": "python"
+  },
+  {
+    "instance_id": "roboflow__supervision-1943",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试在 test_conversion.py 中硬编码导入并使用了符号名 ensure_cv2_image_for_standalone_function，功能等价但名称不同的实现会因 ImportError 被判为无效。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确要求装饰器使用精确名称并说明与测试的依赖关系，五条任务与 test patch 一致，构成通过测试的充要条件。",
+    "__retried__": true,
+    "language": "python"
+  },
+  {
+    "instance_id": "stanfordnlp__dspy-1801",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确规定了哨兵标签、str/repr 精确格式、image_url 扩展与条数、dump/load 序列化及 Optional 支持等，与 test patch 的断言一一对应，构成充要条件。",
+    "language": "python"
+  },
+  {
+    "instance_id": "stanfordnlp__dspy-8105",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确要求异步入口（acall）应像同步一样参与回调生命周期并保持上下文，与测试所验证的「异步调用时回调被触发且事件序列正确」一致，未不足也未过度约束实现细节。",
+    "language": "python"
+  },
+  {
+    "instance_id": "stanfordnlp__dspy-9047",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确要求 toDict() 将 History 递归转为可序列化字典并避免评估导出时的序列化错误，与测试所验证的行为一致，无多余约束或描述不足。",
+    "language": "python"
+  },
+  {
+    "instance_id": "stanfordnlp__dspy-9193",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "测试断言私有属性名 _interpreter 及 _extract_parameters 的精确字典输出格式等实现细节，功能等价的其他实现可能被判无效",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述与 test patch 一致且详尽，满足描述即可通过测试，构成充要条件",
+    "__retried__": true,
+    "language": "python"
+  },
+  {
+    "instance_id": "verl-project__verl-2410",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "test_load_component 硬编码了配置目录与文件名（如 ref/dp_ref、ref/megatron_ref、rollout/rollout），test_config_docs 也写死 ref/ref.yaml、ref/dp_ref.yaml、rollout/rollout.yaml 等路径；若实现采用不同路径或文件名但同样实现独立可加载，会被误判为失败。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了目标（ref/rollout/data 配置可独立加载、消除对完整层级的插值依赖）与现状问题，与 test patch 所验证的「各组件配置可独立 compose 不报错」构成充要对应，未过度约束实现方式。",
+    "__retried__": true,
+    "language": "python"
+  },
+  {
+    "instance_id": "verl-project__verl-3915",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了「拒绝采样应通过排除样本而非零权」以及「被拒绝序列须从损失分母中排除」的充要要求，与 test patch 所验证的分离设计与归一化修正一致，无描述不足或多余约束。",
+    "language": "python"
+  },
+  {
+    "instance_id": "verl-project__verl-4185",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述包含配置项 max_samples_per_step_per_worker 及每 worker 采样逻辑等大量内容，而 test patch 仅验证 trace 参数与 ContextVar 抑制/异常恢复行为，未对配置与采样做任何断言，描述非 test 的充要条件。",
+    "language": "python"
+  },
+  {
+    "instance_id": "vibrantlabsai__ragas-2184",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了与 test patch 一致的充要条件：类名 BaseRagasEmbedding、模块路径与导出、向后兼容别名 RagasBaseEmbedding 及 is 关系、双接口派发与 factory 行为等，无显著描述不足或多余约束。",
+    "language": "python"
+  },
+  {
+    "instance_id": "vibrantlabsai__ragas-2333",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确要求警告信息包含子串 \"embedding_model will be lost\"，与 test patch 的 match 断言一致，构成充要条件；未增加与通过测试无关的硬性约束。",
+    "language": "python"
+  },
+  {
+    "instance_id": "vibrantlabsai__ragas-2382",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了统一 llm_factory 的签名、错误信息措辞、四类 provider 及 Google 使用 from_gemini 等约束，与 test patch 所验证的调用方式与单元测试断言一致，构成通过测试的充要条件。",
+    "language": "python"
+  },
+  {
+    "instance_id": "astral-sh__ruff-19755",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确要求将 raise e from None 与 raise e from <cause> 视为与其它 re-raise 等价、不触发 BLE001，与 test patch 的期望一致，构成充要条件且无多余或缺失约束。",
+    "language": "rust"
+  },
+  {
+    "instance_id": "astral-sh__ruff-19799",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出在推导式与生成器表达式中对下划线前缀变量被使用时的检测要求，与 test patch 覆盖的 list/dict/set 推导及生成器场景一致，且未绑定具体实现细节，构成充要条件。",
+    "language": "rust"
+  },
+  {
+    "instance_id": "astral-sh__ruff-19822",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确要求将多次 capability 注册合并为单次 RegisterCapability/UnregisterCapability 请求并在发送时更新 registry，与测试中「仅有一次 RegisterCapability 且含两项注册」的断言构成充要关系，无描述不足或多余约束。",
+    "language": "rust"
+  },
+  {
+    "instance_id": "astral-sh__ruff-19832",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了 grouped 输出应为紧凑格式、不渲染源码片段、删除 show_source 测试等要求，与 test patch 的 snapshot 变更及删除 show_source 快照一一对应，构成充要条件。",
+    "language": "rust"
+  },
+  {
+    "instance_id": "astral-sh__ruff-19884",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了 test patch 的充要条件：冲突声明仍应传播并集类型与可能未绑定状态、单独报告冲突诊断、以及 await 测试中操作数应为可等待对象以避免无关错误；未多增与通过测试无关的硬性约束。",
+    "language": "rust"
+  },
+  {
+    "instance_id": "astral-sh__ruff-20041",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了 512 上限、停止条件、返回 Unknown、诊断文案与顺序等充要条件，与 test patch 的断言一致；关于将 a=1 改为 int|Any 的说明与测试修改对应。",
+    "language": "rust"
+  },
+  {
+    "instance_id": "astral-sh__ruff-20052",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试仅验证 LSP 响应的 label 为 parts 数组格式及正确分段内容，未限定具体类型名、模块或实现细节，功能正确的实现均可通过。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确要求将 hint 表示为可序列化、具结构的 label 数据以兼容 LSP 的 labeled parts，与测试所验证的 LSP 返回 label 为 parts 数组一致，构成充要；其余关于 tooltips、WASM 等为扩展背景，未与测试冲突。",
+    "language": "rust"
+  },
+  {
+    "instance_id": "astral-sh__ruff-20221",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了参数逆变位置需翻转 materialization、Parameters 处理错误以及 attribute resolution 行为不当，与 test patch 所验证的可调用体参数类型及泛型实例属性揭示类型一致，且无与通过测试相悖的多余约束。",
+    "language": "rust"
+  },
+  {
+    "instance_id": "astral-sh__ruff-20646",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述准确对应「对字面量联合类型的 protocol 成员应给出注解建议」的行为，与 test patch 要求一致，无显著不足或多余约束。",
+    "language": "rust"
+  },
+  {
+    "instance_id": "astral-sh__ruff-20926",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试固定了目录 resources/test/fixtures/semantic_errors、具体 fixture 文件名以及 snapshot 中的路径格式，功能正确但采用不同目录或文件名或 snapshot 命名的实现会被判为失败。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述强制规定了 12 个具体 fixture 文件名、snapshot 命名格式及路径字符串形式，与 test patch 的实现强绑定，功能等价但命名或格式不同的实现无法通过测试。",
+    "__retried__": true,
+    "language": "rust"
+  },
+  {
+    "instance_id": "astral-sh__ruff-21108",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确要求 ConstraintSet 的类方法 API（range/always/never/implies_subtype_of）被类型检查器识别并正确工作，与 test patch 仅验证该类 API 行为与揭示类型一致构成充要关系，无描述不足或多余约束。",
+    "language": "rust"
+  },
+  {
+    "instance_id": "astral-sh__ruff-21445",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "测试断言了 reveal_type 输出与诊断消息的精确字符串（如 P@f.args、(**P1@_) -> int 及多条 exact message），未允许语义等价但措辞或格式不同的实现，可能将功能正确、仅展示方式不同的提交判为无效。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了 ParamSpec 的显示格式、诊断规则与精确文案，与 test patch 中期望的 reveal_type 输出和错误消息一一对应，构成通过测试的充要条件。",
+    "__retried__": true,
+    "language": "rust"
+  },
+  {
+    "instance_id": "codex__openai-4471",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述与 test patch 的断言一致：明确给出二进制名、app_test_support 布局、user-agent 精确格式与 sessionConfigured 的 method/类型名等，构成通过测试的充分条件且无多余无关约束。",
+    "language": "rust"
+  },
+  {
+    "instance_id": "firecracker-microvm__firecracker-c_0fa8dfc",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "测试补丁硬编码类型名 GuestRegionMmapExt 与方法名 dram_from_mmap_region，功能等价但命名或 API 不同的实现无法通过。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述包含测试补丁未验证的过多约束（如必须提供 into_region_ext、memory 模块的 test_utils 子模块、restore_memory_regions 等），满足“能通过测试”不必满足描述的全部要求，存在描述过严。",
+    "__retried__": true,
+    "language": "rust"
+  },
+  {
+    "instance_id": "fish-shell__fish-shell-c_61ee695",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试用例在测试文件中硬编码对新符号 bytes2wcstring、wcs2bytes 的导入与调用，若提交采用其他语义正确的命名（如 bytes_to_wcstring）会被判为无效。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确要求必须重命名为 exactly bytes2wcstring 与 wcs2bytes，并列出所有相关函数与注释的更新，与 golden/test patch 一致，构成通过测试的充要条件。",
+    "__retried__": true,
+    "language": "rust"
+  },
+  {
+    "instance_id": "jj-vcs__jj-7231",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试中硬编码对 clear_rewrite_source 方法的调用，强制要求实现必须提供该名称的 API，功能等价的其他实现方式（如不同方法名或参数）可能无法通过。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述给出了清除 rewrite source 的充要语义及方法名、调用位置与改写逻辑变更要求，与 test patch 中的用法一致，无描述不足或多余无关约束。",
+    "__retried__": true,
+    "language": "rust"
+  },
+  {
+    "instance_id": "jj-vcs__jj-7275",
+    "test_passed": false,
+    "over_narrow_test": "false",
+    "over_narrow_reason": "测试在 lib/tests 中硬编码 use jj_lib::git::expand_fetch_refspecs 及该函数名，强制公开函数必须命名为 expand_fetch_refspecs 并从 jj_lib::git 导出，功能等价但命名或导出路径不同的实现会编译失败。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述中包含与通过测试无关的约束（如 GitSubprocessCallback 及其方法名/签名不得改动），test patch 未对该 API 做任何断言或修改，属描述中多余内容。",
+    "__retried__": true,
+    "language": "rust"
+  },
+  {
+    "instance_id": "jj-vcs__jj-8691",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述中规定了 trait 名称、参数命名、模块路径等实现细节，而测试仅验证 API 接受具有三个方法的 trait 对象，存在与通过测试无关的多余约束，可能导致理解偏差或误判。",
+    "language": "rust"
+  },
+  {
+    "instance_id": "qdrant__qdrant-c_3942071",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "测试硬编码了方法名 advance_until_greater_or_equal、build_generic 及元素字段名 id，功能等价但命名不同的实现会被判为不通过。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述覆盖了 test patch 所验证的边界正确性、advance_until_greater_or_equal、build_generic、公开 id 字段及旧格式兼容等条件，与通过测试所需条件基本充要，无明显描述不足或多余约束。",
+    "__retried__": true,
+    "language": "rust"
+  },
+  {
+    "instance_id": "qdrant__qdrant-c_51b3a62",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "测试通过与否依赖从固定路径 shard::retrieve::record_internal::RecordInternal 和 shard::retrieve::retrieve_blocking::retrieve_blocking 的引用，功能等价但模块结构或命名不同的实现会被判为不通过。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述详述了 edge 与 Python 绑定的实现要求，而 test patch 仅验证 collection 侧对 shard 模块路径的引用与 retrieve_blocking 调用的更新，描述范围大于测试范围，不构成严格充要条件。",
+    "__retried__": true,
+    "language": "rust"
+  },
+  {
+    "instance_id": "qdrant__qdrant-c_83bb3a3",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述与 test patch 构成充要条件：描述要求的 get_quantized_vector 与 score_point_xxx(bytes) 签名正是测试所调用的接口，通过测试即满足描述；描述中对 score_point 委托等有略多约束，但不影响通过测试。",
+    "language": "rust"
+  },
+  {
+    "instance_id": "rust-lang__cargo-16423",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述给出了正确性（仅对成员返回 root、验证 package.workspace）与效率（在配置可确认成员时用轻量检查）的充要条件，与 test patch 所测行为一致，无描述不足或多余约束。",
+    "language": "rust"
+  },
+  {
+    "instance_id": "rust-lang__cargo-c_2bab011",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试硬编码类型名 UserIntent、变体名及字段名 intent，并依赖从 cargo::core::compiler::UserIntent 或 re-export 的导入，功能等价但命名或导出不同的实现会被误判为无效。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "描述完整覆盖测试所依赖的 API（UserIntent、intent 字段、command_prelude 导出、各命令传参等），与 test patch 检查的用法一致，无显著遗漏或多余约束。",
+    "__retried__": true,
+    "language": "rust"
+  },
+  {
+    "instance_id": "rust-lang__cargo-c_e9dced1",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了三点：target 目录应在 workspace root 确定后再解析、配置错误需在 manifest 解析上下文中报错、以及 build script 与空 target-dir 的场景，与 test patch 所测的排序修复、错误链格式和该场景一致，构成充要对应。",
+    "language": "rust"
+  },
+  {
+    "instance_id": "tracel-ai__burn-4154",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述规定了大量与测试验证无关的实现细节（如必须使用 bytes::Bytes::from_static/from_owner、register_burnpack_embed 的具体实现、bytes 依赖版本与 feature 等），通过测试仅需满足公开 API 与加载行为正确，可能导致按其他正确实现通过的提交被误判为不符合要求。",
+    "language": "rust"
+  },
+  {
+    "instance_id": "tracel-ai__burn-4337",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "融合测试中将标量由 ScalarIr::F32(5.0) 改为 ScalarIr::Float(5.0)，硬编码了新枚举变体名称，强制实现必须使用 Float 而非其他等价表示（如 F64），功能正确的实现可能被判无效。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了 Tensor::full 的行为要求与 ScalarIr 四变体命名（如 ScalarIr::Float），与 test patch 的断言及枚举用法一致，构成充要条件。",
+    "__retried__": true,
+    "language": "rust"
+  },
+  {
+    "instance_id": "angular__angular-64903",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "描述明确要求 object 型 FieldTree 支持 Object.keys/entries/values 与 for...of 的与普通对象一致的行为，与 test patch 验证的语义一致，无显著描述不足或多余约束。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-66350",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述与 test patch 一致：均要求仅支持普通对象、移除 customError/规范化逻辑并修正 WithoutField 类型，构成通过测试的充要条件，无多余或缺失约束。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_0362665",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述准确对应“host directive 解析逻辑应可被 tree-shake、未使用该功能时相关代码不应进入 bundle”，与测试要求的在这些 bundle 的 golden 中不包含 resolveHostDirectivesForDef 的意图一致，无显著描述不足或多余约束。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_04c2447",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "测试将通过条件绑定为 bundle golden 文件中必须出现固定符号名 init_linked_signal2，强行限定打包/模块实现细节，功能正确但符号名不同的提交会被判为无效",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述给出了大量与测试无关的 API 与实现约束，而测试仅校验 golden 符号表中是否包含 init_linked_signal2，二者不对等，易导致理解偏差或误判",
+    "__retried__": true,
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_1d3b914",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "测试仅校验三份 bundle.golden_symbols.json 中的具体 minified 符号名（untracked2、init_untracked2），将通过条件与 bundler 的 symbol-mangling 结果强绑定，功能等价的其他实现或不同 mangling 结果会被误判为失败。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了 untracked 的签名、行为及预期的 bundle golden symbol 变更（untracked→untracked2、init_untracked2），与 test patch 完全一致，构成充要条件。",
+    "__retried__": true,
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_2563f39",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "bundle.golden_symbols 测试强制要求产物中出现特定符号名 NG_INJECTABLE_DEF、NG_INJECTOR_DEF、getOwnDefinition，限定实现细节，功能正确但使用不同命名或未保留该函数的实现会被误判为失败。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了回归原因、期望的 fallback 行为、以及需导出 NG_INJECTABLE_DEF/NG_INJECTOR_DEF 与保留 getOwnDefinition 的要求，与集成测试和 bundle 符号断言一致，构成 test patch 的充要条件。",
+    "__retried__": true,
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_3a6e45f",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述覆盖了生产代码中大量 visitor 及 Element 构造的修改要求，而 test patch 仅针对测试工具中的 _SerializerVisitor；描述构成的是全库适配的充要条件，而非通过本 test patch 对应测试的充要条件，存在描述过宽。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_44a8de2",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "测试通过硬编码调用 getSourceMappingAtTcbLocation 与使用 DirectiveSourceManager 验证，强制限定具体名称，功能等价的其他命名实现会被误判为无效。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述规定了全部精确重命名（含 FullSourceMapping、TypeCheckSourceResolver 等），但 test patch 仅验证 getSourceMappingAtTcbLocation 与 DirectiveSourceManager 两处，存在多余约束，非充要条件。",
+    "__retried__": true,
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_4a3d39c",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述给出完整方案（两处协调改动、getProgramInfoFromBaseInfo、devkit 去重等），而测试补丁仅验证 run_single.ts 改为单步 createProgram(path, mockFs)，描述与测试不等价，存在与通过测试无关的约束易导致误判",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_4f8ab4f",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了 min/max 需接受 number/string/null、对可解析数字的字符串做数值比较、对空值与非数字输入安全跳过校验等要求，与 test patch 验证的行为一致，且未加入与通过测试无关的多余约束。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_55ac384",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "测试仅校验 bundle golden symbol 列表是否与预期完全一致，等价于强制使用名为 storeListenerCleanup 的导出；用不同函数名或不同模块实现相同清理逻辑的提交会被判为无效。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了与 test patch 一致的充要条件：函数名、导出模块、四个 bundle 的 golden 文件及具体符号增删，与 test_patch.diff 的修改一一对应。",
+    "__retried__": true,
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_5e0dcf1",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "测试通过 bundle golden symbol 的精确匹配强制要求函数名、模块路径及符号可见性，功能等价的其他实现会因符号列表不符而被判为无效",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了实现约束与各 bundle 的符号约束，且与 test patch 中 golden 文件的变更一致，构成通过测试的充要条件",
+    "__retried__": true,
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_6783fb7",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述规定了完整重构（合并逻辑、共享函数 elementLikeEndShared、重命名及五处 bundle golden 更新），但测试补丁仅验证五处 bundle.golden_symbols.json 中符号名由 elementEndFirstCreatePass 改为 elementLikeEndFirstCreatePass，描述与测试验证范围不一致、存在多余约束。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_6960ec0",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了未标记模板字面量在各层的支持要求及 TCB 输出格式（含三例），与 test patch 断言一致，构成充要条件且无多余或缺失约束。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_7118dac",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确指出了两处需修改的构造点（fakeDirective 与 makeScope）及应补充的两字段与默认值，与 test patch 完全一致，构成通过测试的充要条件，无描述不足或多余约束。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_768a09d",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确要求移除可配置插值逻辑、使用固定插值语法，与 test patch 的充要方向一致，无显著描述不足或多余约束。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_815f1b1",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "描述明确给出了各场景下需发出的 Profiler 事件类型及动态组件创建时的精确事件顺序，与 test patch 中的用例一一对应，无描述不足或多余约束。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_8562667",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了重构目标与 symbol 变更要求（elementPropertyInternal 移除、setPropertyAndInputs 出现），并指名 forms_template_driven 的 bundle.golden_symbols.json，与 test patch 的断言一致，构成充要条件。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_92c4123",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确列出了需修改的生产子系统（indexer、type checker、view binder、language service）及测试侧需求（expression humanizer 访问 directives、visitComponent/visitDirective、expression 查找支持新节点、parser 暴露 selectorless 选项），与 golden_patch 和 test_patch 的改动范围一致，构成实现与通过测试的充要条件，无显著描述不足或多余约束。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_9f44b41",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "测试通过 bundle golden 符号列表和 TNode shape 校验硬编码了必须出现/不得出现的函数名与字段名，功能等价但命名或结构不同的实现会被判为不通过。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了与 test patch 一致的约束（TNode 新字段、指定函数名与 bundle 符号），构成通过测试的充分条件且未引入导致误判的多余约束。",
+    "__retried__": true,
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_a4001c4",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述给出了场景（reactive @for、计算列表、删除倒数第二项）、现象（最后一项误触发 leave）与期望（仅真正移除时触发），构成通过测试的充要条件，且未限定实现细节。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_afea8a9",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述中包含了测试未验证的约束（如接口必须命名为DirectiveResources、registerTemplate/registerStyle必须为private），属多余约束，可能造成理解偏差",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_b29e646",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确指出了 API 命名（property/aggregateProperty）与类型与文档（metadata/MetadataKey）不一致，并隐含应将公开 API 与“metadata”术语对齐，与 test patch 所验证的“测试中改用 metadata 并依赖实现导出 metadata”构成充要关系；描述未缺关键约束也未加入与通过测试无关的额外实现约束。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_b8f2a50",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "测试硬编码了实现细节：必须使用 Resource 的字段名 node（非 expression）、DirectiveDecoratorHandler 的构造函数必须接收 ResourceRegistry、addDirective 必须在固定位置传入 hostBindingContext 参数，功能等价但命名或签名不同的实现会被判为无效。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "问题描述规定了大量与 test patch 无关的 API 与实现细节（如 getHostElement、DirectiveSourceManager 的 host binding 映射方法、HostBindingsContext 结构等），而 test patch 仅验证 Resource 的 node 字段、DirectiveDecoratorHandler 的 resourceRegistry 参数及 addDirective 的 hostBindingContext 参数位置，描述构成充分条件而非充要条件，存在过多添加未在测试中验证的内容。",
+    "__retried__": true,
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_b973c5b",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "描述明确要求 indexer 支持 selectorless 组件/指令节点类型并完成索引、不崩溃，与测试所验证的索引生成与 reference 解析行为一致，且无多余或缺失的充要约束。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_bc9a067",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "测试基础设施强制使用 SelectorlessMatcher 类名与 registry 构造方式、TestDirective.selector 必须为 string | null，以及 prepareDeclarations 的固定分支形态，限定了实现细节，功能等价的其他实现可能被判为无效。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述篇幅过长且包含大量与「通过当前 test patch」无直接对应的实现细节（如 ingest、linker、language service 的逐项要求），易造成理解偏差；且相对 test patch 仅改动的测试基础设施而言并非严格充要。",
+    "__retried__": true,
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_c089d21",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确以 bundle golden symbol 文件为正确性验证手段并列举了需移除与出现的符号，与 test patch 的充要条件一致。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_d47cf58",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "测试强制使用 AngularComponentDebugMetadata 这一具体类型名与导入，功能等价但采用不同类型命名或等价类型设计的正确实现可能无法通过。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述准确概括了多框架下元数据类型命名与契约问题，与测试所验证的“Angular 组件元数据可正确获取并区分类型”一致，未缺条件也未强加与通过测试无关的约束。",
+    "__retried__": true,
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_db95a5c",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了 FormUiControl 类型、WithOptionalField 定义及 ValidationError 作为接口等充要条件，与测试所验证的「无 field 的手动绑定与 control 绑定均可使用并正确渲染」一致，无描述不足或多余约束。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_e3dcf52",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "测试以 golden 文件中是否出现特定符号名（如 findDirectiveDefMatches、init_construction、init_directives2）判定，这些名称与打包器/模块命名等实现细节绑定，功能等价的其它实现可能无法通过。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了与 test patch 一致的目标路径、导出变更及需更新的 golden 符号列表，构成通过测试的充要条件。",
+    "__retried__": true,
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_e77df14",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述准确概括了未防护依赖可选 profiling 导致 ReferenceError 的现象与成因，与通过测试（消除崩溃且不再断言已删除的入口点事件）构成一致充要关系，未多增与通过测试无关的约束。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_eb4c22e",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试仅配置 handler 的依赖与 typeCheckHostBindings 开关，未强制限定具体实现细节或命名。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确要求为 directive host bindings 增加编译期类型检查，与测试中启用 typeCheckScopeRegistry、typeCheckHostBindings 等配置一致，构成充要且无多余或缺失约束。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "angular__angular-c_f320700",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述中关于 hydration 下 viewport 不能含 trigger 及参数数量限制等约束在测试中未覆盖，构成相对通过条件的多余描述。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "ant-design__ant-design-52470",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了语义区域、DOM 类名（section 替代 content、Node 用 ant-skeleton-node、Image 用 ant-skeleton-image）、ConfigProvider 合并与 prefixCls 等与 test patch 断言一致的要求，构成通过测试的充要条件。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "ant-design__ant-design-53106",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "responsiveObserve 测试通过 matchHandlers[responsiveMap.xs].mql.removeListener 断言，绑定内部数据结构与 breakpoint 键名，实现方式不同但行为正确的提交可能被判失败。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出回归原因（仅用新 API 导致旧环境报错）与目标（在仅支持 addListener/removeListener 的环境下可用），与测试要求一致，且无多余约束。",
+    "__retried__": true,
+    "language": "typescript"
+  },
+  {
+    "instance_id": "ant-design__ant-design-53133",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了新旧 props 对应关系、兼容性要求及三条 deprecation 警告的精确文案，与 test patch 的断言一致，构成通过测试的充要条件。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "ant-design__ant-design-53311",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试对三条废弃警告文案做精确字符串匹配，语义正确但措辞略有差异的实现可能被误判为失败。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述给出了完整语义 API 与 ConfigProvider 等规范，而测试仅验证三条废弃提示的精确文案及少量 legacy 行为，描述相对测试过足，不构成充要条件。",
+    "__retried__": true,
+    "language": "typescript"
+  },
+  {
+    "instance_id": "ant-design__ant-design-53401",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试断言了废弃警告的精确字符串和 demo 的完整 DOM snapshot（布局、文案、样式），功能正确但文案或展示细节不同的实现会被误判为失败。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述中写入了过多实现规格（如废弃警告精确文案、demo 文件与布局细节、formatCounter 命名、requestAnimationFrame），超出「通过测试」的充要条件，易造成误判。",
+    "__retried__": true,
+    "language": "typescript"
+  },
+  {
+    "instance_id": "ant-design__ant-design-53695",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试用 toHaveBeenCalledWith 对弃用警告做逐字字符串匹配，功能上等价（正确提示废弃 prop 并推荐 classNames.popup.root/styles.popup.root）但措辞或格式略有差异的实现会被判为不通过。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述中大量包含与测试无关的内容（文档工具、SemanticPreview、类型签名、forward-compatible 设计理由等），test patch 仅断言弃用警告文案，易导致理解偏差或误判；且对弃用文案的逐字要求与测试一致但描述过载。",
+    "__retried__": true,
+    "language": "typescript"
+  },
+  {
+    "instance_id": "ant-design__ant-design-53718",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出了弃用文案的完整措辞、classNames/styles 的语义结构（root、popup/root 及 popup 可为字符串）、遗留 props 须继续生效以及 ConfigProvider 的扩展要求，与 test patch 所测的弃用警告、遗留行为与语义化 API 一致，构成充要条件且无导致误判的多余约束。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "ant-design__ant-design-53739",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出统一属性名 destroyOnHidden 及 Dropdown/Tooltip 的精确弃用警告文案，与 test patch 所验证的 prop 名称与警告内容一致，构成通过测试的充分条件且无矛盾的多余约束。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "ant-design__ant-design-53983",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述完整覆盖 test patch 的验证点（prop 重命名与兼容、精确弃用文案、类名与语义化 API、demo 重命名与 snapshot），无多余或缺失约束，构成充要条件。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "ant-design__ant-design-54178",
+    "test_passed": false,
+    "over_narrow_test": true,
+    "over_narrow_reason": "测试对整棵 DOM 做快照精确比对，强制 ant-flex、gap:8px、无自定义 option 类等实现细节，功能等价但用 Space 或手写 flex 等实现会因 class/style 不同而失败。",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出需用 Flex、移除 my-year-select、使用 options 等改动，且最后一段说明验证为整棵 DOM 快照精确匹配，与 test patch 的 snapshot 验证一致，构成充要条件。",
+    "__retried__": true,
+    "language": "typescript"
+  },
+  {
+    "instance_id": "ant-design__ant-design-54415",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述中要求更新文档与 demo，但测试仅验证 classNames/styles 的 API 与 DOM 效果，未断言文档或 demo 内容，存在与通过测试无关的多余约束。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "ant-design__ant-design-54416",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确给出用 item/itemIcon/itemContent 三个语义 token 替代 listItem、各自作用对象及在 classNames 与 styles 中的支持要求，与 test patch 的断言一致，构成充要条件。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "ant-design__ant-design-54429",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确要求将 trigger 的嵌套/点号命名统一为与 root、list、itemIcon 等一致的扁平、显式 token 结构，与 test patch 所验证的扁平 API（trigger/triggerIcon/triggerContent）及正确应用到对应 DOM 的行为一致，构成充要条件，无描述不足或多余约束。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "ant-design__ant-design-54813",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确要求 classNames/styles 支持根据运行时状态或 props 的动态定制，与 test patch 中验证的函数形式及按 props 生效的行为一致，构成充要且无多余约束。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "ant-design__ant-design-56053",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "",
+    "problem_description_reasonable": true,
+    "problem_description_reason": "问题描述明确要求将 button 目录下组件文件改为 PascalCase 命名并解决引用与工具链一致性问题，与 test patch 所验证的导入路径要求一致，构成充要条件。",
+    "language": "typescript"
+  },
+  {
+    "instance_id": "vitejs__vite-19586",
+    "test_passed": false,
+    "over_narrow_test": false,
+    "over_narrow_reason": "测试硬编码通过 transform.handler 调用，强制属性名必须为 handler，导致使用其他属性名（如 execute/fn）但功能正确的实现被判无效。",
+    "problem_description_reasonable": false,
+    "problem_description_reason": "描述包含大量背景及过渡期保留 hook 自身可调用等与通过当前测试无直接关系的约束，易造成理解偏差或误判。",
+    "__retried__": true,
+    "language": "typescript"
+  }
+]
