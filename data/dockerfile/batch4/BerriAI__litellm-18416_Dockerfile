@@ -1,0 +1,59 @@
+# Base image specification. Using Node.js 20 slim for a lightweight container with Node.js pre-installed
+FROM --platform=linux/x86_64 node:20-slim
+
+# Set environment variables to avoid interactive prompts during package installation
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    python3 \
+    ca-certificates \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale to avoid potential encoding issues
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Verify Node.js and npm versions (should be >=18.17.0 and >=8.3.0 respectively)
+RUN node --version && npm --version
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the repository and checkout to the specific commit
+RUN git clone https://github.com/BerriAI/litellm.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 8a3d4967edc3f428ebca80433cf854061a4fbc7e && \
+    git remote remove origin
+
+# Navigate to the UI dashboard directory and install dependencies
+WORKDIR /testbed/ui/litellm-dashboard/
+
+# Install all npm dependencies from package-lock.json
+RUN npm install
+
+# Verify that the test files exist (with properly quoted paths to handle parentheses)
+RUN test -f 'src/app/(dashboard)/hooks/useAuthorized.test.ts' && \
+    test -f 'src/app/(dashboard)/models-and-endpoints/ModelsAndEndpointsView.test.tsx' && \
+    test -f 'src/components/mcp_server_management/MCPToolPermissions.test.tsx' && \
+    test -f 'src/components/mcp_tools/mcp_servers.test.tsx' && \
+    test -f 'tests/setupTests.ts'
+
+# Set the working directory back to testbed root for consistency
+WORKDIR /testbed/
+
+# Configure bash as the default shell
+SHELL ["/bin/bash", "-c"]
+
+# Set up environment variables for test execution
+ENV NODE_ENV=test

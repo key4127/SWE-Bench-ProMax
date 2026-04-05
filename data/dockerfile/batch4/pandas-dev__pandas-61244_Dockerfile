@@ -1,0 +1,80 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 python:3.11-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    git \
+    build-essential \
+    gcc \
+    g++ \
+    gfortran \
+    libhdf5-dev \
+    libgles2-mesa-dev \
+    libatlas-base-dev \
+    libopenblas-dev \
+    pkg-config \
+    python3-dev \
+    curl \
+    wget \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Upgrade pip and install essential build tools
+RUN pip install --upgrade pip setuptools wheel
+
+# Set default workdir to testbed. (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, configures it, and installs project-specific dependencies
+RUN git clone https://github.com/pandas-dev/pandas /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 214e474e36af74f84bb0c833c7c4e7a4d68b89e4 && \
+    git remote remove origin
+
+# Install build dependencies
+RUN pip install \
+    'meson>=1.2.1,<2' \
+    'meson-python>=0.13.1' \
+    'ninja>=1.11.1' \
+    'Cython~=3.0.5' \
+    'numpy>=2.0.0rc1' \
+    'versioneer[toml]' \
+    wheel
+
+# Install core runtime dependencies
+RUN pip install \
+    'numpy>=1.23.5' \
+    'python-dateutil>=2.8.2' \
+    'pytz>=2023.4' \
+    'tzdata>=2022.7'
+
+# Install critical test dependencies (matplotlib and scipy are mandatory for plotting tests)
+RUN pip install \
+    'pytest>=7.3.2' \
+    'pytest-xdist>=3.4.0' \
+    'pytest-cov' \
+    'matplotlib>=3.6.3' \
+    'scipy>=1.10.0' \
+    'hypothesis>=6.84.0'
+
+# Build and install pandas in editable mode with no build isolation
+RUN cd /testbed && \
+    pip install -e . --no-build-isolation -v
+
+# Set environment variables for matplotlib (CRITICAL - non-interactive backend)
+ENV MPLBACKEND=Agg
+ENV PYTHONPATH=/testbed:$PYTHONPATH
+
+# Set environment variable for shell
+SHELL ["/bin/bash", "-c"]

@@ -1,0 +1,107 @@
+# Base image specification with Python 3.10 (minimum required version)
+FROM --platform=linux/x86_64 python:3.10-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation
+# build-essential: Required for compiling Python packages with C extensions
+# git: Required for cloning the repository
+# ca-certificates: Ensures secure HTTPS connections
+# python3-dev: Required for building Python C extensions
+# wget, curl: Useful for downloading files if needed
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    git \
+    ca-certificates \
+    python3-dev \
+    wget \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup
+# Clone the repository and checkout the specific commit SHA
+RUN git clone https://github.com/verl-project/verl.git /testbed && \
+    cd /testbed && \
+    git checkout 37ec0138d3a30bb69b416d43ef20227f5f5accef && \
+    chmod -R 777 /testbed
+
+# Set environment variables
+# PYTHONPATH ensures Python can find modules in /testbed
+# CUDA_VISIBLE_DEVICES="" forces CPU-only execution for the tests
+# HF_ENDPOINT: HuggingFace mirror for faster downloads
+ENV PYTHONPATH=/testbed:$PYTHONPATH
+ENV CUDA_VISIBLE_DEVICES=""
+ENV NO_PROXY=localhost,127.0.0.1,hf-mirror.com
+ENV HF_ENDPOINT=https://hf-mirror.com
+ENV HF_HUB_ENABLE_HF_TRANSFER=0
+
+# Upgrade pip and install build tools
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
+# Install numpy first with version constraint to avoid conflicts
+RUN pip install --no-cache-dir "numpy<2.0.0"
+
+# Install core dependencies with specific version constraints
+# These are critical dependencies that need to be installed first
+RUN pip install --no-cache-dir \
+    "ray[default]>=2.41.0" \
+    "pyarrow>=19.0.0" \
+    "tensordict>=0.8.0,<=0.10.0,!=0.9.0"
+
+# Install pytest-asyncio with a compatible version to support async tests
+RUN pip install --no-cache-dir "pytest-asyncio>=0.21.0"
+
+# Install the package in editable mode with test dependencies
+# This ensures the verl module is importable and all test dependencies are available
+# Using editable mode (-e) ensures local code changes are reflected
+RUN pip install --no-cache-dir -e .[test]
+
+# Create pytest configuration file to enable asyncio mode
+# This is critical for async test functions to be recognized and run properly
+RUN echo '[tool.pytest.ini_options]' > /testbed/pytest.ini && \
+    echo 'asyncio_mode = "auto"' >> /testbed/pytest.ini
+
+# Set bash as default shell to ensure compatibility
+SHELL ["/bin/bash", "-c"]
+
+# Verify Python installation and basic setup
+# This ensures the environment is correctly set up before tests are run
+RUN python --version && \
+    python -c "import sys; print(f'Python version: {sys.version}')" && \
+    python -c "import sys; print(f'Python path: {sys.path}')" && \
+    python -c "import numpy; print(f'NumPy version: {numpy.__version__}')" && \
+    python -c "import ray; print(f'Ray version: {ray.__version__}')" && \
+    python -c "import pytest; print(f'Pytest version: {pytest.__version__}')" && \
+    python -c "import verl; print(f'verl module imported successfully from: {verl.__file__}')" && \
+    echo "✓ Python environment is ready"
+
+# Verify test file exists
+RUN test -f /testbed/tests/utils/test_rollout_trace_on_cpu.py && \
+    echo "✓ Test file verified"
+
+# Verify pytest configuration
+RUN test -f /testbed/pytest.ini && \
+    cat /testbed/pytest.ini && \
+    echo "✓ Pytest configuration verified"
+
+# Create validation script for environment verification
+RUN echo '#!/bin/bash' > /testbed/validate_setup.sh && \
+    echo 'echo "=== Environment Validation ==="' >> /testbed/validate_setup.sh && \
+    echo 'echo "Python version: $(python --version)"' >> /testbed/validate_setup.sh && \
+    echo 'echo "Working directory: $(pwd)"' >> /testbed/validate_setup.sh && \
+    echo 'echo "PYTHONPATH: $PYTHONPATH"' >> /testbed/validate_setup.sh && \
+    echo 'echo "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"' >> /testbed/validate_setup.sh && \
+    echo 'echo "Git commit: $(git rev-parse HEAD)"' >> /testbed/validate_setup.sh && \
+    echo 'echo "Repository structure:"' >> /testbed/validate_setup.sh && \
+    echo 'ls -la /testbed/' >> /testbed/validate_setup.sh && \
+    echo 'echo "Test file exists:"' >> /testbed/validate_setup.sh && \
+    echo 'ls -la /testbed/tests/utils/test_rollout_trace_on_cpu.py' >> /testbed/validate_setup.sh && \
+    echo 'echo "Pytest version:"' >> /testbed/validate_setup.sh && \
+    echo 'pytest --version' >> /testbed/validate_setup.sh && \
+    echo 'echo "Pytest configuration:"' >> /testbed/validate_setup.sh && \
+    echo 'cat /testbed/pytest.ini' >> /testbed/validate_setup.sh && \
+    chmod +x /testbed/validate_setup.sh

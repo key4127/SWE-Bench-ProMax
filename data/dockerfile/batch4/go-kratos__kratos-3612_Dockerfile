@@ -1,0 +1,51 @@
+# Base image specification. Using official Golang image with version 1.21 as the foundation
+FROM --platform=linux/x86_64 golang:1.21
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    git \
+    wget \
+    curl \
+    build-essential \
+    protobuf-compiler \
+    bash \
+    ca-certificates \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up Go environment variables for optimal performance
+ENV GOPROXY=https://proxy.golang.org,direct
+ENV GO111MODULE=on
+ENV CGO_ENABLED=1
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the repository and checkout to the specific commit
+RUN git clone https://github.com/go-kratos/kratos.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 5d532fe0cd1ee6f1af1d588dc6d3976f36c36799 && \
+    git remote remove origin
+
+# Download and cache Go module dependencies
+RUN cd /testbed && \
+    go mod download && \
+    go mod verify
+
+# Ensure the test files and dependencies are accessible
+RUN cd /testbed && \
+    go list -m all > /dev/null 2>&1 || true
+
+# Set bash as the default shell for better compatibility
+SHELL ["/bin/bash", "-c"]
+
+# Configure bash environment
+RUN echo 'export PATH=/usr/local/go/bin:$PATH' >> /root/.bashrc && \
+    echo 'export GOPATH=/go' >> /root/.bashrc && \
+    echo 'export GO111MODULE=on' >> /root/.bashrc

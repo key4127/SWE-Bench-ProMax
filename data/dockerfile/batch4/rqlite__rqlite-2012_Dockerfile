@@ -1,0 +1,49 @@
+# Base image specification. Using Debian-based Go image to ensure bash compatibility
+FROM --platform=linux/x86_64 golang:1.22-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for CGO and SQLite
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    make \
+    git \
+    pkg-config \
+    zlib1g-dev \
+    libicu-dev \
+    wget \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set CGO_ENABLED=1 (mandatory for SQLite C bindings)
+ENV CGO_ENABLED=1
+
+# Set Go environment variables
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:$PATH
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code and checkouts to the target version
+RUN git clone https://github.com/rqlite/rqlite.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 92bcff8e0b50570294c3d13f6b598821ad3daff6 && \
+    git remote remove origin
+
+# Download Go module dependencies
+RUN cd /testbed && \
+    go mod download && \
+    go mod verify
+
+# Ensure bash is the default shell
+SHELL ["/bin/bash", "-c"]
+
+# Set up bash environment
+RUN echo 'export CGO_ENABLED=1' >> /root/.bashrc && \
+    echo 'export GOPATH=/go' >> /root/.bashrc && \
+    echo 'cd /testbed' >> /root/.bashrc

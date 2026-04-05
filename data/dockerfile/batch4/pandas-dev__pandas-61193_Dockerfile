@@ -1,0 +1,109 @@
+# Base image specification. Using Python 3.11 on Debian Bookworm as recommended
+FROM --platform=linux/x86_64 python:3.11-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gcc \
+    g++ \
+    gfortran \
+    python3-dev \
+    pkg-config \
+    git \
+    wget \
+    curl \
+    locales \
+    locales-all \
+    tzdata \
+    bash-completion \
+    libhdf5-dev \
+    libgles2-mesa-dev \
+    libegl1 \
+    libopengl0 \
+    libblosc-dev \
+    libbz2-dev \
+    liblz4-dev \
+    libzstd-dev \
+    libsnappy-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set default workdir to testbed
+WORKDIR /testbed/
+
+# Clone the pandas repository and checkout the specific commit
+RUN git clone https://github.com/pandas-dev/pandas /testbed && \
+    cd /testbed && \
+    git reset --hard 80795dfe5db3a6c089a2ffc31df5b8a324f8dd53 && \
+    git remote remove origin && \
+    git config --global --add safe.directory /testbed && \
+    chmod -R 777 /testbed
+
+# Upgrade pip, setuptools, and wheel
+RUN pip install --upgrade pip setuptools wheel
+
+# Install build dependencies with specified versions
+RUN pip install \
+    "meson-python>=0.13.1" \
+    "meson>=1.2.1,<2" \
+    ninja \
+    "Cython~=3.0.5" \
+    "numpy>=2.0.0rc1" \
+    "versioneer[toml]" \
+    wheel
+
+# Install core runtime dependencies
+RUN pip install \
+    "numpy>=1.23.5" \
+    "python-dateutil>=2.8.2" \
+    "pytz>=2023.4" \
+    "tzdata>=2022.7"
+
+# Install test dependencies
+RUN pip install \
+    "pytest>=7.3.2" \
+    "pytest-xdist>=3.4.0" \
+    "pytest-cov" \
+    "hypothesis>=6.84.0"
+
+# Install optional dependencies that might be needed for the test files
+RUN pip install \
+    "pyarrow>=10.0.1" \
+    "bottleneck>=1.3.6" \
+    "numexpr>=2.8.4" \
+    "scipy>=1.10.0" \
+    "matplotlib>=3.6.3" \
+    "openpyxl>=3.1.0" \
+    "xlrd>=2.0.1" \
+    "xlsxwriter>=3.0.5" \
+    "tables>=3.8.0" \
+    "jinja2>=3.1.2" \
+    "lxml>=4.9.2" \
+    "html5lib>=1.1" \
+    "beautifulsoup4>=4.11.2" \
+    "fastparquet>=2023.10.0" \
+    "fsspec>=2022.11.0" \
+    "zstandard>=0.19.0"
+
+# Build and install pandas in editable mode with no build isolation
+# This ensures C/Cython extensions are compiled correctly
+RUN cd /testbed && \
+    pip install --no-build-isolation -ve .
+
+# Set environment variables for test execution
+ENV PANDAS_CI=1
+ENV PYTHONPATH=/testbed:$PYTHONPATH
+
+# Verify installation
+RUN python -c "import pandas; print(f'Pandas version: {pandas.__version__}')" && \
+    python -c "import pandas._testing as tm; print('pandas._testing imported successfully')"
+
+# Set bash as default shell
+SHELL ["/bin/bash", "-c"]

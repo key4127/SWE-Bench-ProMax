@@ -1,0 +1,91 @@
+# Base image specification - Ubuntu 22.04 for stability and bash compatibility
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation - essential tools and libraries
+RUN apt-get update && apt-get install -y \
+    wget \
+    curl \
+    git \
+    unzip \
+    zip \
+    build-essential \
+    file \
+    locales \
+    locales-all \
+    tzdata \
+    openjdk-17-jdk \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set Java environment variables
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Install Android SDK Command-line Tools
+ENV ANDROID_SDK_ROOT=/opt/android-sdk
+ENV ANDROID_HOME=/opt/android-sdk
+ENV PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/build-tools/35.0.0
+
+# Create Android SDK directory
+RUN mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
+
+# Download and install Android SDK Command-line Tools (latest version)
+RUN wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O /tmp/cmdline-tools.zip && \
+    unzip -q /tmp/cmdline-tools.zip -d /tmp/cmdline-tools && \
+    mkdir -p $ANDROID_SDK_ROOT/cmdline-tools/latest && \
+    mv /tmp/cmdline-tools/cmdline-tools/* $ANDROID_SDK_ROOT/cmdline-tools/latest/ && \
+    rm -rf /tmp/cmdline-tools.zip /tmp/cmdline-tools
+
+# Accept Android SDK licenses
+RUN yes | sdkmanager --licenses || true
+
+# Install required Android SDK components
+RUN sdkmanager --install \
+    "platform-tools" \
+    "platforms;android-35" \
+    "build-tools;35.0.0" \
+    "cmdline-tools;latest"
+
+# Set Gradle JVM options for test execution
+ENV GRADLE_OPTS="-Xmx2048m -XX:MaxMetaspaceSize=512m -XX:+UseParallelGC -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
+
+# Set working directory
+WORKDIR /testbed/
+
+# Clone the repository and checkout specific commit
+RUN git clone https://github.com/MuntashirAkon/AppManager /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 01df27fc22206fd2b792861423e8a71d5b5ad570 && \
+    git remote remove origin
+
+# Initialize git submodules (required by repository setup)
+RUN cd /testbed && \
+    git submodule update --init --recursive
+
+# Make gradlew executable
+RUN cd /testbed && \
+    chmod +x gradlew
+
+# Create gradle.properties with required settings
+RUN mkdir -p /root/.gradle && \
+    echo "android.useAndroidX=true" >> /root/.gradle/gradle.properties && \
+    echo "android.enableJetifier=false" >> /root/.gradle/gradle.properties && \
+    echo "org.gradle.caching=true" >> /root/.gradle/gradle.properties && \
+    echo "org.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=512m -XX:+UseParallelGC -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8" >> /root/.gradle/gradle.properties
+
+# Set default shell to bash
+SHELL ["/bin/bash", "-c"]
+
+# Add environment setup to bashrc
+RUN echo "export ANDROID_HOME=$ANDROID_SDK_ROOT" >> /root/.bashrc && \
+    echo "export ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> /root/.bashrc && \
+    echo "export JAVA_HOME=$JAVA_HOME" >> /root/.bashrc && \
+    echo "export PATH=$PATH" >> /root/.bashrc

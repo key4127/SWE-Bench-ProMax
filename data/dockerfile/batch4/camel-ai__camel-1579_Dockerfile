@@ -1,0 +1,55 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 python:3.10-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    build-essential \
+    python3-dev \
+    curl \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Poetry for dependency management
+RUN curl -sSL https://install.python-poetry.org | python3 - && \
+    ln -s /root/.local/bin/poetry /usr/local/bin/poetry
+
+# Verify Poetry installation
+RUN poetry --version
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, configures it, and installs project-specific dependencies
+RUN git clone https://github.com/camel-ai/camel.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard cf3d9c5e5f1c90f71d3a9d30b9ec7ce5de6b1ca0 && \
+    git remote remove origin
+
+# Configure Poetry to not create virtual environments (use system Python)
+RUN poetry config virtualenvs.create false
+
+# Install project dependencies using Poetry
+# Install with dev dependencies to get pytest and testing tools
+RUN cd /testbed && \
+    poetry install --with dev --no-interaction --no-ansi
+
+# Ensure the package is installed in editable mode
+RUN cd /testbed && \
+    pip install -e .
+
+# Install scikit-learn which is required by camel/utils/deduplication.py but missing from pyproject.toml
+RUN pip install scikit-learn
+
+# Set PYTHONPATH to include the repository root
+ENV PYTHONPATH=/testbed:$PYTHONPATH
+
+# Verify installation by checking if key packages are available
+RUN python -c "import camel; import pytest; import sklearn; print('Environment setup successful')"

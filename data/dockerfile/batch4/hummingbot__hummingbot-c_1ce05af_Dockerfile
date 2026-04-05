@@ -1,0 +1,48 @@
+# Base image specification. Using Python 3.12 slim for efficient container size
+FROM --platform=linux/x86_64 python:3.12-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for building and runtime
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    git \
+    libssl-dev \
+    libffi-dev \
+    python3-dev \
+    libudev-dev \
+    libusb-1.0-0-dev \
+    wget \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip and install Python build dependencies
+RUN pip install --upgrade pip setuptools wheel
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the repository and checkout to the specific commit
+RUN git clone https://github.com/hummingbot/hummingbot.git /testbed && \
+    cd /testbed && \
+    git checkout 11c0153bda4dc1bb8aa6f879715018717e032045 && \
+    chmod -R 777 /testbed
+
+# Install Python build dependencies required before main installation
+RUN pip install numpy>=2.2.6 cython>=3.0.12
+
+# Install the project in editable mode (installs all dependencies from setup.py)
+RUN cd /testbed && pip install -e .
+
+# Compile Cython extensions (CRITICAL step for hummingbot)
+RUN cd /testbed && python setup.py build_ext --inplace
+
+# Set PYTHONPATH to include project root
+ENV PYTHONPATH=/testbed:$PYTHONPATH
+
+# Ensure pytest is available for test execution
+RUN pip install pytest pytest-asyncio aioresponses
+
+# Set bash as default shell
+SHELL ["/bin/bash", "-c"]

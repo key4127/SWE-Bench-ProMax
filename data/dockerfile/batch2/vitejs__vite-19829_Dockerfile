@@ -1,0 +1,50 @@
+# Base image specification. Using Node.js 20 LTS as the foundation for compatibility with Vite 6.5
+FROM --platform=linux/x86_64 node:20-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    wget \
+    build-essential \
+    python3 \
+    ca-certificates \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Enable corepack to manage pnpm (required for pnpm installation)
+RUN corepack enable
+
+# Set pnpm version to 10.10.0 as specified in package.json packageManager field
+RUN corepack prepare pnpm@10.10.0 --activate
+
+# Verify installations
+RUN node --version && pnpm --version
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Clone the target repository
+RUN git clone https://github.com/vitejs/vite /testbed && \
+    chmod -R 777 /testbed
+
+# Checkout to the specific commit SHA
+RUN cd /testbed && \
+    git reset --hard bf8b07da3e64dc4de446a9b24a33d5822a7736b9 && \
+    git remote remove origin
+
+# Install dependencies using pnpm (monorepo workspace setup)
+RUN cd /testbed && \
+    pnpm i
+
+# Build the project (required before running tests as per CONTRIBUTING.md)
+RUN cd /testbed && \
+    pnpm run build
+
+# Set up shell environment to automatically navigate to testbed
+RUN echo 'cd /testbed' >> /root/.bashrc

@@ -1,0 +1,47 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 python:3.13-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    build-essential \
+    libffi-dev \
+    curl \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LC_ALL=en_US.UTF-8
+ENV LANG=en_US.UTF-8
+
+# Set matplotlib backend to non-interactive mode (Required for headless testing)
+ENV MPLBACKEND=Agg
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, and installs project-specific dependencies
+RUN git clone https://github.com/AtsushiSakai/PythonRobotics /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 22cbee49218a1f8acb07ad488416db3c952c19d6 && \
+    git remote remove origin
+
+# Install Python dependencies from requirements.txt with exact versions
+RUN pip install --no-cache-dir -r requirements/requirements.txt
+
+# Set PYTHONPATH to ensure Python can find the modules in the repository
+ENV PYTHONPATH=/testbed:$PYTHONPATH
+
+# Verify Python version and key dependencies
+RUN python --version && \
+    pip list | grep -E "numpy|scipy|matplotlib|pytest"
+
+# Set default shell to bash for compatibility
+SHELL ["/bin/bash", "-c"]

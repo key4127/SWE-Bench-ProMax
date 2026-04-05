@@ -1,0 +1,55 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 rust:1.90
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    pkg-config \
+    libssl-dev \
+    gcc \
+    g++ \
+    make \
+    ca-certificates \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Configure locale
+ENV LC_ALL=en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US.UTF-8
+
+# Set up Rust environment variables
+ENV PATH="/root/.cargo/bin:$PATH"
+ENV RUST_BACKTRACE=1
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, and sets up Rust toolchain
+RUN git clone https://github.com/astral-sh/ruff /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 130a794c2b894d8ffc96e49c2d48bdddd11c99a6 && \
+    git remote remove origin
+
+# Install the Rust version specified in rust-toolchain.toml
+# The project has a rust-toolchain.toml file that specifies the required Rust version
+RUN cd /testbed && \
+    rustup show
+
+# Build the ty_python_semantic crate to ensure all dependencies are compiled
+# This prepares the environment for testing without actually running tests
+RUN cd /testbed && \
+    cargo build --package ty_python_semantic
+
+# Set up shell environment
+RUN echo 'export PATH="/root/.cargo/bin:$PATH"' >> /root/.bashrc && \
+    echo 'export RUST_BACKTRACE=1' >> /root/.bashrc

@@ -1,0 +1,56 @@
+# Base image specification. Using golang:1.23-bullseye for better compatibility with bash and system tools
+FROM --platform=linux/x86_64 golang:1.23-bullseye
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    locales \
+    locales-all \
+    tzdata \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set Go environment variables
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
+ENV GO111MODULE=on
+
+# Verify Go installation
+RUN go version
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone source code, checkout to the target version, and download dependencies
+RUN git clone https://github.com/antonmedv/fx /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 9611f375a82db8f9352a25cf9817814265459584 && \
+    git remote remove origin
+
+# Download and verify Go module dependencies
+RUN cd /testbed && \
+    go mod download && \
+    go mod verify
+
+# Ensure the working directory is set correctly
+WORKDIR /testbed/
+
+# Set bash as default shell
+SHELL ["/bin/bash", "-c"]
+
+# Add a convenience command to the bash profile for easy environment setup
+RUN echo 'export PATH=$GOPATH/bin:/usr/local/go/bin:$PATH' >> /root/.bashrc && \
+    echo 'export GO111MODULE=on' >> /root/.bashrc && \
+    echo 'cd /testbed' >> /root/.bashrc

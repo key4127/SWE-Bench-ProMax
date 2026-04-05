@@ -1,0 +1,89 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    locales \
+    locales-all \
+    tzdata \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale to UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Install OpenJDK 11
+RUN apt-get update && apt-get install -y \
+    openjdk-11-jdk \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set JAVA_HOME environment variable
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Install Maven 3.8+
+RUN wget https://archive.apache.org/dist/maven/maven-3/3.8.8/binaries/apache-maven-3.8.8-bin.tar.gz -O /tmp/maven.tar.gz \
+    && tar -xzf /tmp/maven.tar.gz -C /opt \
+    && rm /tmp/maven.tar.gz \
+    && ln -s /opt/apache-maven-3.8.8 /opt/maven
+
+ENV MAVEN_HOME=/opt/maven
+ENV PATH=$MAVEN_HOME/bin:$PATH
+
+# Set Maven options with required JVM arguments
+ENV MAVEN_OPTS="-Xmx512M \
+-XX:+TieredCompilation \
+-XX:TieredStopAtLevel=1 \
+-XX:ReservedCodeCacheSize=240m \
+-XX:+IgnoreUnrecognizedVMOptions \
+-Dfile.encoding=UTF-8 \
+--add-opens=java.base/java.lang=ALL-UNNAMED \
+--add-opens=java.base/java.util=ALL-UNNAMED \
+--add-opens=java.base/java.lang.reflect=ALL-UNNAMED \
+--add-opens=java.base/java.text=ALL-UNNAMED \
+--add-opens=java.desktop/java.awt.font=ALL-UNNAMED \
+--add-opens=java.desktop/sun.awt.image=ALL-UNNAMED \
+--add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED"
+
+# Set additional system properties for testing
+ENV JAVA_TOOL_OPTIONS="-Djava.awt.headless=true \
+-Dsun.java2d.d3d=true \
+-DremoteOwsTests=false \
+-DquietTests=true \
+-Dorg.geotools.image.test.enabled=true \
+-Dorg.geotools.image.test.interactive=false \
+-Duser.timezone=UTC \
+-Dwindows.leniency=true"
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checks out to the target version, and prepares the environment
+RUN git clone https://github.com/geoserver/geoserver.git /testbed \
+    && chmod -R 777 /testbed \
+    && cd /testbed \
+    && git reset --hard 1f86e8853e983479f47511dd403432b5462a820b \
+    && git remote remove origin
+
+# Build the project from src/ directory to download all dependencies and compile
+# We skip tests during the build phase as per requirements
+WORKDIR /testbed/src
+
+RUN mvn clean install -DskipTests -T 1C || true
+
+# Set working directory back to /testbed/ as required
+WORKDIR /testbed/
+
+# Configure shell environment
+RUN echo "export JAVA_HOME=$JAVA_HOME" >> /root/.bashrc \
+    && echo "export MAVEN_HOME=$MAVEN_HOME" >> /root/.bashrc \
+    && echo "export PATH=$MAVEN_HOME/bin:$JAVA_HOME/bin:$PATH" >> /root/.bashrc

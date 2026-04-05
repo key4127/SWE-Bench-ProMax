@@ -1,0 +1,722 @@
+{
+  "dataset_instances": 782,
+  "provided_instances": 78,
+  "provided_rate": 0.09974424552429667,
+  "summary": {
+    "total_instances": 78,
+    "failed_before_patch": 29,
+    "passed_after_patch": 74,
+    "details": {
+      "f2p_instance": 26,
+      "p2p_instance": 48,
+      "f2f_instance": 3,
+      "p2f_instance": 1,
+      "resolved": 26,
+      "stable": 26
+    }
+  },
+  "instance_details": [
+    {
+      "instance_id": "davidesantangelo__krep-c_5beabe2",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "LeelaChessZero__lc0-2126",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "LunarG__gfxreconstruct-2546",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "Cockatrice__Cockatrice-6175",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_8948bf6",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "EndstoneMC__endstone-c_74e224c",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "EndstoneMC__endstone-c_dd37325",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "davidesantangelo__krep-c_1eb6a4a",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "EndstoneMC__endstone-c_cd9294a",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_ae3f20f",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_a490543",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_5812b19",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_c4d7b1c",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_fa00aa4",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_b6ea668",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "CESNET__libyang-c_8d3d805",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "adafruit__tinyuf2-c_712343c",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_b2b2df1",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_5c3a562",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_7324fc6",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_b145ede",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "WasmEdge__WasmEdge-4340",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_f3147df",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_5d49a68",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "davidesantangelo__krep-c_fcf4a21",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_b385b6e",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "WerWolv__ImHex-2082",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_3f66b30",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_bab5a7a",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_8dbf236",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_602941e",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "CESNET__libyang-c_81e4cbc",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "SpartanJ__eepp-c_f2d4913",
+      "failed_before_patch": false,
+      "passed_after_patch": false,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_cf63454",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_f007553",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_4589f33",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_c1666c8",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_85681d7",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_796e85f",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_92f3faf",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_b8a5ebf",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_660244e",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_b59b366",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "at-wat__mcl_3dl-435",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_a3c63f3",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "PrismLauncher__PrismLauncher-2616",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_5f050af",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_4fed645",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_17561eb",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "LukasBanana__LLGL-c_3b7aef0",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "davidesantangelo__krep-c_ff1d603",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_ab7ee70",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_53a3999",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "davidesantangelo__krep-c_89ec7fd",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "PrismLauncher__PrismLauncher-4039",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_a12d474",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_b153346",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "LunarG__gfxreconstruct-2178",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_f24c115",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_f4a8619",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_dcca718",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_c7561dc",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_de60680",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_63e2d68",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_6b4f08c",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_84a5812",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "CESNET__libyang-c_953344a",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_5945ad1",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "facebook__redex-c_fb9a91a",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_67a738d",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_7023f5b",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_ac0f4b5",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_f2cf0f0",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_a845be0",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_b077cae",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_e94d9ce",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_cd41b6a",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "espressif__esp-idf-c_b5aae9a",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    }
+  ]
+}

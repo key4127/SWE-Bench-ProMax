@@ -1,0 +1,1784 @@
+{
+  "dataset_instances": 485,
+  "provided_instances": 196,
+  "provided_rate": 0.4041237113402062,
+  "summary": {
+    "total_instances": 196,
+    "failed_before_patch": 113,
+    "passed_after_patch": 180,
+    "details": {
+      "f2p_instance": 97,
+      "p2p_instance": 83,
+      "f2f_instance": 16,
+      "p2f_instance": 0,
+      "resolved": 97,
+      "stable": 97
+    }
+  },
+  "instance_details": [
+    {
+      "instance_id": "cli__cli-c_4575692",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cli__cli-c_f43da8e",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cli__cli-c_19e17c5",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cli__cli-c_41729b0",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "go-gitea__gitea-33861",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "OpenRCT2__OpenRCT2-25304",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "pingcap__tidb-63078",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "nasa__fprime-3765",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cli__cli-11670",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cli__cli-c_1e36e9f",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "moby__moby-c_6084c6a",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_a0cc2cb",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cli__cli-c_563c2f9",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-9293",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_815b963",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_e327c1b",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_da2c551",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_1b0f98f",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "Z3Prover__z3-c_eb97fcc",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_0edf58b",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_d45d6ba",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cli__cli-c_6d14840",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "pingcap__tidb-59644",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "moby__moby-51300",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "nasa__fprime-3422",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "nasa__fprime-4041",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_2c2a5c0",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cli__cli-10197",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_dc9e104",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-8836",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cli__cli-11922",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-9230",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_f3a1bba",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "moby__moby-c_ebc92e0",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_b64c511",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_d6ffcd3",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "OpenRCT2__OpenRCT2-24088",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_632be4b",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_4ddd782",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cli__cli-11752",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_63f32ce",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cli__cli-11018",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cli__cli-c_d684834",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "simdjson__simdjson-2580",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-9358",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-8744",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_cfedfc2",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_7d40689",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "moby__moby-50787",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_bf7a50a",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_d01c07c",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_f456aab",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cli__cli-10521",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_944ca5f",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "catchorg__Catch2-c_0e8112a",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cli__cli-c_8fc8486",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cli__cli-c_c0c5d91",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_5fa70d0",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-8794",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "Activiti__Activiti-5186",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-9040",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cli__cli-11707",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_5e6381c",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_5e02adc",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_b56a282",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_de3b9d8",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_c5b4e33",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cli__cli-10720",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "go-gitea__gitea-35610",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cli__cli-10513",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cli__cli-10180",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_a8348b1",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "ossrs__srs-4465",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cli__cli-10547",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_a887ac0",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_1884ab3",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "ossrs__srs-4462",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-9272",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_b7960ee",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cli__cli-c_a30df14",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_11eb0c5",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "OpenRCT2__OpenRCT2-24089",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "go-gitea__gitea-36406",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "OpenRCT2__OpenRCT2-24498",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_efebe9c",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-9229",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_50e228b",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-9113",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cli__cli-10489",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-8413",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "nasa__fprime-3753",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "gocd__gocd-c_ccaf54b",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "moby__moby-51951",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "moby__moby-50995",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cli__cli-10937",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "pingcap__tidb-62501",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-9153",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "go-gitea__gitea-34983",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "pingcap__tidb-65495",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "google__googletest-c_17d335d",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-9283",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-9359",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "Alexays__Waybar-4212",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_bee0f84",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-9209",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_b411e14",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_0782827",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "moby__moby-50443",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_65635c0",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "moby__moby-51153",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_2be8c98",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-9248",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_f012cf2",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_2b4b6a8",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cli__cli-c_c3087cd",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_c2ee366",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "moby__moby-51908",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "pingcap__tidb-63637",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_6fa8ba0",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cli__cli-12526",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cli__cli-c_a3bfb15",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "nasa__fprime-3684",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "go-gitea__gitea-34412",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_186a71d",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "nasa__fprime-4340",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "go-gitea__gitea-35775",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-9114",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "docker__compose-13104",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cli__cli-10354",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_8606dc8",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-8886",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_b833ca7",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_2821824",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cli__cli-c_4daf489",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_cfd580f",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_6834862",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_05f377e",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_db9c87f",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cli__cli-11279",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "nasa__fprime-3642",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cli__cli-12444",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cli__cli-c_29241cb",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cli__cli-10710",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "OpenRCT2__OpenRCT2-25320",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cli__cli-10382",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cli__cli-9208",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_5a7284f",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_e7c1991",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cli__cli-c_178fb40",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "OpenRCT2__OpenRCT2-25709",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_9fbbf39",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cli__cli-11638",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_5360fb3",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cli__cli-11758",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_049f8d7",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_7fa303e",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "go-gitea__gitea-34692",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cli__cli-10960",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_2cb3677",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cli__cli-12148",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_b0fe79d",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "OpenRCT2__OpenRCT2-c_769a85a",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "ossrs__srs-4463",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_737328d",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cli__cli-c_ec9eaef",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "OpenRCT2__OpenRCT2-24721",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-9396",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_a78959e",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-9265",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_77bdde5",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_9aa1d6b",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_4ae40ad",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-9335",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cli__cli-c_e4f0b79",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "OpenRCT2__OpenRCT2-24979",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-9018",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "pingcap__tidb-63508",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cli__cli-11668",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_d71d4ea",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_c24f247",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_93abf42",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_78919af",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_4273fe2",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cli__cli-10750",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "pingcap__tidb-59272",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_42746c3",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_b20d636",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "scylladb__seastar-2601",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "go-gitea__gitea-34154",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "nasa__fprime-3927",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_85055a4",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_37a74a7",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "bazelbuild__bazel-c_739008e",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_9601180",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "pingcap__tidb-62601",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "deskflow__deskflow-c_11fa5d6",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    }
+  ]
+}

@@ -1,0 +1,188 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    ninja-build \
+    make \
+    bison \
+    flex \
+    gperf \
+    ccache \
+    libffi-dev \
+    libssl-dev \
+    libncurses-dev \
+    libncurses5-dev \
+    libncurses5 \
+    libusb-1.0-0-dev \
+    libusb-1.0-0 \
+    libbsd-dev \
+    libglib2.0-0 \
+    libglib2.0-dev \
+    libpixman-1-0 \
+    libsdl2-2.0-0 \
+    libslirp0 \
+    libdbus-1-dev \
+    git \
+    git-lfs \
+    curl \
+    wget \
+    unzip \
+    zip \
+    xz-utils \
+    bzip2 \
+    tar \
+    gzip \
+    ca-certificates \
+    ruby \
+    lcov \
+    check \
+    python3 \
+    python3-venv \
+    python3-pip \
+    dfu-util \
+    gcc \
+    g++ \
+    pkg-config \
+    libudev-dev \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Ensure python3 is the default python
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+
+# Set up working directory (Required)
+WORKDIR /testbed/
+
+# Clone the ESP-IDF repository and checkout the specific commit
+RUN git clone https://github.com/espressif/esp-idf.git /testbed && \
+    cd /testbed && \
+    git checkout 0afcc02c4719ca6c2eb44918b9f04f5f52a6236c && \
+    git submodule update --init --recursive && \
+    chmod -R 777 /testbed
+
+# Set ESP-IDF environment variables
+ENV IDF_PATH=/testbed
+ENV IDF_TOOLS_PATH=/opt/esp
+ENV IDF_PYTHON_CHECK_CONSTRAINTS=no
+ENV IDF_CCACHE_ENABLE=1
+ENV IDF_SKIP_CHECK_SUBMODULES=1
+
+# Upgrade pip, setuptools, and wheel
+RUN python3 -m pip install --upgrade pip setuptools wheel
+
+# Install Python core dependencies for ESP-IDF
+RUN cd /testbed && \
+    python3 -m pip install --no-cache-dir \
+    setuptools \
+    packaging \
+    click \
+    pyserial \
+    cryptography \
+    pyparsing \
+    pyelftools \
+    'idf-component-manager>=2.2' \
+    esp-coredump \
+    esptool \
+    esp-idf-kconfig \
+    esp-idf-monitor \
+    esp-idf-nvs-partition-gen \
+    esp-idf-size \
+    esp-idf-diag \
+    esp-idf-panic-decoder \
+    pyclang \
+    construct \
+    rich \
+    psutil \
+    freertos_gdb
+
+# Install Python test dependencies
+RUN python3 -m pip install --no-cache-dir \
+    scapy \
+    websocket-client \
+    netifaces \
+    rangehttpserver \
+    protobuf \
+    bleak \
+    paho-mqtt \
+    paramiko \
+    netmiko \
+    pyecharts \
+    python-can || true
+
+# Install core requirements from ESP-IDF
+RUN cd /testbed && \
+    if [ -f tools/requirements/requirements.core.txt ]; then \
+        python3 -m pip install --no-cache-dir -r tools/requirements/requirements.core.txt || true; \
+    fi
+
+# Install pytest and testing requirements
+RUN cd /testbed && \
+    if [ -f tools/requirements/requirements.pytest.txt ]; then \
+        python3 -m pip install --no-cache-dir -r tools/requirements/requirements.pytest.txt; \
+    else \
+        python3 -m pip install --no-cache-dir pytest>=7.0 pytest-embedded>=1.0 pytest-embedded-serial-esp>=1.0 pytest-embedded-idf>=1.0 pytest-rerunfailures pytest-timeout || true; \
+    fi
+
+# Install python-gitlab for CI infrastructure
+RUN python3 -m pip install --no-cache-dir python-gitlab || true
+
+# Install idf-build-apps for build validation
+RUN python3 -m pip install --no-cache-dir "idf-build-apps>=2.0" || true
+
+# Install CI requirements if available
+RUN cd /testbed && \
+    if [ -f tools/requirements/requirements.ci.txt ]; then \
+        python3 -m pip install --no-cache-dir -r tools/requirements/requirements.ci.txt || true; \
+    fi
+
+# Install additional requirements files if they exist
+RUN cd /testbed && \
+    for req_file in tools/requirements/requirements.*.txt; do \
+        if [ -f "$req_file" ] && \
+           [ "$req_file" != "tools/requirements/requirements.core.txt" ] && \
+           [ "$req_file" != "tools/requirements/requirements.ci.txt" ] && \
+           [ "$req_file" != "tools/requirements/requirements.pytest.txt" ]; then \
+            python3 -m pip install --no-cache-dir -r "$req_file" || true; \
+        fi; \
+    done
+
+# Install ESP-IDF tools for esp32 target
+RUN cd /testbed && \
+    ./install.sh esp32
+
+# Install Python environment via idf_tools.py
+RUN cd /testbed && \
+    python3 tools/idf_tools.py install-python-env || true
+
+# Set up environment activation in bashrc
+RUN echo "export IDF_PATH=/testbed" >> /root/.bashrc && \
+    echo "export IDF_TOOLS_PATH=/opt/esp" >> /root/.bashrc && \
+    echo "export IDF_PYTHON_CHECK_CONSTRAINTS=no" >> /root/.bashrc && \
+    echo "export IDF_CCACHE_ENABLE=1" >> /root/.bashrc && \
+    echo "export IDF_SKIP_CHECK_SUBMODULES=1" >> /root/.bashrc && \
+    echo "source /testbed/export.sh" >> /root/.bashrc
+
+# Create a wrapper script to ensure environment is sourced before running commands
+RUN echo '#!/bin/bash\n\
+export IDF_PATH=/testbed\n\
+export IDF_TOOLS_PATH=/opt/esp\n\
+export IDF_PYTHON_CHECK_CONSTRAINTS=no\n\
+export IDF_CCACHE_ENABLE=1\n\
+export IDF_SKIP_CHECK_SUBMODULES=1\n\
+source /testbed/export.sh\n\
+exec "$@"' > /usr/local/bin/idf-env.sh && \
+    chmod +x /usr/local/bin/idf-env.sh
+
+# Set bash as default shell
+SHELL ["/bin/bash", "-c"]
+
+# Set working directory to testbed
+WORKDIR /testbed/

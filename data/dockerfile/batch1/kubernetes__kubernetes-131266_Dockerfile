@@ -1,0 +1,38 @@
+# Base image with Go 1.24.0 pre-installed
+FROM golang:1.24.0-bookworm
+
+# Set environment variables
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:$PATH
+ENV GOFLAGS="-mod=readonly"
+ENV KUBE_VERBOSE=""
+ENV KUBE_COVER=""
+
+# Install system dependencies including jq
+RUN apt-get update && apt-get install -y \
+    make \
+    git \
+    bash \
+    jq \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /testbed
+
+# Clone the kubernetes repository
+RUN git clone https://github.com/kubernetes/kubernetes.git .
+
+# Checkout the specific commit
+RUN git reset --hard d895ad218103b83f05431e1ce845081fa322a726
+
+# Configure go workspace using the existing go.work
+RUN go work use $(find staging/src -name go.mod -exec dirname {} \;)
+
+# Verify vendor directory exists
+RUN test -d vendor && echo "Vendor directory found"
+
+# Clean up git history to reduce image size
+RUN rm -rf .git
+
+# Set default shell to bash for compatibility with hack scripts
+SHELL ["/bin/bash", "-c"]

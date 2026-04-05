@@ -1,0 +1,60 @@
+# Base image specification. Using Node.js 22.21.1 as the base image to match the required version
+FROM --platform=linux/x86_64 node:22.21.1-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    python3 \
+    python3-pip \
+    chromium \
+    chromium-driver \
+    ca-certificates \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Enable corepack and set up pnpm 10.20.0 as required by the project
+RUN corepack enable && \
+    corepack prepare pnpm@10.20.0 --activate
+
+# Install Bazelisk globally to manage Bazel versions
+RUN npm install -g @bazel/bazelisk
+
+# Verify installations
+RUN node --version && npm --version && pnpm --version && bazelisk version
+
+# Set environment variables for test execution
+ENV CHROME_BIN=/usr/bin/chromium
+ENV CI=true
+ENV NODE_OPTIONS=--max_old_space_size=8192
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Clone the Angular repository and checkout the specific commit
+RUN git clone https://github.com/angular/angular.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 058377ed5547e58f4b9f058397fda22e5d347f38 && \
+    git remote remove origin
+
+# Install all project dependencies using pnpm
+# This will install Bazel via @bazel/bazelisk and all other required dependencies
+RUN cd /testbed && pnpm install
+
+# Set up environment to ensure bash is used by default
+SHELL ["/bin/bash", "-c"]
+
+# Verify the test file exists
+RUN test -f /testbed/packages/router/test/recognize.spec.ts && \
+    echo "Test file found successfully"
+
+# Set default shell for interactive sessions
+RUN echo "cd /testbed" >> /root/.bashrc

@@ -1,0 +1,61 @@
+# Base image specification. Using Node.js 20 LTS on Debian-based image for better compatibility
+FROM --platform=linux/x86_64 node:20-bookworm
+
+# Prevent interactive prompts during package installation
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    python3 \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale to avoid potential encoding issues
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the NestJS repository and checkout to the target commit
+RUN git clone https://github.com/nestjs/nest.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 9d270a2a9181e70df7606ff489820fd63822cfe8 && \
+    git remote remove origin
+
+# Install dependencies using npm with legacy-peer-deps flag as specified
+# This ensures all packages are installed correctly despite peer dependency conflicts
+RUN cd /testbed && \
+    npm ci --legacy-peer-deps
+
+# Build the TypeScript packages as required before running tests
+# Uses TypeScript project references with tsc -b
+# Skipping prepare.sh as it requires Docker/docker-compose which is not needed for unit tests
+RUN cd /testbed && \
+    npm run build
+
+# Verify key dependencies are installed correctly
+RUN cd /testbed && \
+    node -e "console.log('Node version:', process.version)" && \
+    npm list typescript ts-node mocha chai reflect-metadata || true
+
+# Set up environment variables for test execution
+ENV NODE_ENV=test
+
+# Ensure the test file and related directories have proper permissions
+RUN chmod -R 755 /testbed/packages/
+
+# Set bash as the default shell
+SHELL ["/bin/bash", "-c"]
+
+# Set bash as the default shell for interactive sessions
+RUN echo "export PS1='testbed:\w\$ '" >> /root/.bashrc

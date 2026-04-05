@@ -1,0 +1,44 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    build-essential \
+    gcc \
+    make \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale to avoid potential encoding issues
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checks out to the target version
+RUN git clone https://github.com/davidesantangelo/krep /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 9036d0534beb02aafe2315f2ac95a32d328bc9e4 && \
+    git remote remove origin
+
+# Verify the test files exist
+RUN ls -la /testbed/test/ && \
+    test -f /testbed/test/test_krep.c && \
+    test -f /testbed/test/test_krep.h && \
+    test -f /testbed/test/test_regex.c
+
+# Set default shell to bash
+SHELL ["/bin/bash", "-c"]
+
+# Create a simple bashrc to ensure proper environment
+RUN echo "export PATH=/usr/bin:/bin:/usr/local/bin:$PATH" >> /root/.bashrc

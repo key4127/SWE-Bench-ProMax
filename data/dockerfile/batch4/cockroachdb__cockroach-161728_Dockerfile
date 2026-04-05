@@ -1,0 +1,117 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/amd64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    curl \
+    wget \
+    gnupg2 \
+    build-essential \
+    g++ \
+    gcc \
+    make \
+    cmake \
+    autoconf \
+    automake \
+    libtool \
+    pkg-config \
+    git \
+    bison \
+    clang \
+    llvm \
+    libncurses-dev \
+    libtinfo-dev \
+    libssl-dev \
+    libz-dev \
+    libcurl4-gnutls-dev \
+    libexpat1-dev \
+    python3 \
+    python3-venv \
+    python-is-python3 \
+    unzip \
+    zip \
+    lsof \
+    openssh-client \
+    openjdk-11-jre \
+    dh-autoreconf \
+    gettext \
+    netbase \
+    sudo \
+    bash \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Go 1.23.5 (closest available version to 1.25.5 which doesn't exist yet)
+RUN wget https://go.dev/dl/go1.23.5.linux-amd64.tar.gz \
+    && tar -C /usr/local -xzf go1.23.5.linux-amd64.tar.gz \
+    && rm go1.23.5.linux-amd64.tar.gz
+
+# Set Go environment variables
+ENV PATH=/usr/local/go/bin:$PATH
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:$PATH
+ENV GO111MODULE=on
+ENV CGO_ENABLED=1
+
+# Install Bazelisk (which will download the correct Bazel version based on .bazelversion)
+RUN wget https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-linux-amd64 \
+    && chmod +x bazelisk-linux-amd64 \
+    && mv bazelisk-linux-amd64 /usr/local/bin/bazel
+
+# Install Node.js (for potential build dependencies)
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user for test execution
+RUN useradd -m -s /bin/bash testuser \
+    && echo "testuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Set up directories with proper permissions
+RUN mkdir -p /home/testuser/.cache/bazel \
+    && mkdir -p /go \
+    && chown -R testuser:testuser /home/testuser \
+    && chown -R testuser:testuser /go
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version
+RUN git clone https://github.com/cockroachdb/cockroach.git /testbed \
+    && cd /testbed \
+    && git checkout deb1052e2fbd527de60815cb1d03c3173210356d \
+    && git remote remove origin \
+    && git config --global --add safe.directory /testbed \
+    && chown -R testuser:testuser /testbed
+
+# Set environment variables for the test execution
+ENV HOME=/home/testuser
+ENV GORACE=halt_on_error=1 log_path=stdout
+ENV GO_TEST_WRAP_TESTV=1
+
+# Switch to non-root user for subsequent operations
+USER testuser
+
+# Pre-download Go module dependencies to speed up test execution
+RUN cd /testbed && go mod download || true
+
+# Pre-fetch Bazel dependencies for the target test to speed up test execution
+RUN cd /testbed && bazel fetch //pkg/kv/kvserver/closedts/sidetransport:sidetransport_test --config=test 2>/dev/null || true
+
+# Set bash as default shell
+SHELL ["/bin/bash", "-c"]
+
+# Add convenience script to bashrc for easier environment access
+RUN echo 'export PATH=/usr/local/go/bin:$GOPATH/bin:$PATH' >> /home/testuser/.bashrc \
+    && echo 'export GOPATH=/go' >> /home/testuser/.bashrc \
+    && echo 'export GO111MODULE=on' >> /home/testuser/.bashrc \
+    && echo 'export CGO_ENABLED=1' >> /home/testuser/.bashrc \
+    && echo 'export GORACE="halt_on_error=1 log_path=stdout"' >> /home/testuser/.bashrc \
+    && echo 'export GO_TEST_WRAP_TESTV=1' >> /home/testuser/.bashrc \
+    && echo 'cd /testbed' >> /home/testuser/.bashrc
+
+# Switch back to root for potential setup needs
+USER root

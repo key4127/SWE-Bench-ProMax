@@ -1,0 +1,49 @@
+# Base image specification. Using official Go image with version 1.23 for compatibility
+FROM --platform=linux/x86_64 golang:1.23
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up Go environment variables
+ENV GO111MODULE=on \
+    CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checks out to the target version, and sets up the multi-module structure
+RUN git clone https://github.com/redis/go-redis.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard a15e76394c80a8053d2790058d439fc5dd59c112 && \
+    git remote remove origin
+
+# Download dependencies for the main module
+RUN cd /testbed && \
+    go mod download
+
+# Download dependencies for the extra/redisotel module (target test location)
+# The replace directives in go.mod will automatically use local paths
+RUN cd /testbed/extra/redisotel && \
+    go mod download
+
+# Download dependencies for the extra/rediscmd module (required by redisotel)
+RUN cd /testbed/extra/rediscmd && \
+    go mod download
+
+# Verify the setup by checking if the test file exists
+RUN test -f /testbed/extra/redisotel/tracing_test.go || (echo "Test file not found!" && exit 1)
+
+# Set working directory to the test location for convenience
+WORKDIR /testbed/extra/redisotel

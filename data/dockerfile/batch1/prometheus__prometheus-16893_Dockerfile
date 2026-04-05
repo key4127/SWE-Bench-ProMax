@@ -1,0 +1,56 @@
+# Base image with bash and basic tools
+FROM ubuntu:22.04
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    curl \
+    git \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Go 1.23.0
+RUN curl -OL https://go.dev/dl/go1.23.0.linux-amd64.tar.gz \
+    && tar -C /usr/local -xzf go1.23.0.linux-amd64.tar.gz \
+    && rm go1.23.0.linux-amd64.tar.gz
+ENV PATH="/usr/local/go/bin:$PATH"
+ENV GOPATH="/go"
+ENV PATH="$GOPATH/bin:$PATH"
+
+# Install Node.js v20.5.1 and npm
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install -g npm@latest
+
+# Install goyacc (from golang.org/x/tools/cmd/goyacc)
+RUN go install golang.org/x/tools/cmd/goyacc@latest
+
+# Install golangci-lint
+RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
+
+# Set environment variables for Go modules
+ENV GO111MODULE=on
+
+# Create testbed directory and set as working directory
+WORKDIR /testbed
+
+# Clone the prometheus repository
+RUN git clone https://github.com/prometheus/prometheus.git .
+
+# Checkout the specific commit
+RUN git reset --hard 13b55ffc811c3787bf6cde9c1b61f2df179911f4
+
+# Install UI dependencies
+RUN cd web/ui && npm ci
+RUN cd web/ui/react-app && npm ci
+
+# Download Go modules
+RUN go mod download
+
+# Build the project to ensure dependencies are available
+RUN make build
+
+# Set default shell to bash
+SHELL ["/bin/bash", "-c"]

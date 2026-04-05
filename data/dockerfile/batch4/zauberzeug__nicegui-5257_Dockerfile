@@ -1,0 +1,41 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 python:3.9-slim
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Poetry (dependency management tool) with pinned version for stability
+RUN pip install --no-cache-dir poetry==1.8.3
+
+# Configure Poetry to not create virtual environments (install globally in container)
+RUN poetry config virtualenvs.create false
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, and installs project-specific dependencies
+RUN git clone https://github.com/zauberzeug/nicegui /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard aa8a72bf5f0799ba656297663e1aea4213c61c5d && \
+    git remote remove origin
+
+# Install Python dependencies via Poetry with all extras
+RUN cd /testbed && \
+    poetry install --all-extras
+
+# Install latex2mathml separately if not included in Poetry dependencies
+RUN pip install --no-cache-dir latex2mathml
+
+# Set environment variables for test execution
+ENV PYTHONPATH=/testbed:$PYTHONPATH
+ENV MPLBACKEND=Agg
+
+# Ensure bash is the default shell for consistency
+SHELL ["/bin/bash", "-c"]

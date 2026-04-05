@@ -1,0 +1,88 @@
+# Base image specification. Using Debian Trixie which provides Qt6 6.8.x (satisfies >= 6.7.0 requirement)
+FROM --platform=linux/x86_64 debian:trixie-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Install all required packages for building and testing Deskflow
+# Includes build tools, X11 libraries, Qt6, Wayland support, and core dependencies
+RUN apt-get update && apt-get install -y \
+    # Build essentials and tools
+    build-essential \
+    cmake \
+    ninja-build \
+    git \
+    wget \
+    curl \
+    pkg-config \
+    ca-certificates \
+    # X11 display libraries (required for compilation)
+    libx11-dev \
+    libxtst-dev \
+    libxinerama-dev \
+    libxrandr-dev \
+    libxi-dev \
+    libxcursor-dev \
+    xorg-dev \
+    libxkbfile-dev \
+    # Core libraries
+    libssl-dev \
+    libcurl4-openssl-dev \
+    libavahi-compat-libdnssd-dev \
+    libglib2.0-dev \
+    libgdk-pixbuf-2.0-dev \
+    libnotify-dev \
+    libsystemd-dev \
+    # Qt6 dependencies (>= 6.7.0)
+    qt6-base-dev \
+    qt6-svg-dev \
+    qt6-tools-dev \
+    qt6-l10n-tools \
+    # Wayland support libraries (>= required versions)
+    libei-dev \
+    libportal-dev \
+    # GTK and additional libraries
+    libgtk-3-dev \
+    # Google Test and Mock (for testing framework)
+    libgtest-dev \
+    libgmock-dev \
+    # Additional dependencies
+    libpugixml-dev \
+    libtomlplusplus-dev \
+    libcli11-dev \
+    # Locale and timezone support
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set environment variables required for headless test execution
+ENV QT_QPA_PLATFORM=offscreen
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the repository and checkout to the specific commit
+RUN git clone https://github.com/deskflow/deskflow /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 2721de220a9eb22ea7f74311c70c15bf751f9a46 && \
+    git remote remove origin
+
+# Configure and build the project with tests enabled
+# Using Ninja generator for faster builds and enabling all necessary flags
+# Note: Building with BUILD_TESTS=ON to ensure the mock header file is properly validated
+RUN cd /testbed && \
+    cmake -B build \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_TESTS=ON \
+    -DBUILD_INSTALLER=OFF \
+    -G Ninja \
+    -DCMAKE_INSTALL_PREFIX=/usr && \
+    cmake --build build --config Release -j$(nproc)
+
+# Ensure bash is the default shell for compatibility
+SHELL ["/bin/bash", "-c"]
+
+# Set up bash environment with required environment variables
+RUN echo "export QT_QPA_PLATFORM=offscreen" >> /root/.bashrc

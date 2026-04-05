@@ -1,0 +1,41 @@
+# Base image specification. Use official Maven image with JDK 21 for building and testing
+FROM --platform=linux/x86_64 maven:3.9-eclipse-temurin-21
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# System dependencies installation. Install essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    git \
+    wget \
+    curl \
+    build-essential \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Configure locale
+RUN locale-gen en_US.UTF-8
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the repository, checkout to the target commit SHA
+RUN git clone https://github.com/google/gson.git /testbed && \
+    cd /testbed && \
+    git reset --hard dfc1ce001b46cb1c022012aa08152852b67dbdc9 && \
+    git remote remove origin && \
+    chmod -R 777 /testbed
+
+# Download Maven dependencies and build the project (without running tests)
+# This ensures all dependencies are cached and the project is compiled
+RUN cd /testbed && \
+    mvn clean install -DskipTests -Dmaven.javadoc.skip=true
+
+# Set up bash environment
+RUN echo "cd /testbed" >> /root/.bashrc

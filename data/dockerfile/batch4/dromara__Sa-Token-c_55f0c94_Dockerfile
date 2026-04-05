@@ -1,0 +1,87 @@
+# Base image specification. Defines the foundation OS and architecture for the container
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    locales \
+    locales-all \
+    tzdata \
+    redis-server \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Install OpenJDK 17 (required for Spring Boot 3 modules)
+RUN apt-get update && apt-get install -y \
+    openjdk-17-jdk \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set JAVA_HOME environment variable
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Install Maven 3.9.x (compatible with Java 17)
+RUN wget https://archive.apache.org/dist/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz -O /tmp/maven.tar.gz \
+    && tar -xzf /tmp/maven.tar.gz -C /opt \
+    && ln -s /opt/apache-maven-3.9.6 /opt/maven \
+    && rm /tmp/maven.tar.gz
+
+ENV MAVEN_HOME=/opt/maven
+ENV PATH=$MAVEN_HOME/bin:$PATH
+
+# Configure Maven settings for better performance
+RUN mkdir -p /root/.m2
+RUN echo '<?xml version="1.0" encoding="UTF-8"?>' > /root/.m2/settings.xml && \
+    echo '<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"' >> /root/.m2/settings.xml && \
+    echo '          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' >> /root/.m2/settings.xml && \
+    echo '          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">' >> /root/.m2/settings.xml && \
+    echo '  <localRepository>/root/.m2/repository</localRepository>' >> /root/.m2/settings.xml && \
+    echo '</settings>' >> /root/.m2/settings.xml
+
+# Set default workdir to testbed
+WORKDIR /testbed/
+
+# Clone the Sa-Token repository and checkout the specific commit
+RUN git clone https://github.com/dromara/Sa-Token.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 36cc99a70c525bc7add56e4357b815305b24cc15 && \
+    git remote remove origin
+
+# Configure Redis
+RUN mkdir -p /var/run/redis && \
+    chmod 755 /var/run/redis
+
+# Build the project (install all modules including demo modules)
+# This compiles all the controller files and creates the necessary artifacts
+RUN cd /testbed && \
+    mvn clean install -DskipTests -Dmaven.test.skip=true
+
+# Set JVM memory options for running applications
+ENV MAVEN_OPTS="-Xms256m -Xmx2048m"
+ENV JAVA_OPTS="-Xms256m -Xmx2048m"
+
+# Create a startup script for Redis in the background
+RUN echo '#!/bin/bash' > /usr/local/bin/start-redis.sh && \
+    echo 'redis-server --daemonize yes --bind 127.0.0.1 --port 6379 --protected-mode no' >> /usr/local/bin/start-redis.sh && \
+    chmod +x /usr/local/bin/start-redis.sh
+
+# Set bash as default shell
+SHELL ["/bin/bash", "-c"]
+
+# Add helpful aliases and environment setup to bashrc
+RUN echo 'export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64' >> /root/.bashrc && \
+    echo 'export MAVEN_HOME=/opt/maven' >> /root/.bashrc && \
+    echo 'export PATH=$JAVA_HOME/bin:$MAVEN_HOME/bin:$PATH' >> /root/.bashrc && \
+    echo 'alias start-redis="/usr/local/bin/start-redis.sh"' >> /root/.bashrc && \
+    echo 'cd /testbed' >> /root/.bashrc

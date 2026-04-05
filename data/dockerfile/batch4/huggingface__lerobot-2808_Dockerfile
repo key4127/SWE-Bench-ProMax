@@ -1,0 +1,91 @@
+# Base image specification - Using Ubuntu 22.04 as recommended
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation - Essential tools and libraries
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    pkg-config \
+    cmake \
+    python3.10 \
+    python3.10-dev \
+    python3-pip \
+    python3.10-venv \
+    git-lfs \
+    libopencv-dev \
+    libgl1-mesa-glx \
+    libgl1-mesa-dev \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender1 \
+    libgomp1 \
+    ffmpeg \
+    libavcodec-dev \
+    libavformat-dev \
+    libswscale-dev \
+    libudev-dev \
+    libusb-1.0-0-dev \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set Python 3.10 as default python3
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 && \
+    update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
+
+# Upgrade pip to latest version
+RUN python3 -m pip install --upgrade pip setuptools wheel
+
+# Initialize Git LFS (critical for test artifacts)
+RUN git lfs install
+
+# Set working directory
+WORKDIR /testbed/
+
+# Clone the repository and checkout specific commit
+RUN git clone https://github.com/huggingface/lerobot.git /testbed && \
+    cd /testbed && \
+    git checkout 4483184875e0c283066ba304e2404638f8aa803e && \
+    chmod -R 777 /testbed
+
+# Pull Git LFS files (critical for test artifacts)
+RUN cd /testbed && git lfs pull
+
+# Install Python dependencies
+# First install core dependencies that might be needed for building other packages
+RUN pip install --no-cache-dir \
+    numpy \
+    setuptools \
+    wheel \
+    cython
+
+# Install test framework dependencies
+RUN pip install --no-cache-dir \
+    pytest>=8.1.0 \
+    pytest-timeout>=2.4.0 \
+    pytest-cov>=5.0.0
+
+# Install camera-specific dependencies
+RUN pip install --no-cache-dir \
+    opencv-python-headless>=4.9.0 \
+    pyrealsense2>=2.55.1.6486
+
+# Install the repository in editable mode with test and intelrealsense extras
+# This ensures all dependencies are properly installed
+RUN cd /testbed && pip install -e ".[test,intelrealsense]"
+
+# Set environment variables
+ENV PYTHONPATH=/testbed:$PYTHONPATH
+
+# Configure bash environment
+RUN echo "export PYTHONPATH=/testbed:\$PYTHONPATH" >> /root/.bashrc
+
+# Set default shell to bash
+SHELL ["/bin/bash", "-c"]

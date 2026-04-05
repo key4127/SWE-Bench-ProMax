@@ -1,0 +1,461 @@
+{
+  "dataset_instances": 557,
+  "provided_instances": 49,
+  "provided_rate": 0.08797127468581688,
+  "summary": {
+    "total_instances": 49,
+    "failed_before_patch": 31,
+    "passed_after_patch": 44,
+    "details": {
+      "f2p_instance": 26,
+      "p2p_instance": 18,
+      "f2f_instance": 5,
+      "p2f_instance": 0,
+      "resolved": 26,
+      "stable": 26
+    }
+  },
+  "instance_details": [
+    {
+      "instance_id": "ETLCPP__etl-c_2e66865",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "ETLCPP__etl-c_03ca499",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "arkq__bluez-alsa-c_7dcad21",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "bambulab__BambuStudio-8817",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "ETLCPP__etl-955",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "betaflight__betaflight-c_d3c113b",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "ETLCPP__etl-c_10f21a0",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "ETLCPP__etl-c_d6e6816",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "aws__s2n-tls-5530",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "QuEST-Kit__QuEST-653",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "aviggiano__redis-roaring-126",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "aws__s2n-tls-5472",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "betaflight__betaflight-14320",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "betaflight__betaflight-14156",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "aviggiano__redis-roaring-123",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "ETLCPP__etl-c_d4f1c89",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "Nebukam__PCGExtendedToolkit-104",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "aviggiano__redis-roaring-129",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "danmar__cppcheck-7427",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "danmar__cppcheck-8030",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "ETLCPP__etl-c_acad52a",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "actor-framework__actor-framework-2020",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "PancakeTAS__lsfg-vk-247",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "danmar__cppcheck-7440",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "aviggiano__redis-roaring-118",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "ETLCPP__etl-c_5852ab3",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "driftregion__iso14229-107",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "Nebukam__PCGExtendedToolkit-119",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "danmar__cppcheck-7145",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "Return-To-The-Roots__s25client-1857",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "OpenOrienteering__mapper-2343",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "bloomberg__blazingmq-827",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "aws__s2n-tls-5464",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "ETLCPP__etl-c_b6e21ca",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "ETLCPP__etl-c_5c5e5df",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "FreeRDP__FreeRDP-11472",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "betaflight__betaflight-14229",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "betaflight__betaflight-14174",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "ZQuestClassic__ZQuestClassic-c_6388cd7",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "aws__s2n-tls-5552",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "aviggiano__redis-roaring-117",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "betaflight__betaflight-c_9230c5f",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "BehaviorTree__BehaviorTree.CPP-1000",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "ZQuestClassic__ZQuestClassic-c_a24d699",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "Icinga__icinga2-10432",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "ZQuestClassic__ZQuestClassic-c_8c038be",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "LMMS__lmms-7454",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "Icinga__icinga2-10516",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "LMMS__lmms-7883",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    }
+  ]
+}

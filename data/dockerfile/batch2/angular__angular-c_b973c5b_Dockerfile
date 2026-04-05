@@ -1,0 +1,88 @@
+# Base image specification. Using Node.js 22.15.0 on Debian Bookworm to match Angular requirements
+FROM --platform=linux/x86_64 node:22.15.0-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    build-essential \
+    python3 \
+    python3-pip \
+    curl \
+    gnupg \
+    ca-certificates \
+    bash \
+    patch \
+    unzip \
+    openjdk-17-jdk \
+    libx11-6 \
+    libx11-xcb1 \
+    libxcb1 \
+    libxcomposite1 \
+    libxcursor1 \
+    libxdamage1 \
+    libxext6 \
+    libxi6 \
+    libxrandr2 \
+    libxrender1 \
+    libxss1 \
+    libxtst6 \
+    libnss3 \
+    libnspr4 \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libcups2 \
+    libdrm2 \
+    libdbus-1-3 \
+    libexpat1 \
+    libgbm1 \
+    libasound2 \
+    libpango-1.0-0 \
+    libcairo2 \
+    libatspi2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Verify Node.js version (should be 22.15.0 from base image)
+RUN node --version && npm --version
+
+# Verify Java installation (required by Bazel)
+RUN java -version
+
+# Install Yarn package manager to specific version (>= 1.22.4 < 2)
+# Using --force flag to overwrite any existing yarn installation
+RUN npm install -g --force yarn@1.22.22
+
+# Install Bazelisk (automatically downloads and uses the correct Bazel version as specified in .bazelversion)
+RUN npm install -g @bazel/bazelisk@1.22.0
+
+# Verify installations
+RUN yarn --version && bazelisk --version
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones the Angular repository and checkouts to the specific commit SHA
+RUN git clone https://github.com/angular/angular.git /testbed && \
+    cd /testbed && \
+    git checkout 814e6b07ac387e89ee9a5ab3e5e7e64b396883f9 && \
+    chmod -R 777 /testbed
+
+# Install project dependencies using yarn with frozen lockfile to ensure reproducibility
+# Patches are automatically applied during yarn install via postinstall script
+RUN cd /testbed && yarn install --frozen-lockfile
+
+# Ensure Bazel cache directory exists and has proper permissions
+RUN mkdir -p /root/.cache/bazel && chmod -R 777 /root/.cache/bazel
+
+# Ensure bash is the default shell for better compatibility
+SHELL ["/bin/bash", "-c"]
+
+# Set up shell environment
+RUN echo 'export PATH=/testbed/node_modules/.bin:$PATH' >> /root/.bashrc
+
+# Pre-warm Bazel by running a simple query to download necessary dependencies
+# This ensures that the first test run doesn't have to download everything
+RUN cd /testbed && bazelisk version || true

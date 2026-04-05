@@ -1,0 +1,52 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    pkg-config \
+    libssl-dev \
+    gcc \
+    g++ \
+    make \
+    ca-certificates \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Rust toolchain. The project requires Rust 1.89 as specified in rust-toolchain.toml
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none
+ENV PATH="/root/.cargo/bin:$PATH"
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, and sets up Rust toolchain
+RUN git clone https://github.com/astral-sh/ruff /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard b57cc5be330847bb6f83f9af4bf5364dc3ac4ffe && \
+    git remote remove origin
+
+# Install the Rust version specified in rust-toolchain.toml
+# The project has a rust-toolchain.toml file that specifies the required Rust version (1.89)
+RUN cd /testbed && \
+    rustup show
+
+# Install cargo-insta for snapshot testing (required for mdtest framework)
+RUN cargo install cargo-insta
+
+# Build the ty_python_semantic crate to ensure all dependencies are compiled
+# This prepares the environment for testing without actually running tests
+RUN cd /testbed && \
+    cargo build --package ty_python_semantic --lib
+
+# Set up shell environment
+RUN echo 'export PATH="/root/.cargo/bin:$PATH"' >> /root/.bashrc

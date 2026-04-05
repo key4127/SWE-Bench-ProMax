@@ -1,0 +1,68 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/amd64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    ca-certificates \
+    build-essential \
+    gcc \
+    g++ \
+    make \
+    cmake \
+    autoconf \
+    automake \
+    libtool \
+    pkg-config \
+    python3 \
+    python3-pip \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Go 1.23.12
+RUN wget https://go.dev/dl/go1.23.12.linux-amd64.tar.gz \
+    && tar -C /usr/local -xzf go1.23.12.linux-amd64.tar.gz \
+    && rm go1.23.12.linux-amd64.tar.gz
+
+ENV PATH=/usr/local/go/bin:$PATH
+ENV GOPATH=/root/go
+ENV PATH=$GOPATH/bin:$PATH
+
+# Install Bazelisk (which will download the correct Bazel version)
+RUN wget https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-linux-amd64 \
+    && chmod +x bazelisk-linux-amd64 \
+    && mv bazelisk-linux-amd64 /usr/local/bin/bazel
+
+# Set Bazel cache directory
+ENV HOME=/root
+RUN mkdir -p /root/.cache/bazel
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version
+RUN git clone https://github.com/cockroachdb/cockroach.git /testbed \
+    && cd /testbed \
+    && git checkout 6ad5b43aa46369e140794605e0f61cd363f80f6f \
+    && git remote remove origin \
+    && chmod -R 777 /testbed
+
+# Set environment variables for the test
+ENV TZ=
+
+# Pre-fetch Bazel dependencies to speed up test execution (optional but recommended)
+# This will download and cache dependencies without running tests
+RUN cd /testbed && bazel fetch //pkg/sql/opt/exec/execbuilder:execbuilder_test || true
+
+# Set bash as default shell
+SHELL ["/bin/bash", "-c"]
+
+# Add convenience script to bashrc for easier environment access
+RUN echo 'export PATH=/usr/local/go/bin:$GOPATH/bin:$PATH' >> /root/.bashrc \
+    && echo 'export GOPATH=/root/go' >> /root/.bashrc \
+    && echo 'cd /testbed' >> /root/.bashrc

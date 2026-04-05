@@ -1,0 +1,72 @@
+# Base image specification - using Ubuntu 22.04 for bash compatibility
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    zip \
+    unzip \
+    locales \
+    locales-all \
+    tzdata \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set UTF-8 encoding
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Install SDKMAN for Java version management
+RUN curl -s "https://get.sdkman.io" | bash
+
+# Install Java 24 using SDKMAN
+RUN /bin/bash -c "source /root/.sdkman/bin/sdkman-init.sh && \
+    sdk install java 24.0.2-librca && \
+    sdk default java 24.0.2-librca"
+
+# Set Java environment variables
+ENV JAVA_HOME=/root/.sdkman/candidates/java/current
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Set Gradle JVM arguments and configuration
+ENV GRADLE_OPTS="-Xmx2g -Dfile.encoding=UTF-8"
+ENV GRADLE_USER_HOME=/root/.gradle
+
+# Ensure SPRING_PROFILES_ACTIVE is unset
+ENV SPRING_PROFILES_ACTIVE=
+
+# Set default workdir to testbed
+WORKDIR /testbed/
+
+# Clone the Spring Boot repository and checkout the specific commit
+RUN git clone https://github.com/spring-projects/spring-boot.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 11c5a8c4048d4d61f969eb378a48b5cafc287cd7 && \
+    git remote remove origin
+
+# Make Gradle wrapper executable
+RUN chmod +x /testbed/gradlew
+
+# Build the project to download dependencies and compile (skipping tests)
+# This ensures all dependencies are cached and the project is ready for testing
+RUN /bin/bash -c "source /root/.sdkman/bin/sdkman-init.sh && \
+    cd /testbed && \
+    unset SPRING_PROFILES_ACTIVE && \
+    ./gradlew :module:spring-boot-restclient:build -x test -x check --no-daemon --stacktrace && \
+    ./gradlew :module:spring-boot-webclient:build -x test -x check --no-daemon --stacktrace"
+
+# Setup bash environment to source SDKMAN and unset SPRING_PROFILES_ACTIVE
+RUN echo "source /root/.sdkman/bin/sdkman-init.sh" >> /root/.bashrc && \
+    echo "unset SPRING_PROFILES_ACTIVE" >> /root/.bashrc && \
+    echo "export GRADLE_OPTS=\"-Xmx2g -Dfile.encoding=UTF-8\"" >> /root/.bashrc
+
+# Set working directory
+WORKDIR /testbed/

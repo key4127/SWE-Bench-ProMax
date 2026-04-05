@@ -1,0 +1,61 @@
+# Base image specification. Using Node.js 22.21.1 as the base image to match the required version
+FROM --platform=linux/x86_64 node:22.21.1-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    python3 \
+    python3-pip \
+    ca-certificates \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install pnpm 10.20.0 globally as required by the project
+RUN npm install -g pnpm@10.20.0
+
+# Install Bazelisk globally to manage Bazel versions (will use Bazel 7.7.0 from .bazelversion)
+RUN npm install -g @bazel/bazelisk
+
+# Verify installations
+RUN node --version && npm --version && pnpm --version && bazelisk --version
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Clone the Angular repository and checkout the specific commit SHA
+RUN git clone https://github.com/angular/angular.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 5343001835a5aa54bb6bf7e084c5db721b97444c && \
+    git remote remove origin
+
+# Install all project dependencies using pnpm with frozen lockfile
+# This will install all dependencies including TypeScript, Jasmine, RxJS, and Bazel rules
+RUN cd /testbed && pnpm install --frozen-lockfile
+
+# Set up environment to ensure bash is used by default
+SHELL ["/bin/bash", "-c"]
+
+# Verify the Bazel workspace is properly configured
+RUN cd /testbed && bazelisk version
+
+# Verify that key test files exist
+RUN test -f /testbed/packages/compiler-cli/private/testing.ts && \
+    test -f /testbed/packages/language-service/test/completions_spec.ts && \
+    test -f /testbed/packages/localize/tools/test/extract/extractor_spec.ts && \
+    echo "Target test files found successfully"
+
+# Set environment variables for Bazel
+ENV USE_BAZEL_VERSION=7.7.0
+
+# Ensure bash is the default shell for all subsequent commands
+RUN echo '#!/bin/bash' > /etc/profile.d/bash_default.sh && \
+    chmod +x /etc/profile.d/bash_default.sh

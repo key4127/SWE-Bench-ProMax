@@ -1,0 +1,62 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set UTF-8 encoding to support Chinese characters in test data
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Install OpenJDK 8 (Eclipse Temurin equivalent via apt)
+# Using OpenJDK 8 as specified in requirements (Java 1.8)
+RUN apt-get update && apt-get install -y \
+    openjdk-8-jdk \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set JAVA_HOME environment variable for Java 8
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Set file encoding for Maven/Java (Required for UTF-8 support)
+ENV MAVEN_OPTS="-Xmx2g -Xms2g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
+ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8"
+
+# Verify Java installation
+RUN java -version
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, and builds the project
+RUN git clone https://github.com/apache/fesod /testbed \
+    && chmod -R 777 /testbed \
+    && cd /testbed \
+    && git reset --hard 36615f1b71539c8af23ecdcfa7d7e1d8e4c7aec5 \
+    && git remote remove origin
+
+# Make Maven wrapper executable
+RUN chmod +x /testbed/mvnw
+
+# Build the project (compile and install to local Maven repository, skip tests during build)
+# This ensures all dependencies are downloaded and the project is compiled
+RUN cd /testbed \
+    && ./mvnw clean install -B -V -Dmaven.test.skip=true
+
+# Set working directory to testbed root
+WORKDIR /testbed/
+
+# Set default shell to bash
+SHELL ["/bin/bash", "-c"]

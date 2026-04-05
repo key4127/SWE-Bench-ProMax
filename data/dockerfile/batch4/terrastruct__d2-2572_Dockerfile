@@ -1,0 +1,43 @@
+# Base image specification. Using official Go 1.23 image which includes Go toolchain and basic Unix utilities
+FROM --platform=linux/x86_64 golang:1.23
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+ENV PATH=/usr/local/go/bin:$PATH
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    git \
+    make \
+    curl \
+    tar \
+    grep \
+    sed \
+    coreutils \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the repository and checkout to the target commit
+RUN git clone https://github.com/terrastruct/d2 /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard ea61d3b6a9fecf0da6787f44b7b6b56d9754d7af && \
+    git remote remove origin
+
+# Initialize git submodules (required for CI repository and other dependencies)
+RUN cd /testbed && \
+    git submodule update --init --recursive
+
+# Download Go dependencies
+RUN cd /testbed && \
+    go mod download
+
+# Set up shell environment
+RUN echo 'export PATH=/usr/local/go/bin:$PATH' >> /root/.bashrc
+
+# Ensure bash is the default shell
+SHELL ["/bin/bash", "-c"]

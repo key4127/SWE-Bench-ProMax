@@ -1,0 +1,51 @@
+# Base image specification. Using OpenJDK 11 on Debian-based system for Java development
+FROM --platform=linux/x86_64 eclipse-temurin:11-jdk-jammy
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Apache Maven 3.x (using 3.9.x for better compatibility)
+RUN wget https://archive.apache.org/dist/maven/maven-3/3.9.5/binaries/apache-maven-3.9.5-bin.tar.gz -O /tmp/maven.tar.gz \
+    && tar -xzf /tmp/maven.tar.gz -C /opt \
+    && ln -s /opt/apache-maven-3.9.5 /opt/maven \
+    && rm /tmp/maven.tar.gz
+
+# Set Maven environment variables
+ENV MAVEN_HOME=/opt/maven
+ENV PATH=${MAVEN_HOME}/bin:${PATH}
+
+# Verify Java and Maven installation
+RUN java -version && mvn -version
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, and builds the project
+RUN git clone https://github.com/swagger-api/swagger-core.git /testbed \
+    && chmod -R 777 /testbed \
+    && cd /testbed \
+    && git reset --hard 1fcd9196c6f053953126bfaa7288915a0c7f2adf \
+    && git remote remove origin
+
+# Run initial Maven setup (mvn -N) to ensure parent POM is processed
+RUN cd /testbed && mvn -N install
+
+# Build the project without running tests to ensure all dependencies are downloaded and compiled
+RUN cd /testbed && mvn clean install -DskipTests
+
+# Set bash as default shell for better compatibility
+SHELL ["/bin/bash", "-c"]
+
+# Configure environment for interactive use
+RUN echo "cd /testbed" >> /root/.bashrc

@@ -1,0 +1,68 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+# Prevent interactive prompts during package installation
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+# Installing clang-15, clang++-15, libblocksruntime-dev, make, build-essential, and git
+RUN apt-get update && apt-get install -y \
+    git \
+    wget \
+    curl \
+    ca-certificates \
+    build-essential \
+    make \
+    clang-15 \
+    clang++-15 \
+    libblocksruntime-dev \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Create symbolic links and configure clang as default compiler
+# Use update-alternatives to properly configure clang/clang++ commands
+RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-15 100 && \
+    update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-15 100
+
+# Set clang-15 as the default compiler
+ENV CC=clang-15
+ENV CXX=clang++-15
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version
+RUN git clone https://github.com/betaflight/betaflight.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 7ed1b4b71f36a48eca6c3682c20b6cab0a9acadf && \
+    git remote remove origin
+
+# Verify that the test framework (gtest) is present in the repository
+RUN test -d /testbed/lib/test/gtest || (echo "ERROR: gtest not found in repository" && exit 1)
+
+# Verify the test file exists
+RUN test -f /testbed/src/test/unit/pg_unittest.cc || (echo "ERROR: Test file not found" && exit 1)
+
+# Verify the environment is set up correctly by checking compiler versions
+RUN clang-15 --version && \
+    clang++-15 --version && \
+    clang --version && \
+    clang++ --version && \
+    make --version
+
+# Set up shell environment for interactive use
+RUN echo 'export CC=clang-15' >> /root/.bashrc && \
+    echo 'export CXX=clang++-15' >> /root/.bashrc && \
+    echo 'cd /testbed' >> /root/.bashrc
+
+# Set default shell to bash
+SHELL ["/bin/bash", "-c"]

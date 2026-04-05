@@ -1,0 +1,59 @@
+# Base image specification. Using Python 3.10 slim image as recommended in docker_strategy
+FROM --platform=linux/x86_64 python:3.10-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+# Including OpenCV system dependencies (libgl1, libglib2.0-0) and build tools
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    gcc \
+    g++ \
+    make \
+    libgl1 \
+    libglib2.0-0 \
+    libgomp1 \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Poetry package manager
+RUN curl -sSL https://install.python-poetry.org | python3 - && \
+    ln -s /root/.local/bin/poetry /usr/local/bin/poetry
+
+# Set environment variables for PyTorch and model caching
+ENV PYTORCH_ENABLE_MPS_FALLBACK=1
+ENV TORCH_DEVICE=cpu
+ENV PYTHONPATH=/testbed:$PYTHONPATH
+
+# Set default workdir to testbed
+WORKDIR /testbed/
+
+# Target Project setup. Clone repository and checkout to specific commit
+RUN git clone https://github.com/datalab-to/surya /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard cd2acf0476c7f0a9e7c7f00882a42993952ca8d3 && \
+    git remote remove origin
+
+# Install dependencies using Poetry
+# Configure Poetry to not create virtual environment (we're already in container)
+RUN cd /testbed && \
+    poetry config virtualenvs.create false && \
+    poetry install --with dev
+
+# Install the package in editable mode as an additional step to ensure proper setup
+RUN cd /testbed && pip install -e .
+
+# Ensure bash is the default shell
+SHELL ["/bin/bash", "-c"]
+
+# Set up bash environment
+RUN echo "export PYTHONPATH=/testbed:\$PYTHONPATH" >> /root/.bashrc && \
+    echo "export PYTORCH_ENABLE_MPS_FALLBACK=1" >> /root/.bashrc && \
+    echo "export TORCH_DEVICE=cpu" >> /root/.bashrc

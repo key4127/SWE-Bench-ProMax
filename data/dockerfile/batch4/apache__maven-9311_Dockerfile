@@ -1,0 +1,66 @@
+# Base image specification. Using official Maven image with Eclipse Temurin JDK 17
+# This provides Maven 3.9+ and Java 17, which are the required versions for this project
+FROM --platform=linux/x86_64 maven:3.9-eclipse-temurin-17
+
+# Set environment variables for Maven and JVM
+# MAVEN_OPTS: Configures heap size and garbage collection for Maven builds
+# Locale settings ensure consistent behavior across different environments
+ENV MAVEN_OPTS="-Xmx4G -Xms4G -Djava.awt.headless=true -XX:+UseG1GC"
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+# git: Required for cloning the repository
+# wget, curl: Useful for downloading additional resources if needed
+# build-essential: Provides compilation tools
+# locales, locales-all: Required for proper locale configuration
+# tzdata: Timezone data for consistent time handling
+RUN apt-get update && apt-get install -y \
+    git \
+    wget \
+    curl \
+    build-essential \
+    locales \
+    locales-all \
+    tzdata \
+    vim \
+    && rm -rf /var/lib/apt/lists/*
+
+# Configure locale settings for consistent test execution
+# This ensures that tests behave consistently regardless of the host system's locale
+RUN locale-gen en_US.UTF-8
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the repository and checkout to the specific commit
+# The commit SHA b4621d249a1a29f9b8b72a6e0665236f7f50285e is for Maven 4.0
+# Setting permissions to 777 ensures no permission issues during test execution
+RUN git clone https://github.com/apache/maven.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard b4621d249a1a29f9b8b72a6e0665236f7f50285e && \
+    git remote remove origin
+
+# Build the entire Maven project to ensure all modules are built and dependencies are resolved
+# -DskipTests: Skips test execution during build (tests will be run separately via eval script)
+# -T 1C: Enables parallel builds using one thread per CPU core to speed up the process
+# clean install: Cleans previous builds and installs all artifacts to local repository
+# This step is critical as the tests depend on other modules being built first
+RUN cd /testbed && \
+    mvn clean install -DskipTests -T 1C
+
+# Set up shell environment to use bash by default
+# This ensures compatibility with shell scripts and commands
+SHELL ["/bin/bash", "-c"]
+
+# Create a bashrc configuration with environment variables
+# This ensures the environment is properly configured when interactive shells are started
+RUN echo "export MAVEN_OPTS=\"-Xmx4G -Xms4G -Djava.awt.headless=true -XX:+UseG1GC\"" >> /root/.bashrc && \
+    echo "export LANG=en_US.UTF-8" >> /root/.bashrc && \
+    echo "export LC_ALL=en_US.UTF-8" >> /root/.bashrc && \
+    echo "cd /testbed" >> /root/.bashrc
+
+# Verify Java and Maven versions for debugging purposes
+RUN java -version && mvn -version

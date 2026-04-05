@@ -1,0 +1,58 @@
+# Base image specification. Using Debian-based Go image for better compatibility with bash and standard tools
+FROM --platform=linux/x86_64 golang:1.24-bullseye
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    git \
+    make \
+    bash \
+    ca-certificates \
+    gcc \
+    libc6-dev \
+    curl \
+    wget \
+    build-essential \
+    locales \
+    locales-all \
+    tzdata \
+    docker.io \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Configure Go environment
+ENV GO111MODULE=on
+ENV CGO_ENABLED=0
+ENV GOPROXY=https://proxy.golang.org,direct
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone source code, checkout to the target version, and download dependencies
+RUN git clone https://github.com/trufflesecurity/trufflehog /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 073c922c2064f4840b10cdb34a3450e3c80b927e && \
+    git remote remove origin
+
+# Download and verify Go module dependencies
+RUN cd /testbed && \
+    go mod download && \
+    go mod verify
+
+# Build the project to ensure all dependencies are properly resolved
+# Skip tests during build as per requirements
+RUN cd /testbed && \
+    CGO_ENABLED=0 go build -o /dev/null ./...
+
+# Set up bash as default shell
+SHELL ["/bin/bash", "-c"]
+
+# Ensure bash is the default for interactive sessions
+RUN echo 'export PS1="\u@\h:\w\$ "' >> /root/.bashrc

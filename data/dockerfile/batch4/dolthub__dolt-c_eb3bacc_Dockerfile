@@ -1,0 +1,61 @@
+# Base image specification with Go 1.24.0
+FROM --platform=linux/x86_64 golang:1.24-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    wget \
+    build-essential \
+    ca-certificates \
+    netcat-openbsd \
+    nodejs \
+    npm \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install BATS (Bash Automated Testing System) via npm
+RUN npm install -g bats
+
+# Set up Go environment variables
+ENV GO111MODULE=on
+ENV CGO_ENABLED=1
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:/usr/local/bin:$PATH
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Clone the target repository and checkout specific commit
+RUN git clone https://github.com/dolthub/dolt /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 65f87cb29074cf1f131223db16532a8acda20dcc && \
+    git remote remove origin
+
+# Navigate to the go module directory and download dependencies
+WORKDIR /testbed/go
+
+# Download Go module dependencies
+RUN go mod download && \
+    go mod verify
+
+# Build Dolt binary from source
+RUN go build -mod=readonly -o /usr/local/bin/dolt ./cmd/dolt
+
+# Configure Dolt user settings
+RUN dolt config --global --add user.name 'Test User' && \
+    dolt config --global --add user.email 'test@example.com'
+
+# Set working directory back to testbed root
+WORKDIR /testbed/
+
+# Ensure bash is the default shell
+SHELL ["/bin/bash", "-c"]
+
+# Set up bash environment
+RUN echo 'export PATH=$GOPATH/bin:/usr/local/bin:$PATH' >> /root/.bashrc && \
+    echo 'export GO111MODULE=on' >> /root/.bashrc && \
+    echo 'export CGO_ENABLED=1' >> /root/.bashrc

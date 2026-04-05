@@ -1,0 +1,66 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 python:3.12-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    build-essential \
+    libsqlite3-dev \
+    gettext \
+    libjpeg-dev \
+    zlib1g-dev \
+    wget \
+    curl \
+    ca-certificates \
+    libmemcached-dev \
+    libffi-dev \
+    libtiff-dev \
+    locales \
+    locales-all \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set environment variables for testing
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Upgrade pip, setuptools, and wheel
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
+# Set working directory (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, and installs project-specific dependencies
+RUN git clone https://github.com/django/django.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 3839afb63ad5183cdf08e06e3a43a014ca4b7263 && \
+    git remote remove origin
+
+# Install Django in development mode first
+RUN pip install --no-cache-dir -e .
+
+# Install test requirements
+RUN pip install --no-cache-dir -r tests/requirements/py3.txt
+
+# Verify installation
+RUN python -c "import django; print(f'Django version: {django.get_version()}')"
+
+# Ensure bash is the default shell
+SHELL ["/bin/bash", "-c"]
+
+# Create a simple activation script for convenience
+RUN echo '#!/bin/bash' > /root/.bashrc && \
+    echo 'cd /testbed' >> /root/.bashrc && \
+    echo 'export PYTHONDONTWRITEBYTECODE=1' >> /root/.bashrc && \
+    echo 'export PYTHONUNBUFFERED=1' >> /root/.bashrc
+
+# Set default command to bash for interactive use
+CMD ["/bin/bash"]

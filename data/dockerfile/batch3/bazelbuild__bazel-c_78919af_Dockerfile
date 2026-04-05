@@ -1,0 +1,60 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 ubuntu:22.04
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    openjdk-21-jdk \
+    python3 \
+    python3-pip \
+    build-essential \
+    zip \
+    unzip \
+    bash \
+    git \
+    patch \
+    wget \
+    curl \
+    ca-certificates \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up environment variables for Java (Required for Bazel build)
+ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Install Python dependencies required by Bazel
+RUN pip3 install --no-cache-dir bazel-runfiles==0.24.0
+
+# Install Bazelisk (which will download and use the correct Bazel version specified in .bazelversion)
+# Bazelisk version 1.19.0 is used to ensure compatibility
+RUN wget -O /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-linux-amd64 \
+    && chmod +x /usr/local/bin/bazel
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version
+RUN git clone https://github.com/bazelbuild/bazel /testbed \
+    && chmod -R 777 /testbed \
+    && cd /testbed \
+    && git reset --hard 67e328cf927611a1823a56ff0b62580a209330e5 \
+    && git remote remove origin
+
+# Configure shell to use bash
+SHELL ["/bin/bash", "-c"]
+
+# Set up environment for interactive shells
+RUN echo "export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64" >> /root/.bashrc \
+    && echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> /root/.bashrc
+
+# Pre-fetch Bazel dependencies to speed up subsequent builds and cache external dependencies
+# This helps ensure all Maven dependencies and toolchains are downloaded without running tests
+# We fetch the target test to ensure all dependencies are cached
+RUN cd /testbed && bazel fetch //src/test/java/net/starlark/java/syntax:SyntaxTests || true
+
+# Additional fetch to ensure all related dependencies are cached
+RUN cd /testbed && bazel build //src/test/java/net/starlark/java/syntax:SyntaxTests --nobuild || true

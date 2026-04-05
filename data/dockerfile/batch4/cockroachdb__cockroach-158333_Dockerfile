@@ -1,0 +1,98 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/amd64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    autoconf \
+    automake \
+    libtool \
+    cmake \
+    make \
+    gcc \
+    g++ \
+    git \
+    curl \
+    wget \
+    unzip \
+    zip \
+    ca-certificates \
+    netbase \
+    libncurses-dev \
+    libssl-dev \
+    zlib1g-dev \
+    pkg-config \
+    openssh-client \
+    lsof \
+    openjdk-11-jre \
+    python3 \
+    python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Go 1.23.4
+RUN wget https://go.dev/dl/go1.23.4.linux-amd64.tar.gz \
+    && tar -C /usr/local -xzf go1.23.4.linux-amd64.tar.gz \
+    && rm go1.23.4.linux-amd64.tar.gz
+
+# Set Go environment variables
+ENV PATH=/usr/local/go/bin:$PATH
+ENV GOPATH=/go
+ENV GOCACHE=/go/cache
+ENV PATH=$GOPATH/bin:$PATH
+ENV CGO_ENABLED=1
+
+# Install Bazelisk (for Bazel version management)
+# Bazelisk will automatically download and use the correct Bazel version specified in .bazelversion
+RUN wget https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-linux-amd64 \
+    && chmod +x bazelisk-linux-amd64 \
+    && mv bazelisk-linux-amd64 /usr/local/bin/bazel
+
+# Install Node.js 20.18.1 (if needed for build system)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set Bazel cache directory
+ENV HOME=/root
+ENV BAZEL_HOME=/root/.cache/bazel
+RUN mkdir -p /root/.cache/bazel
+
+# Set bash as default shell
+SHELL ["/bin/bash", "-c"]
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version
+RUN git clone https://github.com/cockroachdb/cockroach.git /testbed \
+    && cd /testbed \
+    && git checkout 35973fd3369b79b9e189887d29b0f739ec5b40ea \
+    && git remote remove origin \
+    && chmod -R 777 /testbed
+
+# Configure Bazel to use the correct version specified in .bazelversion
+# The repository should have a .bazelversion file that specifies the Bazel version
+ENV USE_BAZEL_VERSION=7.3.2
+
+# Set environment variables for test execution
+ENV GO_TEST_WRAP_TESTV=1
+
+# Download Go modules to cache dependencies
+RUN cd /testbed && go mod download || true
+
+# Pre-fetch Bazel dependencies to speed up test execution (optional but recommended)
+# This will download and cache dependencies without running tests
+RUN cd /testbed && bazel fetch //pkg/kv/kvserver/allocator/mmaprototype:mmaprototype_test || true
+
+# Add convenience script to bashrc for easier environment access
+RUN echo 'export PATH=/usr/local/go/bin:$GOPATH/bin:$PATH' >> /root/.bashrc \
+    && echo 'export GOPATH=/go' >> /root/.bashrc \
+    && echo 'export GOCACHE=/go/cache' >> /root/.bashrc \
+    && echo 'export CGO_ENABLED=1' >> /root/.bashrc \
+    && echo 'export BAZEL_HOME=/root/.cache/bazel' >> /root/.bashrc \
+    && echo 'export USE_BAZEL_VERSION=7.3.2' >> /root/.bashrc \
+    && echo 'export GO_TEST_WRAP_TESTV=1' >> /root/.bashrc \
+    && echo 'cd /testbed' >> /root/.bashrc

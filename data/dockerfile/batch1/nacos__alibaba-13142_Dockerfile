@@ -1,0 +1,42 @@
+# Base image with Java 17 using a verified tag
+FROM eclipse-temurin:17-jdk
+
+# Set environment variables
+ENV TZ=Etc/UTC
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+ENV MAVEN_VERSION=3.8.6
+ENV MAVEN_HOME=/usr/share/maven
+ENV PATH=$MAVEN_HOME/bin:$PATH
+
+# Install system dependencies and Maven
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    git \
+    wget \
+    && rm -rf /var/lib/apt/lists/* && \
+    # Install Maven
+    wget https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz -O /tmp/maven.tar.gz && \
+    tar -xzf /tmp/maven.tar.gz -C /usr/share && \
+    mv /usr/share/apache-maven-${MAVEN_VERSION} $MAVEN_HOME && \
+    ln -s $MAVEN_HOME/bin/mvn /usr/bin/mvn && \
+    rm /tmp/maven.tar.gz
+
+# Set working directory
+WORKDIR /testbed
+
+# Clone the repository and checkout specific commit
+RUN git clone https://github.com/alibaba/nacos.git /testbed && \
+    git reset --hard 2c025e20eccee93adad5c65ac0b125a2718b6ef4
+
+# Install the project in development mode
+RUN mvn clean install -DskipTests -Dmaven.test.skip=true -Dcheckstyle.skip=true -Dpmd.skip=true
+
+# Configure environment for test execution
+ENV MAVEN_OPTS="--add-opens=java.base/java.lang=ALL-UNNAMED \
+                 --add-opens=java.base/java.util=ALL-UNNAMED \
+                 --add-opens=java.base/java.net=ALL-UNNAMED \
+                 --add-opens=java.base/sun.net=ALL-UNNAMED"
+
+# Set default shell to bash
+SHELL ["/bin/bash", "-c"]

@@ -1,0 +1,47 @@
+# Base image specification. Using golang:1.24-bookworm for Bash compatibility and Go 1.24 support
+FROM --platform=linux/x86_64 golang:1.24-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    git \
+    ca-certificates \
+    build-essential \
+    curl \
+    wget \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up Go environment variables for static binary compilation
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+ENV GO111MODULE=on
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, and downloads dependencies
+RUN git clone https://github.com/livekit/livekit /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 599002f890efac0ea6852453fe194d2687b461d8 && \
+    git remote remove origin
+
+# Download all Go module dependencies
+RUN cd /testbed && \
+    go mod download && \
+    go mod verify
+
+# Verify the test file exists and Go environment is properly set up
+RUN cd /testbed && \
+    ls -la pkg/sfu/audio/audiolevel_test.go && \
+    go version
+
+# Set up shell environment for interactive use
+RUN echo 'export CGO_ENABLED=0' >> /root/.bashrc && \
+    echo 'export GOOS=linux' >> /root/.bashrc && \
+    echo 'export GO111MODULE=on' >> /root/.bashrc

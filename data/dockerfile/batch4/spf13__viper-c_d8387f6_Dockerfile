@@ -1,0 +1,53 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    tar \
+    bash \
+    build-essential \
+    gcc \
+    g++ \
+    make \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Go 1.23.0
+RUN wget https://go.dev/dl/go1.23.0.linux-amd64.tar.gz \
+    && tar -C /usr/local -xzf go1.23.0.linux-amd64.tar.gz \
+    && rm go1.23.0.linux-amd64.tar.gz
+
+# Set Go environment variables
+ENV PATH=/usr/local/go/bin:$PATH
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:$PATH
+ENV CGO_ENABLED=1
+
+# Verify Go installation
+RUN go version
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, and installs project-specific dependencies
+RUN git clone https://github.com/spf13/viper /testbed \
+    && chmod -R 777 /testbed \
+    && cd /testbed \
+    && git reset --hard 93dc9f6a62bffa885c4af96c53d872f3acab7b5d \
+    && git remote remove origin
+
+# Download Go module dependencies
+RUN cd /testbed && go mod download
+
+# Set up shell environment
+RUN echo 'export CGO_ENABLED=1' >> /root/.bashrc \
+    && echo 'export PATH=/usr/local/go/bin:$GOPATH/bin:$PATH' >> /root/.bashrc
+
+# Set the default shell to bash
+SHELL ["/bin/bash", "-c"]

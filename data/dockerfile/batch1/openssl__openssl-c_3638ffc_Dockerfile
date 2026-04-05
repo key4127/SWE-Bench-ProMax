@@ -1,0 +1,35 @@
+# Base image specification
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+# Set environment variables to avoid interactive prompts
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# Install system dependencies including build tools, Perl, and development libraries
+RUN apt-get update && apt-get install -y \
+    git \
+    build-essential \
+    perl \
+    libtest-simple-perl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set default workdir
+WORKDIR /testbed/
+
+# Clone the OpenSSL repository
+RUN git clone https://github.com/openssl/openssl.git .
+
+# Checkout the specific commit
+RUN git reset --hard 618675778038ec1317e8ad8103029cccf0d7b714
+
+# Configure and build OpenSSL (but don't install system-wide)
+RUN ./config && make
+
+# Set up environment variables for OpenSSL
+ENV PATH="/testbed:/testbed/apps:$PATH"
+ENV LD_LIBRARY_PATH="/testbed:$LD_LIBRARY_PATH"
+
+# Create a simple bashrc to set up the environment
+RUN echo 'export PATH="/testbed:/testbed/apps:$PATH"' >> /root/.bashrc && \
+    echo 'export LD_LIBRARY_PATH="/testbed:$LD_LIBRARY_PATH"' >> /root/.bashrc

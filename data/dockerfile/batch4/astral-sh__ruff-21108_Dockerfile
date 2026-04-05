@@ -1,0 +1,45 @@
+# Base image specification. Using Rust 1.90 on Debian Bookworm as recommended for this project
+FROM --platform=linux/x86_64 rust:1.90-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools required for Rust development and testing
+RUN apt-get update && apt-get install -y \
+    git \
+    build-essential \
+    curl \
+    wget \
+    ca-certificates \
+    locales \
+    locales-all \
+    tzdata \
+    pkg-config \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale for proper text handling
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the repository and checkout to the specific commit
+RUN git clone https://github.com/astral-sh/ruff.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 7b959ef44bf3c1cb4e2f65e01dda2028b3d6fb46 && \
+    git remote remove origin
+
+# Build the ty_python_semantic package to ensure all dependencies are compiled
+# This will cache the compiled dependencies for faster test execution
+RUN cd /testbed && \
+    cargo build --package ty_python_semantic
+
+# Ensure the shell environment is properly configured
+RUN echo 'export PATH=/usr/local/cargo/bin:$PATH' >> /root/.bashrc
+
+# Set the default shell to bash for compatibility
+SHELL ["/bin/bash", "-c"]

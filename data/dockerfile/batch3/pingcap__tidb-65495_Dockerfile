@@ -1,0 +1,74 @@
+# Base image specification. Using official Go 1.25.5 image as specified in requirements
+FROM --platform=linux/x86_64 golang:1.25.5
+
+# Set non-interactive mode for apt-get
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Set timezone to Asia/Shanghai as specified in test requirements
+ENV TZ=Asia/Shanghai
+
+# System dependencies installation. Install essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    git \
+    make \
+    gcc \
+    g++ \
+    build-essential \
+    curl \
+    wget \
+    ca-certificates \
+    tzdata \
+    vim \
+    && rm -rf /var/lib/apt/lists/*
+
+# Configure timezone
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Set Go environment variables as specified by context retrieval agent
+ENV CGO_ENABLED=1
+ENV GO111MODULE=on
+ENV GOPROXY=https://proxy.golang.org,direct
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the TiDB repository and checkout to the target commit
+RUN git clone https://github.com/pingcap/tidb.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 920ee6e01185ef79b9728cccc400ed86412e94ce && \
+    git remote remove origin
+
+# Download Go dependencies using go.mod and go.sum
+RUN cd /testbed && \
+    go mod download
+
+# Build failpoint tool if needed (TiDB uses failpoint for testing)
+RUN cd /testbed && \
+    if [ -f "tools/check/go.mod" ]; then \
+        cd tools/check && go mod download; \
+    fi
+
+# Attempt to build failpoint-ctl tool
+RUN cd /testbed && \
+    (make failpoint-ctl || echo "Failpoint-ctl build attempted")
+
+# Enable failpoints for testing (required for intest tag)
+RUN cd /testbed && \
+    if [ -f "tools/bin/failpoint-ctl" ]; then \
+        tools/bin/failpoint-ctl enable || echo "Failpoint enable attempted"; \
+    elif command -v failpoint-ctl &> /dev/null; then \
+        failpoint-ctl enable || echo "Failpoint enable attempted"; \
+    else \
+        (make failpoint-enable || echo "Failpoint enable attempted via make"); \
+    fi
+
+# Set up shell environment with required variables
+RUN echo 'export TZ=Asia/Shanghai' >> /root/.bashrc && \
+    echo 'export CGO_ENABLED=1' >> /root/.bashrc && \
+    echo 'export GO111MODULE=on' >> /root/.bashrc && \
+    echo 'export GOPROXY=https://proxy.golang.org,direct' >> /root/.bashrc && \
+    echo 'cd /testbed' >> /root/.bashrc
+
+# Set default shell to bash
+SHELL ["/bin/bash", "-c"]

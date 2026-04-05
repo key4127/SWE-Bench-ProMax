@@ -1,0 +1,57 @@
+# Base image specification. Using Debian-based Go image for better compatibility and bash support
+FROM --platform=linux/x86_64 golang:1.24-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    ca-certificates \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set Go environment variables for optimal build configuration
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+ENV GOARCH=amd64
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the repository and checkout to the specific commit
+RUN git clone https://github.com/trufflesecurity/trufflehog.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 9e839e34a6f4cbf53efe3c9c6d877a290acd3d79 && \
+    git remote remove origin
+
+# Download Go module dependencies
+# This is done separately to leverage Docker layer caching
+RUN cd /testbed && \
+    go mod download && \
+    go mod verify
+
+# Verify Go installation and module setup
+RUN go version && \
+    go env && \
+    cd /testbed && \
+    go list -m all | head -20
+
+# Set up bash as default shell for consistency
+SHELL ["/bin/bash", "-c"]
+
+# Configure bash environment
+RUN echo 'export PATH=/usr/local/go/bin:$PATH' >> /root/.bashrc && \
+    echo 'export CGO_ENABLED=0' >> /root/.bashrc && \
+    echo 'cd /testbed' >> /root/.bashrc

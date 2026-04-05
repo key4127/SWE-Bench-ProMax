@@ -1,0 +1,40 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 python:3.9-slim
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip and install setuptools
+RUN pip install --upgrade pip setuptools
+
+# Set default workdir to testbed. (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, configures it, and installs project-specific dependencies
+RUN git clone https://github.com/optuna/optuna /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard cd2fc0b4c08c1e4053306309c6d59b2328af6ddf && \
+    git remote remove origin
+
+# Install the package in development mode with test dependencies
+# Using --extra-index-url for PyTorch CPU-only version to reduce image size
+RUN cd /testbed && \
+    pip install -e . && \
+    pip install -e .[test] --extra-index-url https://download.pytorch.org/whl/cpu
+
+# Set environment variable for SQLAlchemy warnings
+ENV SQLALCHEMY_WARN_20=1
+
+# Ensure bash is the default shell for runtime compatibility
+SHELL ["/bin/bash", "-c"]
+
+# Add a default bash configuration for interactive use
+RUN echo "cd /testbed" >> /root/.bashrc

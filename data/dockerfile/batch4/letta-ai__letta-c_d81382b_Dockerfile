@@ -1,0 +1,71 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt update && apt install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    libffi-dev \
+    libssl-dev \
+    libpq-dev \
+    postgresql-client \
+    python3.11 \
+    python3.11-dev \
+    python3.11-venv \
+    python3-pip \
+    python-is-python3 \
+    jq \
+    locales \
+    locales-all \
+    tzdata \
+    ca-certificates \
+    software-properties-common \
+    && rm -rf /var/lib/apt/lists/*
+
+# Ensure Python 3.11 is the default python3
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
+
+# Upgrade pip for Python 3.11
+RUN python3.11 -m pip install --upgrade pip setuptools wheel
+
+# Install Poetry for Python dependency management
+RUN curl -sSL https://install.python-poetry.org | python3.11 - && \
+    ln -s /root/.local/bin/poetry /usr/local/bin/poetry
+
+# Verify Poetry installation
+RUN poetry --version
+
+# Configure Poetry to use in-project virtual environments
+RUN poetry config virtualenvs.in-project true
+
+# Set default workdir to testbed. (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, configures it, and installs project-specific dependencies
+RUN git clone https://github.com/letta-ai/letta /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard d2f5bb676f66c748504cd6bcf9d8d430802cd215 && \
+    git remote remove origin
+
+# Install project dependencies using Poetry
+RUN cd /testbed && \
+    poetry install --with dev --all-extras
+
+# Install aiosqlite dependency for async SQLite operations
+RUN cd /testbed && \
+    poetry run pip install aiosqlite
+
+# Set up shell to automatically activate Poetry virtual environment
+RUN echo 'cd /testbed && source .venv/bin/activate' >> /root/.bashrc
+
+# Set environment variables for the project
+ENV PYTHONPATH=/testbed:$PYTHONPATH
+ENV LETTA_PG_PORT=5432
+ENV PATH=/testbed/.venv/bin:$PATH
+ENV VIRTUAL_ENV=/testbed/.venv

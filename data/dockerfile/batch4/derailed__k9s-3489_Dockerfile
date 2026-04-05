@@ -1,0 +1,54 @@
+# Base image specification. Using golang:1.24-alpine3.21 for Go 1.24.x with Alpine Linux 3.21
+# Alpine is chosen for its lightweight nature while still providing necessary tools
+FROM --platform=linux/x86_64 golang:1.24-alpine3.21
+
+# Set environment variables to avoid interactive prompts and configure timezone
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Install essential tools and libraries required for development and runtime
+# Alpine uses apk package manager. Installing make, git, ca-certificates as specified in requirements
+RUN apk update && apk add --no-cache \
+    wget \
+    git \
+    curl \
+    bash \
+    make \
+    ca-certificates \
+    && rm -rf /var/cache/apk/*
+
+# Set Go environment variables for static compilation as specified in requirements
+# CGO_ENABLED=0 is required per the environment requirements
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone source code and checkout to the target commit SHA
+# The commit SHA af27aff6ac16d0620ff3ba4b7e5113bd10b431d3 corresponds to version 0.50
+RUN git clone https://github.com/derailed/k9s /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard af27aff6ac16d0620ff3ba4b7e5113bd10b431d3 && \
+    git remote remove origin
+
+# Download Go module dependencies
+# This ensures all dependencies from go.mod and go.sum are fetched
+# Using go mod download as specified in the requirements
+RUN cd /testbed && \
+    go mod download && \
+    go mod verify
+
+# Verify the target test files exist
+# Checking for context_test.go and the required helper file helpers_test.go
+RUN test -f /testbed/internal/view/context_test.go && \
+    test -f /testbed/internal/view/helpers_test.go && \
+    echo "Target test files verified successfully"
+
+# Set working directory to repository root where go.mod exists
+WORKDIR /testbed
+
+# Ensure bash is the default shell for any subsequent commands
+# This is important for script compatibility
+SHELL ["/bin/bash", "-c"]

@@ -1,0 +1,91 @@
+# Base image specification - using official Go 1.24.5 image with Debian base
+# Updated from 1.24.2 to 1.24.5 to satisfy test module requirements (test/go.mod requires go >= 1.24.5)
+FROM --platform=linux/x86_64 golang:1.24.5-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation - essential tools and libraries
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    build-essential \
+    curl \
+    ca-certificates \
+    gnupg \
+    lsb-release \
+    make \
+    jq \
+    locales \
+    locales-all \
+    tzdata \
+    bash \
+    zstd \
+    brotli \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js (LTS version 20.x)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Docker CLI for testcontainers support
+RUN install -m 0755 -d /etc/apt/keyrings \
+    && curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
+    && chmod a+r /etc/apt/keyrings/docker.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
+    && apt-get update \
+    && apt-get install -y docker-ce-cli \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set Go environment variables
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
+ENV CGO_ENABLED=1
+ENV GOCACHE=/tmp/go-build
+
+# Verify installations
+RUN go version && node --version && npm --version
+
+# Set working directory
+WORKDIR /testbed/
+
+# Clone the repository and checkout specific commit
+RUN git clone https://github.com/TecharoHQ/anubis.git /testbed \
+    && cd /testbed \
+    && git checkout a709a2b2daecea6b893de6bb4224bab85ae200d8 \
+    && git remote remove origin \
+    && chmod -R 777 /testbed
+
+# Install Go module dependencies for main module
+RUN cd /testbed && go mod download
+
+# Install Go module dependencies for test module
+RUN cd /testbed/test && go mod download
+
+# Install Node.js dependencies
+RUN cd /testbed && npm ci
+
+# Generate assets (web and xess builds)
+RUN cd /testbed && make assets
+
+# Install Playwright browsers and system dependencies
+# This installs Chromium, Firefox, and WebKit with all required system libraries
+RUN cd /testbed && go run github.com/playwright-community/playwright-go/cmd/playwright@v0.5200.1 install --with-deps
+
+# Install utility tools from the repository
+RUN cd /testbed && go install ./utils/cmd/... || true
+
+# Install ko-build tool (used in CI)
+RUN go install github.com/google/ko@latest || true
+
+# Set up shell environment
+RUN echo 'export PATH=$GOPATH/bin:/usr/local/go/bin:$PATH' >> /root/.bashrc \
+    && echo 'export CGO_ENABLED=1' >> /root/.bashrc \
+    && echo "export PS1='testbed:\w\$ '" >> /root/.bashrc
+
+# Ensure proper permissions
+RUN chmod -R 777 /testbed
+
+# Set default shell to bash
+SHELL ["/bin/bash", "-c"]

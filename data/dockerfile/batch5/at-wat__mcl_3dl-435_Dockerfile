@@ -1,0 +1,84 @@
+# Base image specification. Using ROS Noetic on Ubuntu 20.04 as the foundation
+FROM --platform=linux/x86_64 ros:noetic-ros-base-focal
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for ROS development
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    git \
+    wget \
+    curl \
+    libpcl-dev \
+    libeigen3-dev \
+    python3-rosdep \
+    python3-catkin-tools \
+    ros-noetic-roscpp \
+    ros-noetic-pcl-ros \
+    ros-noetic-tf2-ros \
+    ros-noetic-tf2-geometry-msgs \
+    ros-noetic-tf2-sensor-msgs \
+    ros-noetic-diagnostic-updater \
+    ros-noetic-geometry-msgs \
+    ros-noetic-nav-msgs \
+    ros-noetic-sensor-msgs \
+    ros-noetic-std-msgs \
+    ros-noetic-std-srvs \
+    ros-noetic-visualization-msgs \
+    ros-noetic-rostest \
+    ros-noetic-rosunit \
+    ros-noetic-roslint \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set environment variables for ROS
+ENV ROS_DISTRO=noetic
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Initialize rosdep
+RUN rosdep init || true
+RUN rosdep update
+
+# Create catkin workspace structure
+RUN mkdir -p /catkin_ws/src
+WORKDIR /catkin_ws/src
+
+# Clone the mcl_3dl_msgs dependency repository
+RUN git clone https://github.com/at-wat/mcl_3dl_msgs.git
+
+# Clone the target repository (mcl_3dl) into /testbed/
+WORKDIR /
+RUN git clone https://github.com/at-wat/mcl_3dl.git /testbed
+WORKDIR /testbed
+RUN git checkout b235b7fd6eaed8a76abcdb23a35ddc98337eb087
+
+# Create a symbolic link to the testbed in the catkin workspace
+RUN ln -s /testbed /catkin_ws/src/mcl_3dl
+
+# Set working directory to catkin workspace
+WORKDIR /catkin_ws
+
+# Install dependencies using rosdep
+RUN /bin/bash -c "source /opt/ros/noetic/setup.bash && \
+    rosdep install --from-paths src --ignore-src -r -y"
+
+# Build the catkin workspace with Release configuration
+RUN /bin/bash -c "source /opt/ros/noetic/setup.bash && \
+    catkin_make -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=14"
+
+# Set up environment sourcing in bashrc for convenience
+RUN echo "source /opt/ros/noetic/setup.bash" >> /root/.bashrc
+RUN echo "source /catkin_ws/devel/setup.bash" >> /root/.bashrc
+
+# Set default workdir to testbed as required
+WORKDIR /testbed/
+
+# Ensure the workspace is properly set up
+ENV CMAKE_PREFIX_PATH=/catkin_ws/devel:/opt/ros/noetic
+ENV ROS_PACKAGE_PATH=/catkin_ws/src:/opt/ros/noetic/share

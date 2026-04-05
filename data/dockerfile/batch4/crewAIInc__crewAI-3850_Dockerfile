@@ -1,0 +1,65 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 python:3.10-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Install uv package manager (version 0.8.4 as specified)
+RUN pip install --no-cache-dir uv==0.8.4
+
+# Set environment variables for testing (as specified by context retrieval agent)
+ENV OPENAI_API_KEY=fake-api-key
+ENV PYTHONUNBUFFERED=1
+ENV BRAVE_API_KEY=fake-brave-key
+ENV SNOWFLAKE_USER=fake-snowflake-user
+ENV SNOWFLAKE_PASSWORD=fake-snowflake-password
+ENV SNOWFLAKE_ACCOUNT=fake-snowflake-account
+ENV SNOWFLAKE_WAREHOUSE=fake-snowflake-warehouse
+ENV SNOWFLAKE_DATABASE=fake-snowflake-database
+ENV SNOWFLAKE_SCHEMA=fake-snowflake-schema
+ENV EMBEDCHAIN_DB_URI=sqlite:///test.db
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, configures it, and installs project-specific dependencies
+RUN git clone https://github.com/crewAIInc/crewAI /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 9e5906c52f39f97ae044174fd8702f650f834c51 && \
+    git remote remove origin
+
+# Install all dependencies using uv (including all groups and extras as specified)
+RUN cd /testbed && \
+    uv sync --all-groups --all-extras
+
+# Ensure the shell environment is properly configured
+SHELL ["/bin/bash", "-c"]
+
+# Set up bash as default shell for interactive sessions with all environment variables
+RUN echo 'export OPENAI_API_KEY=fake-api-key' >> /root/.bashrc && \
+    echo 'export PYTHONUNBUFFERED=1' >> /root/.bashrc && \
+    echo 'export BRAVE_API_KEY=fake-brave-key' >> /root/.bashrc && \
+    echo 'export SNOWFLAKE_USER=fake-snowflake-user' >> /root/.bashrc && \
+    echo 'export SNOWFLAKE_PASSWORD=fake-snowflake-password' >> /root/.bashrc && \
+    echo 'export SNOWFLAKE_ACCOUNT=fake-snowflake-account' >> /root/.bashrc && \
+    echo 'export SNOWFLAKE_WAREHOUSE=fake-snowflake-warehouse' >> /root/.bashrc && \
+    echo 'export SNOWFLAKE_DATABASE=fake-snowflake-database' >> /root/.bashrc && \
+    echo 'export SNOWFLAKE_SCHEMA=fake-snowflake-schema' >> /root/.bashrc && \
+    echo 'export EMBEDCHAIN_DB_URI=sqlite:///test.db' >> /root/.bashrc

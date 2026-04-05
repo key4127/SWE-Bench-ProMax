@@ -1,0 +1,93 @@
+# Base image specification. Using Node.js 22.14.0 on Debian Bookworm for Angular requirements
+FROM --platform=linux/x86_64 node:22.14.0-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    build-essential \
+    g++ \
+    gcc \
+    make \
+    python3 \
+    python3-pip \
+    curl \
+    gnupg \
+    ca-certificates \
+    bash \
+    patch \
+    openjdk-17-jdk \
+    chromium \
+    chromium-driver \
+    xvfb \
+    libgtk-3-0 \
+    libgbm1 \
+    libnss3 \
+    libnspr4 \
+    libasound2 \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libcups2 \
+    libdrm2 \
+    libxkbcommon0 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxfixes3 \
+    libxrandr2 \
+    libpango-1.0-0 \
+    libcairo2 \
+    fonts-liberation \
+    libappindicator3-1 \
+    xdg-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Verify Node.js version (should be 22.14.0 from base image)
+RUN node --version && npm --version
+
+# Enable Corepack for Yarn management
+RUN corepack enable
+
+# Upgrade Yarn package manager to specific version 1.22.22 as specified in requirements
+RUN npm install -g --force yarn@1.22.22
+
+# Install Bazelisk (automatically downloads and uses Bazel 5.0.0 as specified in .bazelversion)
+RUN npm install -g @bazel/bazelisk@1.19.0
+
+# Verify installations
+RUN yarn --version && bazelisk --version
+
+# Set environment variables for Chrome and display
+ENV CHROME_BIN=/usr/bin/chromium
+ENV DISPLAY=:99
+ENV NODE_OPTIONS=--max-old-space-size=4096
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones the Angular repository and checkouts to the specific commit SHA
+RUN git clone https://github.com/angular/angular.git /testbed && \
+    cd /testbed && \
+    git checkout b9cf414790f5217cd5c73f7520a11031bde6c864 && \
+    chmod -R 777 /testbed
+
+# Install project dependencies using yarn with frozen lockfile to ensure reproducibility
+# The yarn install will trigger postinstall scripts that apply necessary patches
+RUN cd /testbed && yarn install --frozen-lockfile --network-timeout 100000
+
+# Ensure Bazel cache directory exists and has proper permissions
+RUN mkdir -p /root/.cache/bazel && chmod -R 777 /root/.cache/bazel
+
+# Ensure bash is the default shell for better compatibility
+SHELL ["/bin/bash", "-c"]
+
+# Set up shell environment
+RUN echo 'export PATH=/testbed/node_modules/.bin:$PATH' >> /root/.bashrc && \
+    echo 'export CHROME_BIN=/usr/bin/chromium' >> /root/.bashrc && \
+    echo 'export DISPLAY=:99' >> /root/.bashrc
+
+# Create a script to start Xvfb for headless Chrome testing
+RUN echo '#!/bin/bash\nXvfb :99 -ac -screen 0 1280x1024x24 > /dev/null 2>&1 &\nsleep 3' > /usr/local/bin/start-xvfb.sh && \
+    chmod +x /usr/local/bin/start-xvfb.sh

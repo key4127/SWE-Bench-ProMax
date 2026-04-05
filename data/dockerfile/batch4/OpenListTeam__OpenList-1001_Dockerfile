@@ -1,0 +1,47 @@
+# Base image specification. Using Debian-based Go image for bash compatibility
+FROM --platform=linux/x86_64 golang:1.23-bookworm
+
+# Prevent interactive prompts during package installation
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    bash \
+    curl \
+    jq \
+    gcc \
+    git \
+    ca-certificates \
+    tzdata \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set Go environment variables
+ENV CGO_ENABLED=1
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:$PATH
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone source code and checkout to the target version
+RUN git clone https://github.com/OpenListTeam/OpenList.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 8c244a984d063b5198946b68e79fbce22882a061 && \
+    git remote remove origin
+
+# Download and verify Go dependencies
+RUN cd /testbed && \
+    go mod download && \
+    go mod verify
+
+# Ensure bash is the default shell for runtime
+SHELL ["/bin/bash", "-c"]
+
+# Set up bash profile for interactive sessions
+RUN echo 'export CGO_ENABLED=1' >> /root/.bashrc && \
+    echo 'export GOPATH=/go' >> /root/.bashrc && \
+    echo 'export PATH=$GOPATH/bin:$PATH' >> /root/.bashrc && \
+    echo 'cd /testbed' >> /root/.bashrc

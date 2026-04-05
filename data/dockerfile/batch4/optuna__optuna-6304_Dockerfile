@@ -1,0 +1,53 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 python:3.9-slim-bookworm
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    patch \
+    build-essential \
+    libffi-dev \
+    libtiff-dev \
+    jq \
+    curl \
+    locales \
+    locales-all \
+    tzdata \
+    openmpi-bin \
+    libopenmpi-dev \
+    libopenblas-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Ensure Python 3.9 is properly configured
+RUN python3 --version && pip3 --version
+
+# Set default workdir to testbed. (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, configures it, and installs project-specific dependencies
+RUN git clone https://github.com/optuna/optuna /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 790899174e41f6e4929a6773faa66f469a8a817c && \
+    git remote remove origin
+
+# Upgrade pip and setuptools
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
+# Install the package with test dependencies
+# Using CPU-only PyTorch to reduce image size and installation time
+RUN cd /testbed && \
+    pip install --no-cache-dir -e ".[test]" --extra-index-url https://download.pytorch.org/whl/cpu
+
+# Verify installation of critical dependencies
+RUN python -c "import optuna; print(f'Optuna version: {optuna.__version__}')" && \
+    python -c "import numpy; print(f'NumPy version: {numpy.__version__}')" && \
+    python -c "import scipy; print(f'SciPy version: {scipy.__version__}')" && \
+    python -c "import torch; print(f'PyTorch version: {torch.__version__}')" && \
+    python -c "import pytest; print(f'pytest version: {pytest.__version__}')"
+
+# Set bash as default shell
+SHELL ["/bin/bash", "-c"]

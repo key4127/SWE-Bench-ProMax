@@ -1,0 +1,65 @@
+# Base image specification. Using Rust 1.89 as specified in requirements for edition 2024 support
+FROM --platform=linux/x86_64 rust:1.89-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    git \
+    build-essential \
+    curl \
+    wget \
+    ca-certificates \
+    pkg-config \
+    libssl-dev \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Verify Rust installation and configure cargo
+RUN rustc --version && cargo --version
+
+# Configure cargo for better build performance and git dependencies
+RUN mkdir -p /root/.cargo && \
+    echo '[build]' >> /root/.cargo/config.toml && \
+    echo 'jobs = 4' >> /root/.cargo/config.toml && \
+    echo '[net]' >> /root/.cargo/config.toml && \
+    echo 'git-fetch-with-cli = true' >> /root/.cargo/config.toml
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code and checks out to the target commit SHA
+RUN git clone https://github.com/tracel-ai/burn.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 5cf7900bf6a55dac943e78185823d9318c864e20 && \
+    git remote remove origin
+
+# Pre-fetch dependencies for the burn-store crate
+# This fetches all dependencies including git dependencies (cubecl, cubecl-common, cubek)
+RUN cd /testbed && \
+    cargo fetch
+
+# Pre-build the burn-store package to cache dependencies
+# Using --lib flag to build only the library (not tests yet)
+# Allow failure with || true since we only want to cache dependencies
+RUN cd /testbed && \
+    cargo build --package burn-store --lib || true
+
+# Ensure the working directory is set correctly
+WORKDIR /testbed
+
+# Set bash as default shell for compatibility
+SHELL ["/bin/bash", "-c"]
+
+# Add helpful environment variables
+ENV RUST_BACKTRACE=1
+ENV CARGO_TERM_COLOR=always

@@ -1,0 +1,66 @@
+# Base image specification. Using official Go 1.23.12 image with Debian base for bash compatibility
+FROM --platform=linux/x86_64 golang:1.23.12
+
+# Set non-interactive mode for apt and timezone
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Asia/Shanghai
+
+# System dependencies installation. Install essential tools required for development and runtime
+RUN apt-get update && apt-get install -y \
+    git \
+    wget \
+    curl \
+    build-essential \
+    ca-certificates \
+    tzdata \
+    make \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set environment variables required for Go and TiDB
+ENV GO111MODULE=on
+ENV GOPROXY=https://proxy.golang.org,direct
+ENV CGO_ENABLED=1
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:/testbed/tools/bin:$PATH
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone TiDB repository and checkout to specific commit
+RUN git clone https://github.com/pingcap/tidb.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 365a824786a822872e6d32cdb2ad269b83c08571 && \
+    git remote remove origin
+
+# Download Go module dependencies
+RUN cd /testbed && \
+    go mod download
+
+# Create tools directory and install required tools for testing
+RUN mkdir -p /testbed/tools/bin
+
+# Install failpoint-ctl (critical for test execution with failpoint support)
+RUN cd /testbed && \
+    GOBIN=/testbed/tools/bin go install github.com/pingcap/failpoint/failpoint-ctl@9b3b6e3
+
+# Install gotestsum (test runner with JUnit output support)
+RUN cd /testbed && \
+    GOBIN=/testbed/tools/bin go install gotest.tools/gotestsum@v1.8.1
+
+# Verify failpoint-ctl installation
+RUN /testbed/tools/bin/failpoint-ctl --help || echo "failpoint-ctl installed"
+
+# Enable failpoints in the codebase (required for running unit tests)
+RUN cd /testbed && \
+    /testbed/tools/bin/failpoint-ctl enable
+
+# Set bash as default shell
+SHELL ["/bin/bash", "-c"]
+
+# Configure bash environment
+RUN echo 'export TZ=Asia/Shanghai' >> /root/.bashrc && \
+    echo 'export GO111MODULE=on' >> /root/.bashrc && \
+    echo 'export CGO_ENABLED=1' >> /root/.bashrc && \
+    echo 'export PATH=/testbed/tools/bin:$PATH' >> /root/.bashrc && \
+    echo 'cd /testbed' >> /root/.bashrc

@@ -1,0 +1,60 @@
+# Base image specification. Using official Go image with Debian Bookworm as recommended
+FROM --platform=linux/x86_64 golang:1.23-bookworm
+
+# Set environment variables for non-interactive installation
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Install essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    git \
+    build-essential \
+    gcc \
+    pkg-config \
+    make \
+    curl \
+    wget \
+    ca-certificates \
+    libseccomp-dev \
+    libsystemd-dev \
+    iptables \
+    iproute2 \
+    net-tools \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up Go environment variables as specified by context retrieval agent
+ENV GO111MODULE=on \
+    CGO_ENABLED=1 \
+    GOTOOLCHAIN=local \
+    GOOS=linux \
+    GOARCH=amd64
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the moby/moby repository and checkout to the specific commit
+RUN git clone https://github.com/moby/moby.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard d6aa6ae9bdbcceebaef9302adba3f9bc6e3ce29c && \
+    git remote remove origin
+
+# Download Go dependencies using Go modules
+# This leverages Docker layer caching - dependencies are only re-downloaded if go.mod/go.sum change
+RUN cd /testbed && \
+    go mod download && \
+    go mod verify
+
+# Verify the test files exist
+RUN test -f /testbed/client/network_list_test.go || (echo "Test file client/network_list_test.go not found!" && exit 1) && \
+    test -f /testbed/integration-cli/requirements_test.go || (echo "Test file integration-cli/requirements_test.go not found!" && exit 1) && \
+    test -f /testbed/integration/network/delete_test.go || (echo "Test file integration/network/delete_test.go not found!" && exit 1) && \
+    test -f /testbed/testutil/environment/clean.go || (echo "Utility file testutil/environment/clean.go not found!" && exit 1) && \
+    test -f /testbed/testutil/environment/protect.go || (echo "Utility file testutil/environment/protect.go not found!" && exit 1)
+
+# Set bash as default shell for compatibility
+SHELL ["/bin/bash", "-c"]
+
+# Configure bash environment
+RUN echo 'export PATH=/usr/local/go/bin:$PATH' >> /root/.bashrc && \
+    echo 'cd /testbed' >> /root/.bashrc

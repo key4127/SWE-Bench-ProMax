@@ -1,0 +1,1271 @@
+{
+  "dataset_instances": 517,
+  "provided_instances": 139,
+  "provided_rate": 0.2688588007736944,
+  "summary": {
+    "total_instances": 139,
+    "failed_before_patch": 113,
+    "passed_after_patch": 122,
+    "details": {
+      "f2p_instance": 96,
+      "p2p_instance": 26,
+      "f2f_instance": 17,
+      "p2f_instance": 0,
+      "resolved": 96,
+      "stable": 96
+    }
+  },
+  "instance_details": [
+    {
+      "instance_id": "samber__lo-756",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "charmbracelet__crush-959",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "jesseduffield__lazygit-4318",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "charmbracelet__crush-571",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "trufflesecurity__trufflehog-4372",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "stanfordnlp__dspy-9121",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "vibrantlabsai__ragas-2333",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "SYSTRAN__faster-whisper-1338",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "stanfordnlp__dspy-8011",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "apache__fesod-533",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cockroachdb__cockroach-157150",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "trufflesecurity__trufflehog-3938",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "stanfordnlp__dspy-8105",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "charmbracelet__crush-884",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "antonmedv__fx-c_3a96a8f",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "charmbracelet__crush-999",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "trufflesecurity__trufflehog-4691",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "redis__go-redis-3550",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "TecharoHQ__anubis-332",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "pandas-dev__pandas-60898",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "restic__restic-5550",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "trufflesecurity__trufflehog-3939",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "charmbracelet__crush-1963",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "apache__fesod-249",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "letta-ai__letta-c_d81382b",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "trufflesecurity__trufflehog-4413",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "pandas-dev__pandas-61173",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "restic__restic-5465",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "charmbracelet__crush-c_17de9c7",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "charmbracelet__crush-1016",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "TecharoHQ__anubis-619",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "YaLTeR__niri-2333",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "huggingface__smolagents-631",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "TecharoHQ__anubis-1308",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "emcie-co__parlant-619",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "trufflesecurity__trufflehog-4102",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "apache__fesod-772",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "apache__fesod-413",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "huggingface__peft-2282",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "apache__calcite-4390",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "stanfordnlp__dspy-9050",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "apache__hbase-7584",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "MuntashirAkon__AppManager-c_dd1d422",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "apache__pinot-17128",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "TabbyML__tabby-4083",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "TabbyML__tabby-4176",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "apache__hbase-6485",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "restic__restic-5173",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "pandas-dev__pandas-61244",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "samber__lo-782",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "TecharoHQ__anubis-548",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "restic__restic-5494",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "apache__fesod-610",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "apache__fesod-454",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "jesseduffield__lazygit-4394",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "vibrantlabsai__ragas-2399",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "stanfordnlp__dspy-9041",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "TecharoHQ__anubis-158",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "secdev__scapy-4798",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "fatedier__frp-5105",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "apache__fesod-688",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "jesseduffield__lazygit-4953",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "restic__restic-5235",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cockroachdb__cockroach-160394",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "trufflesecurity__trufflehog-4590",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "samber__lo-739",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cockroachdb__cockroach-157066",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "apache__fesod-658",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "OpenListTeam__OpenList-1001",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "trufflesecurity__trufflehog-3134",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cockroachdb__cockroach-157041",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "stanfordnlp__dspy-9193",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cockroachdb__cockroach-c_97370ee",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "pandas-dev__pandas-61193",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cockroachdb__cockroach-158333",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "trufflesecurity__trufflehog-4323",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cockroachdb__cockroach-155135",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "charmbracelet__crush-407",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "TecharoHQ__anubis-370",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "geoserver__geoserver-8384",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "samber__lo-771",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "psf__black-4928",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "redis__go-redis-3262",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "trufflesecurity__trufflehog-3854",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "apache__pinot-16709",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "pandas-dev__pandas-61158",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "pandas-dev__pandas-59636",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "stanfordnlp__dspy-7991",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "tracel-ai__burn-4154",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "antonmedv__fx-c_294e473",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "restic__restic-5251",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "TabbyML__tabby-4129",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "charmbracelet__crush-666",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "emcie-co__parlant-c_96ba8c2",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "TecharoHQ__anubis-657",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "tracel-ai__burn-4337",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "TecharoHQ__anubis-350",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cockroachdb__cockroach-158455",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cockroachdb__cockroach-155532",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cockroachdb__cockroach-161280",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "apache__calcite-c_6e664e9",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "TecharoHQ__anubis-368",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "stanfordnlp__dspy-9247",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "charmbracelet__crush-1990",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cockroachdb__cockroach-155998",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "stanfordnlp__CoreNLP-1490",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "TecharoHQ__anubis-647",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "getzola__zola-2615",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "vanna-ai__vanna-1081",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "stanfordnlp__dspy-9017",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "charmbracelet__crush-1229",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "restic__restic-5241",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "apache__fesod-567",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "samber__lo-767",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "certbot__certbot-10465",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "vibrantlabsai__ragas-2184",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "charmbracelet__crush-821",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "apache__pinot-16723",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "stanfordnlp__dspy-9160",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "vibrantlabsai__ragas-2382",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "apache__hbase-7340",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "restic__restic-c_b7bbb40",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "antonmedv__fx-c_9611f37",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "apache__hbase-7540",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cockroachdb__cockroach-154386",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cockroachdb__cockroach-156489",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "OpenListTeam__OpenList-686",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cockroachdb__cockroach-c_972d746",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "TecharoHQ__anubis-944",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "seleniumbase__SeleniumBase-3864",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cockroachdb__cockroach-156829",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "cockroachdb__cockroach-161728",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cockroachdb__cockroach-145934",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "stanfordnlp__dspy-1801",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "TecharoHQ__anubis-1299",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cockroachdb__cockroach-158835",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "stanfordnlp__dspy-9047",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cockroachdb__cockroach-156854",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "cockroachdb__cockroach-160560",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    }
+  ]
+}

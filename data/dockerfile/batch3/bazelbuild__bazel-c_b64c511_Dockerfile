@@ -1,0 +1,82 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 ubuntu:22.04
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    openjdk-21-jdk \
+    build-essential \
+    gcc \
+    g++ \
+    zip \
+    unzip \
+    python3 \
+    python3-pip \
+    git \
+    curl \
+    wget \
+    bash \
+    locales \
+    locales-all \
+    tzdata \
+    ca-certificates \
+    sed \
+    grep \
+    findutils \
+    coreutils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set up environment variables for Java
+ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Install Python dependencies (for Bazel build scripts)
+RUN pip3 install --no-cache-dir bazel-runfiles==0.24.0
+
+# Install Bazelisk (which will download and use the correct Bazel version specified in .bazelversion)
+RUN wget -O /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-linux-amd64 \
+    && chmod +x /usr/local/bin/bazel
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version
+RUN git clone https://github.com/bazelbuild/bazel /testbed \
+    && chmod -R 777 /testbed \
+    && cd /testbed \
+    && git reset --hard 1478082e556768033d5681a3b86c84fcbdf65c2b \
+    && git remote remove origin
+
+# Set up .bazelversion to ensure correct Bazel version is used (8.4.2 as specified)
+RUN echo "8.4.2" > /testbed/.bazelversion
+
+# Configure shell to use bash
+SHELL ["/bin/bash", "-c"]
+
+# Set up environment for interactive shells
+RUN echo "export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64" >> /root/.bashrc \
+    && echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> /root/.bashrc
+
+# Set up test environment directories
+RUN mkdir -p /var/lib/buildkite-agent/bazeltest/install_base \
+    && mkdir -p /var/lib/buildkite-agent/bazeltest/repo_cache \
+    && mkdir -p $HOME/bazeltest
+
+# Set environment variables for test execution
+ENV TEST_INSTALL_BASE=/var/lib/buildkite-agent/bazeltest/install_base
+ENV REPOSITORY_CACHE=/var/lib/buildkite-agent/bazeltest/repo_cache
+ENV REMOTE_NETWORK_ADDRESS=bazel.build:80
+
+# Verify Bazel installation and version
+RUN cd /testbed && bazel version
+
+# Pre-fetch Bazel dependencies to speed up subsequent test execution
+# This downloads external dependencies without running tests
+RUN cd /testbed && (bazel fetch //src/test/java/net/starlark/java/eval:all || true) \
+    && (bazel fetch //src/test/java/net/starlark/java/syntax:all || true)

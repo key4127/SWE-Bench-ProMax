@@ -1,0 +1,81 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    pkg-config \
+    libssl-dev \
+    ca-certificates \
+    git \
+    curl \
+    wget \
+    gcc-multilib \
+    libsecret-1-0 \
+    libsecret-1-dev \
+    lldb \
+    locales \
+    locales-all \
+    tzdata \
+    libcurl4-openssl-dev \
+    cmake \
+    perl \
+    libgit2-dev \
+    libssh2-1-dev \
+    zlib1g-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Rust via rustup with stable toolchain
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable --profile minimal
+
+# Set environment variables for Cargo and Rust
+ENV PATH=/root/.cargo/bin:$PATH
+ENV CARGO_HOME=/root/.cargo
+ENV RUSTUP_HOME=/root/.rustup
+
+# Verify Rust installation
+RUN rustc --version && cargo --version
+
+# Install i686-unknown-linux-gnu target for cross-compilation tests
+RUN rustup target add i686-unknown-linux-gnu
+
+# Set locale environment variables
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set environment variables for Cargo testing
+ENV CARGO_PROFILE_DEV_DEBUG=1
+ENV CARGO_PROFILE_TEST_DEBUG=1
+ENV CARGO_INCREMENTAL=0
+ENV CARGO_PUBLIC_NETWORK_TESTS=1
+ENV CARGO_CONTAINER_TESTS=1
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version
+RUN git clone https://github.com/rust-lang/cargo /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard a9e8aa2c65091b520519fd1065f41d156d45f9dd && \
+    git remote remove origin
+
+# Build the project to ensure all dependencies are resolved (bootstrap cargo with cargo)
+RUN cd /testbed && cargo build --tests
+
+# Set up bash environment with necessary environment variables
+RUN echo 'export PATH=/root/.cargo/bin:$PATH' >> /root/.bashrc && \
+    echo 'export CARGO_HOME=/root/.cargo' >> /root/.bashrc && \
+    echo 'export RUSTUP_HOME=/root/.rustup' >> /root/.bashrc && \
+    echo 'export CARGO_PROFILE_DEV_DEBUG=1' >> /root/.bashrc && \
+    echo 'export CARGO_PROFILE_TEST_DEBUG=1' >> /root/.bashrc && \
+    echo 'export CARGO_INCREMENTAL=0' >> /root/.bashrc && \
+    echo 'export CARGO_PUBLIC_NETWORK_TESTS=1' >> /root/.bashrc && \
+    echo 'export CARGO_CONTAINER_TESTS=1' >> /root/.bashrc
+
+# Ensure bash is the default shell
+SHELL ["/bin/bash", "-c"]

@@ -1,0 +1,63 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    ca-certificates \
+    build-essential \
+    gcc \
+    g++ \
+    make \
+    cmake \
+    redis-server \
+    redis-tools \
+    valgrind \
+    curl \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Ensure bash is available
+SHELL ["/bin/bash", "-c"]
+
+# Set default workdir to testbed. (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version
+RUN git clone https://github.com/aviggiano/redis-roaring /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard be52cc241cdb9ba946e02301fe25ce5640c3d334 && \
+    git remote remove origin
+
+# Initialize git submodules (CRoaring, redis, hiredis)
+RUN cd /testbed && \
+    git submodule update --init --recursive
+
+# Run configuration script to set up dependencies
+RUN cd /testbed && \
+    bash configure.sh
+
+# Build the project
+RUN cd /testbed && \
+    mkdir -p build && \
+    cd build && \
+    cmake .. && \
+    make -j$(nproc)
+
+# Ensure the module and test binaries are built
+RUN ls -la /testbed/build/libredis-roaring.so && \
+    ls -la /testbed/build/unit
+
+# Make test scripts executable
+RUN chmod +x /testbed/tests/*.sh
+
+# Set bash as default shell for runtime
+RUN echo "#!/bin/bash" > /root/.bashrc && \
+    chmod +x /root/.bashrc

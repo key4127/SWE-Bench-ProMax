@@ -1,0 +1,75 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 python:3.11-slim
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    build-essential \
+    chromium \
+    chromium-driver \
+    libnss3 \
+    libfontconfig1 \
+    libx11-6 \
+    libx11-xcb1 \
+    libxcb1 \
+    libxcomposite1 \
+    libxcursor1 \
+    libxdamage1 \
+    libxext6 \
+    libxfixes3 \
+    libxi6 \
+    libxrandr2 \
+    libxrender1 \
+    libxss1 \
+    libxtst6 \
+    ca-certificates \
+    fonts-liberation \
+    libappindicator3-1 \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libcups2 \
+    libdbus-1-3 \
+    libdrm2 \
+    libgbm1 \
+    libgtk-3-0 \
+    libnspr4 \
+    libpango-1.0-0 \
+    libpangocairo-1.0-0 \
+    libxkbcommon0 \
+    xdg-utils \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Poetry (dependency management tool)
+RUN curl -sSL https://install.python-poetry.org | python3 - && \
+    ln -s /root/.local/bin/poetry /usr/local/bin/poetry
+
+# Configure Poetry to not create virtual environments (install globally in container)
+RUN poetry config virtualenvs.create false
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, and installs project-specific dependencies
+RUN git clone https://github.com/zauberzeug/nicegui /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 786e24fb65ba62909cef7d90cec633671666d262 && \
+    git remote remove origin
+
+# Install Python dependencies via Poetry
+RUN cd /testbed && \
+    poetry install --all-extras && \
+    poetry run pip install -r tests/requirements.txt && \
+    poetry run pip install importlib-resources
+
+# Set environment variables for headless Chrome
+ENV CHROME_BIN=/usr/bin/chromium
+ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
+
+# Ensure bash is the default shell for consistency
+SHELL ["/bin/bash", "-c"]

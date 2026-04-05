@@ -1,0 +1,66 @@
+# Base image specification. Using Python 3.11 slim for compatibility with project requirements (3.10-3.13)
+FROM --platform=linux/x86_64 python:3.11-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    build-essential \
+    curl \
+    ca-certificates \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale environment variables as required by the project
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Upgrade pip to latest version and install build tools
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the repository and checkout to the target commit
+RUN git clone https://github.com/icloud-photos-downloader/icloud_photos_downloader.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard a25ba6f72065ec43303ad7fe9a0f23a15f2a63c0 && \
+    git remote remove origin
+
+# Install pip requirements first (as specified in the installation sequence)
+RUN python3 -m pip install --disable-pip-version-check -r requirements-pip.txt
+
+# Install project in editable mode with test dependencies
+# Note: Using explicit dependency installation as the --group flag may not work with all pip versions
+RUN pip install --disable-pip-version-check -e .
+
+# Install test dependencies explicitly (from dependency-groups.test in pyproject.toml)
+RUN pip install --no-cache-dir \
+    pytest==8.4.0 \
+    mock==5.2.0 \
+    freezegun==1.5.2 \
+    vcrpy==7.0.0 \
+    pytest-cov==5.0.0 \
+    pytest-timeout==2.4.0 \
+    pytest-xdist==3.7.0 \
+    mypy==1.16.0 \
+    types-requests \
+    types-setuptools \
+    types-six \
+    types-pytz
+
+# Set PYTHONPATH to include src directory as per pytest configuration
+ENV PYTHONPATH=/testbed/src:$PYTHONPATH
+
+# Set CLIENT_ID environment variable (default used by tests)
+ENV CLIENT_ID=DE309E26-942E-11E8-92F5-14109FE0B321
+
+# Set up bash as default shell
+SHELL ["/bin/bash", "-c"]

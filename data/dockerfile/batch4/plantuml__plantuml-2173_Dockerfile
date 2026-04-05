@@ -1,0 +1,47 @@
+# Base image specification. Using Eclipse Temurin 11 JDK which is the actively maintained successor to OpenJDK
+FROM --platform=linux/x86_64 eclipse-temurin:11-jdk
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale and encoding to UTF-8 as required by the project
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set working directory to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the repository and checkout to the specific commit
+RUN git clone https://github.com/plantuml/plantuml.git /testbed && \
+    cd /testbed && \
+    git reset --hard 7711694c259a41c7b23494f91fdefab44042e2a1 && \
+    git remote remove origin && \
+    chmod -R 777 /testbed
+
+# Make Gradle wrapper executable
+RUN chmod +x /testbed/gradlew
+
+# Build the project without running tests to ensure all dependencies are downloaded and compiled
+# Using -x test to skip tests, -x javaDoc to skip documentation generation
+RUN cd /testbed && ./gradlew clean build -x test -x javaDoc --no-daemon || true
+
+# Pre-download test dependencies by running a test task that will fail but download dependencies
+RUN cd /testbed && ./gradlew testClasses --no-daemon || true
+
+# Set the default shell to bash for compatibility
+SHELL ["/bin/bash", "-c"]
+
+# Set environment variable for Java encoding
+ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8"

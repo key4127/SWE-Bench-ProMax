@@ -1,0 +1,31 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 python:3.9-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    git \
+    build-essential \
+    wget \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set default workdir to testbed. (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, configures it, and installs project-specific dependencies
+RUN git clone https://github.com/EleutherAI/lm-evaluation-harness /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 584de690f3a753a00d27fd0bf97d2adc1f31b4e8 && \
+    git remote remove origin
+
+# Install the package with dev dependencies
+RUN cd /testbed && \
+    pip install --upgrade pip && \
+    pip install -e ".[dev]"
+
+# Set up bash environment
+RUN echo "cd /testbed" >> /root/.bashrc

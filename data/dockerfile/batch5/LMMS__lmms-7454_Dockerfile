@@ -1,0 +1,106 @@
+# Base image specification - Ubuntu 22.04 as specified in the requirements
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+# Environment variables for non-interactive installation
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+ENV CCACHE_MAXSIZE=500M
+ENV CCACHE_NOCOMPRESS=1
+ENV MAKEFLAGS=-j2
+
+# System dependencies installation - Install all required Ubuntu packages
+RUN apt-get update && apt-get install -y \
+    binutils \
+    ca-certificates \
+    ccache \
+    cmake \
+    file \
+    fluid \
+    gcc \
+    git \
+    gpg \
+    g++ \
+    libasound2-dev \
+    libc6-dev \
+    libfftw3-dev \
+    libfluidsynth-dev \
+    libgig-dev \
+    libgtk2.0-0 \
+    libjack-jackd2-dev \
+    liblilv-dev \
+    liblist-moreutils-perl \
+    libmp3lame-dev \
+    libogg-dev \
+    libqt5svg5-dev \
+    libqt5x11extras5-dev \
+    libsamplerate0-dev \
+    libsdl2-dev \
+    libsndfile1-dev \
+    libsoundio-dev \
+    libstk-dev \
+    libsuil-dev \
+    libvorbis-dev \
+    libx11-xcb-dev \
+    libxcb-keysyms1-dev \
+    libxcb-util0-dev \
+    libxft-dev \
+    libxinerama-dev \
+    libxml2-utils \
+    libxml-perl \
+    lsb-release \
+    lv2-dev \
+    make \
+    perl \
+    portaudio19-dev \
+    qt5-qmake \
+    qtbase5-dev \
+    qtbase5-dev-tools \
+    qtbase5-private-dev \
+    qttools5-dev-tools \
+    qtwayland5 \
+    software-properties-common \
+    openssh-client \
+    stk \
+    wget \
+    libcairo2-dev \
+    libpango1.0-dev \
+    wayland-protocols \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+# Build and install FLTK from specific commit
+RUN git clone https://github.com/fltk/fltk /tmp/fltk && \
+    cd /tmp/fltk && \
+    git checkout 27d991f046bdebb12bfd58f7c05a19f135979c29 && \
+    cmake -S . -B build \
+        -DFLTK_BUILD_SHARED_LIBS=ON \
+        -DFLTK_BACKEND_WAYLAND=ON \
+        -DFLTK_USE_LIBDECOR_GTK=OFF \
+        -DFLTK_BUILD_TEST=OFF \
+        -DFLTK_BUILD_GL=OFF && \
+    cmake --build build -j2 && \
+    cmake --install build && \
+    ldconfig && \
+    cd / && \
+    rm -rf /tmp/fltk
+
+# Set working directory to /testbed/ (Required)
+WORKDIR /testbed/
+
+# Clone the LMMS repository and checkout the specific commit
+RUN git clone https://github.com/LMMS/lmms.git /testbed && \
+    cd /testbed && \
+    git checkout -f 8a33dd7afe78d010db7a5587dc724caf25a24132 && \
+    git reset --hard HEAD && \
+    git clean -fdx && \
+    git remote remove origin && \
+    chmod -R 777 /testbed && \
+    git submodule update --init --recursive
+
+# Set up shell environment
+RUN echo 'export CCACHE_MAXSIZE=500M' >> /root/.bashrc && \
+    echo 'export CCACHE_NOCOMPRESS=1' >> /root/.bashrc && \
+    echo 'export MAKEFLAGS=-j2' >> /root/.bashrc
+
+# Set default shell to bash
+SHELL ["/bin/bash", "-c"]

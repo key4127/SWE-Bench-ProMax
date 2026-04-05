@@ -1,0 +1,54 @@
+# Base image specification. Using official Go 1.23 image based on Debian Bookworm
+FROM --platform=linux/x86_64 golang:1.23-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    ca-certificates \
+    fuse \
+    libfuse-dev \
+    openssh-client \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Configure Go environment variables
+ENV GO111MODULE=on
+ENV GOPROXY=https://proxy.golang.org,direct
+ENV CGO_ENABLED=0
+
+# Set default workdir to testbed
+WORKDIR /testbed/
+
+# Target Project setup. Clone the repository and checkout to the specific commit
+RUN git clone https://github.com/restic/restic.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 4104a8e6a567696c2708f02f228afedfc14869e8 && \
+    git remote remove origin
+
+# Download Go module dependencies
+RUN cd /testbed && \
+    go mod download && \
+    go mod verify
+
+# Verify Go installation and module setup
+RUN go version && \
+    go env && \
+    cd /testbed && \
+    go list -m all
+
+# Set up shell environment
+RUN echo 'export GO111MODULE=on' >> /root/.bashrc && \
+    echo 'export GOPROXY=https://proxy.golang.org,direct' >> /root/.bashrc && \
+    echo 'cd /testbed' >> /root/.bashrc
+
+# Ensure proper permissions
+RUN chmod -R 777 /testbed

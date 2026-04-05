@@ -1,0 +1,61 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 python:3.10-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    python3-dev \
+    git \
+    curl \
+    wget \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Ensure Python bin directory is in PATH
+ENV PATH="/usr/local/bin:${PATH}"
+
+# Set default workdir to testbed. (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, configures it, and installs project-specific dependencies
+RUN git clone https://github.com/vibrantlabsai/ragas /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard aa1aacd50f5bff889a26bc3bf6be522c6c5bb048 && \
+    git remote remove origin
+
+# Change to the ragas subdirectory for installation (as per package structure)
+WORKDIR /testbed/ragas
+
+# Install the package in editable mode with dev dependencies
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install -e ".[dev]" || true
+
+# Explicitly install test dependencies to ensure pytest is available
+RUN pip install pytest pytest-asyncio pytest-xdist[psutil] pytest-cov nbmake
+
+# Verify pytest installation
+RUN which pytest && pytest --version
+
+# Set environment variables for test execution
+ENV RAGAS_DO_NOT_TRACK=true
+ENV __RAGAS_DEBUG_TRACKING=true
+
+# Set working directory back to testbed root
+WORKDIR /testbed/
+
+# Ensure bash is the default shell
+SHELL ["/bin/bash", "-c"]
+
+# Add convenience for interactive debugging
+RUN echo 'cd /testbed/ragas' >> /root/.bashrc

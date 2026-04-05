@@ -1,0 +1,68 @@
+# Base image specification. Using Python 3.10 slim as recommended by context retrieval agent
+FROM --platform=linux/x86_64 python:3.10-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for JAX compilation and testing
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    build-essential \
+    python3-dev \
+    curl \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Upgrade pip, setuptools, and wheel as recommended
+RUN pip install --upgrade pip setuptools wheel
+
+# Set working directory to /testbed/ as required
+WORKDIR /testbed/
+
+# Clone the JAX repository and checkout to the specific commit
+RUN git clone https://github.com/jax-ml/jax.git /testbed && \
+    cd /testbed && \
+    git checkout a3a285dddc84b2ab98c9ec27b541b79fe347376e && \
+    chmod -R 777 /testbed
+
+# Install core dependencies first to ensure compatibility
+RUN pip install \
+    "numpy>=1.25" \
+    "ml_dtypes>=0.4.0" \
+    "opt_einsum" \
+    "scipy>=1.11.1"
+
+# Install jaxlib==0.5.0 explicitly BEFORE installing JAX from source
+# This ensures we get a compatible prebuilt wheel for the container environment
+RUN pip install jaxlib==0.5.0
+
+# Install test dependencies from build/test-requirements.txt
+RUN pip install -r /testbed/build/test-requirements.txt
+
+# Install additional test dependencies explicitly mentioned
+RUN pip install \
+    "absl-py" \
+    "pytest>=7.2.0" \
+    "pytest-xdist"
+
+# Install JAX from source in editable mode with --no-deps to avoid reinstalling jaxlib
+# This ensures we use the compatible jaxlib we installed earlier
+RUN pip install -e /testbed --no-deps
+
+# Set environment variables for test execution
+# JAX_PLATFORMS=cpu forces CPU-only execution for container isolation
+ENV JAX_PLATFORMS=cpu
+
+# Ensure bash is the default shell
+SHELL ["/bin/bash", "-c"]
+
+# Set up bash environment
+RUN echo 'export JAX_PLATFORMS=cpu' >> /root/.bashrc

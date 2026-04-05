@@ -1,0 +1,141 @@
+# Base image specification. Using official Go image with Debian Bookworm for full compatibility
+# Updated to golang:1.24 to meet the go.mod requirement of >= 1.24.0
+# 
+# ============================================================================
+# CRITICAL: CONTAINER RUNTIME REQUIREMENTS
+# ============================================================================
+# This container MUST be run with the following flags for Docker-in-Docker support:
+#
+#   docker run --privileged \
+#              --security-opt seccomp=unconfined \
+#              --security-opt apparmor=unconfined \
+#              --cgroupns=host \
+#              <image-name>
+#
+# These flags are REQUIRED because:
+# - --privileged: Grants access to kernel features (cgroups, namespaces, iptables)
+# - --security-opt seccomp=unconfined: Allows syscalls needed by Docker daemon
+# - --security-opt apparmor=unconfined: Disables AppArmor restrictions
+# - --cgroupns=host: Provides proper cgroup hierarchy for nested containers
+#
+# Integration tests require a running Docker daemon inside the container,
+# which needs privileged access to manage iptables, cgroups, and other kernel features.
+# ============================================================================
+FROM --platform=linux/x86_64 golang:1.24-bookworm
+
+# Set environment variables for non-interactive installation
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Install essential tools and libraries required for development and runtime
+# Including Docker-in-Docker dependencies for integration tests
+RUN apt-get update && apt-get install -y \
+    git \
+    build-essential \
+    gcc \
+    g++ \
+    make \
+    curl \
+    wget \
+    ca-certificates \
+    pkg-config \
+    cmake \
+    autoconf \
+    automake \
+    libseccomp-dev \
+    libsystemd-dev \
+    libnftables-dev \
+    libcap-dev \
+    libprotobuf-c-dev \
+    libyajl-dev \
+    iptables \
+    nftables \
+    iproute2 \
+    apparmor \
+    xfsprogs \
+    e2fsprogs \
+    pigz \
+    xz-utils \
+    procps \
+    vim-common \
+    apt-transport-https \
+    gnupg \
+    lsb-release \
+    sudo \
+    jq \
+    python3 \
+    python3-yaml \
+    yamllint \
+    systemd \
+    dbus \
+    fuse-overlayfs \
+    thin-provisioning-tools \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Docker CLI and containerd for Docker-in-Docker setup
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bookworm stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+    apt-get update && \
+    apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set up Go environment variables as specified by the context retrieval agent
+ENV GOTOOLCHAIN=local \
+    GO111MODULE=on \
+    CGO_ENABLED=1 \
+    GIT_PAGER=cat \
+    PAGER=cat \
+    GOOS=linux \
+    GOARCH=amd64 \
+    DOCKER_HOST=unix:///var/run/docker.sock \
+    CONTAINERD_ADDRESS=/run/docker/containerd/containerd.sock \
+    CONTAINERD_NAMESPACE=moby \
+    SYSTEMD=false \
+    FIREWALLD=false
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the moby/moby repository and checkout to the specific commit
+RUN git clone https://github.com/moby/moby.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 2401bd1e12edc2468910b8a20fa9eac011d7b1f7 && \
+    git remote remove origin
+
+# Download Go dependencies using Go modules
+# This leverages Docker layer caching - dependencies are only re-downloaded if go.mod/go.sum change
+RUN cd /testbed && \
+    go mod download && \
+    go mod verify
+
+# Verify the test files exist
+RUN test -f /testbed/client/plugin_inspect_test.go || (echo "Test file client/plugin_inspect_test.go not found!" && exit 1)
+RUN test -f /testbed/integration-cli/docker_cli_daemon_test.go || (echo "Test file integration-cli/docker_cli_daemon_test.go not found!" && exit 1)
+RUN test -f /testbed/integration/plugin/common/plugin_test.go || (echo "Test file integration/plugin/common/plugin_test.go not found!" && exit 1)
+RUN test -f /testbed/integration/plugin/volumes/mounts_test.go || (echo "Test file integration/plugin/volumes/mounts_test.go not found!" && exit 1)
+RUN test -f /testbed/integration/service/plugin_test.go || (echo "Test file integration/service/plugin_test.go not found!" && exit 1)
+RUN test -f /testbed/internal/testutil/daemon/plugin.go || (echo "Test file internal/testutil/daemon/plugin.go not found!" && exit 1)
+
+# Set bash as default shell for compatibility
+SHELL ["/bin/bash", "-c"]
+
+# Configure bash environment
+RUN echo 'export PATH=/usr/local/go/bin:$PATH' >> /root/.bashrc && \
+    echo 'export GOTOOLCHAIN=local' >> /root/.bashrc && \
+    echo 'export GO111MODULE=on' >> /root/.bashrc && \
+    echo 'export CGO_ENABLED=1' >> /root/.bashrc && \
+    echo 'export DOCKER_HOST=unix:///var/run/docker.sock' >> /root/.bashrc && \
+    echo 'export CONTAINERD_ADDRESS=/run/docker/containerd/containerd.sock' >> /root/.bashrc && \
+    echo 'export CONTAINERD_NAMESPACE=moby' >> /root/.bashrc && \
+    echo 'cd /testbed' >> /root/.bashrc
+
+# Create necessary directories for Docker daemon
+RUN mkdir -p /var/run /var/lib/docker /etc/docker /run/docker/containerd
+
+# Configure Docker daemon for better compatibility in containerized environment
+RUN echo '{"storage-driver": "vfs", "iptables": true, "debug": false}' > /etc/docker/daemon.json
+
+# Create a privilege validation script to provide clear error messages
+RUN printf '#!/bin/bash\nset -e\n\necho "Checking container privileges..."\n\nif [ ! -w /sys ]; then\n    echo "ERROR: Container is not running in privileged mode!"\n    echo "Please run with: docker run --privileged ..."\n    exit 1\nfi\n\nif [ ! -d /sys/fs/cgroup/systemd ]; then\n    echo "WARNING: Cgroup hierarchy may not be optimal"\n    echo "Consider running with: --cgroupns=host"\nfi\n\necho "Privilege check passed!"\n' > /usr/local/bin/check-privileges.sh && \
+    chmod +x /usr/local/bin/check-privileges.sh

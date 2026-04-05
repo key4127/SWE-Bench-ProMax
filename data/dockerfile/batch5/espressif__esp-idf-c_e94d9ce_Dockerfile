@@ -1,0 +1,155 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    apt-utils \
+    bison \
+    bzip2 \
+    ca-certificates \
+    ccache \
+    check \
+    curl \
+    flex \
+    git \
+    git-lfs \
+    gperf \
+    lcov \
+    libbsd-dev \
+    libffi-dev \
+    libglib2.0-0 \
+    libglib2.0-dev \
+    libdbus-1-dev \
+    libncurses-dev \
+    libncurses5-dev \
+    libncurses5 \
+    libpixman-1-0 \
+    libsdl2-2.0-0 \
+    libslirp0 \
+    libusb-1.0-0-dev \
+    libssl-dev \
+    make \
+    ninja-build \
+    python3 \
+    python3-pip \
+    python3-venv \
+    ruby \
+    unzip \
+    wget \
+    xz-utils \
+    zip \
+    tar \
+    gzip \
+    build-essential \
+    gcc \
+    g++ \
+    cmake \
+    pkg-config \
+    libudev-dev \
+    dfu-util \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale environment
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+
+# Ensure python3 is the default python
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+
+# Set up working directory (Required)
+WORKDIR /testbed/
+
+# Clone the ESP-IDF repository and checkout the specific commit
+RUN git clone https://github.com/espressif/esp-idf.git /testbed && \
+    cd /testbed && \
+    git checkout 6bd8b52ad765674387b209693cb9aaa80d401057 && \
+    git submodule update --init --recursive && \
+    chmod -R 777 /testbed
+
+# Set ESP-IDF environment variables
+ENV IDF_PATH=/testbed
+ENV IDF_TOOLS_PATH=/opt/esp
+ENV IDF_PYTHON_CHECK_CONSTRAINTS=no
+ENV IDF_CCACHE_ENABLE=1
+ENV IDF_CI_BUILD=1
+
+# Upgrade pip first
+RUN cd /testbed && \
+    python3 -m pip install --upgrade pip
+
+# Install core requirements
+RUN cd /testbed && \
+    python3 -m pip install --no-cache-dir -r tools/requirements/requirements.core.txt
+
+# Install pytest and testing requirements - check if file exists first
+RUN cd /testbed && \
+    if [ -f tools/requirements/requirements.pytest.txt ]; then \
+        python3 -m pip install --no-cache-dir -r tools/requirements/requirements.pytest.txt; \
+    else \
+        python3 -m pip install --no-cache-dir pytest>=7.0 pytest-embedded>=1.0 pytest-embedded-serial-esp>=1.0 pytest-embedded-idf>=1.0 pytest-rerunfailures pytest-timeout; \
+    fi
+
+# Install CI requirements if available
+RUN cd /testbed && \
+    if [ -f tools/requirements/requirements.ci.txt ]; then \
+        python3 -m pip install --no-cache-dir -r tools/requirements/requirements.ci.txt; \
+    fi
+
+# Install additional test packages
+RUN python3 -m pip install --no-cache-dir \
+    scapy \
+    websocket-client \
+    netifaces \
+    rangehttpserver \
+    protobuf \
+    bleak \
+    paho-mqtt \
+    paramiko \
+    netmiko \
+    pyecharts \
+    python-can
+
+# Install idf-build-apps for build validation
+RUN python3 -m pip install --no-cache-dir "idf-build-apps>=2.0"
+
+# Install ESP-IDF tools (toolchains, OpenOCD, etc.) with CI and test-specific options
+RUN cd /testbed && \
+    ./install.sh --enable-ci --enable-test-specific
+
+# Set up PYTHONPATH for ESP-IDF tools
+ENV PYTHONPATH=${IDF_PATH}/tools:${IDF_PATH}/tools/ci:${IDF_PATH}/tools/esp_app_trace:${IDF_PATH}/components/partition_table:${IDF_PATH}/tools/ci/python_packages
+
+# Set up environment activation in bashrc
+RUN echo "export IDF_PATH=/testbed" >> /root/.bashrc && \
+    echo "export IDF_TOOLS_PATH=/opt/esp" >> /root/.bashrc && \
+    echo "export IDF_PYTHON_CHECK_CONSTRAINTS=no" >> /root/.bashrc && \
+    echo "export IDF_CCACHE_ENABLE=1" >> /root/.bashrc && \
+    echo "export IDF_CI_BUILD=1" >> /root/.bashrc && \
+    echo "export LC_ALL=C.UTF-8" >> /root/.bashrc && \
+    echo "export PYTHONPATH=\${IDF_PATH}/tools:\${IDF_PATH}/tools/ci:\${IDF_PATH}/tools/esp_app_trace:\${IDF_PATH}/components/partition_table:\${IDF_PATH}/tools/ci/python_packages" >> /root/.bashrc && \
+    echo "source /testbed/export.sh" >> /root/.bashrc
+
+# Create a wrapper script to ensure environment is sourced before running commands
+RUN echo '#!/bin/bash\n\
+export IDF_PATH=/testbed\n\
+export IDF_TOOLS_PATH=/opt/esp\n\
+export IDF_PYTHON_CHECK_CONSTRAINTS=no\n\
+export IDF_CCACHE_ENABLE=1\n\
+export IDF_CI_BUILD=1\n\
+export LC_ALL=C.UTF-8\n\
+export PYTHONPATH=${IDF_PATH}/tools:${IDF_PATH}/tools/ci:${IDF_PATH}/tools/esp_app_trace:${IDF_PATH}/components/partition_table:${IDF_PATH}/tools/ci/python_packages\n\
+source /testbed/export.sh\n\
+exec "$@"' > /usr/local/bin/idf-env.sh && \
+    chmod +x /usr/local/bin/idf-env.sh
+
+# Set bash as default shell
+SHELL ["/bin/bash", "-c"]
+
+# Set working directory to testbed
+WORKDIR /testbed/

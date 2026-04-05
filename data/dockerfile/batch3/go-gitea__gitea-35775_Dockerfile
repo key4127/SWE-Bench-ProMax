@@ -1,0 +1,67 @@
+# Base image specification. Using golang:1.25 with Debian Bookworm for bash compatibility and proper tooling
+# Go 1.25+ is required to support the go.mod requirements as specified in the repository
+FROM --platform=linux/x86_64 golang:1.25-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+# Git 2.x+ is critical as the tests execute real Git commands
+# gcc, libc-dev, and libsqlite3-dev are required for CGO compilation with sqlite build tags
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    git-lfs \
+    build-essential \
+    gcc \
+    g++ \
+    make \
+    curl \
+    ca-certificates \
+    locales \
+    locales-all \
+    tzdata \
+    bash \
+    libc6-dev \
+    libsqlite3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Verify Git installation (required for test execution)
+RUN git --version
+
+# Verify Go version to ensure compatibility with go.mod requirements (>= 1.25.0)
+RUN go version
+
+# Set up Go environment variables with CGO enabled for proper compilation with sqlite tags
+ENV GO111MODULE=on \
+    CGO_ENABLED=1 \
+    GOPROXY=https://proxy.golang.org,direct
+
+# Environment variables for Gitea
+ENV GITEA_ROOT=/testbed
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code and checks out to the target commit SHA
+RUN git clone https://github.com/go-gitea/gitea /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard ee9d8893a73b8607b43d86c569674a73a65b5a70 && \
+    git remote remove origin
+
+# Download Go module dependencies
+# This ensures all dependencies are cached and available for test execution
+RUN cd /testbed && \
+    go mod download && \
+    go mod verify
+
+# Ensure bash is the default shell for subsequent operations
+SHELL ["/bin/bash", "-c"]
+
+# Set up bash profile for interactive sessions with all necessary environment variables
+RUN echo 'export PATH=/usr/local/go/bin:$PATH' >> /root/.bashrc && \
+    echo 'export GO111MODULE=on' >> /root/.bashrc && \
+    echo 'export CGO_ENABLED=1' >> /root/.bashrc && \
+    echo 'export GITEA_ROOT=/testbed' >> /root/.bashrc && \
+    echo 'cd /testbed' >> /root/.bashrc

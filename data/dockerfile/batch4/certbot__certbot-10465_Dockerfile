@@ -1,0 +1,60 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 python:3.10-slim-bullseye
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    git \
+    wget \
+    curl \
+    build-essential \
+    gcc \
+    nginx \
+    libaugeas0 \
+    libaugeas-dev \
+    libssl-dev \
+    libffi-dev \
+    python3-dev \
+    ca-certificates \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Upgrade pip, setuptools, and wheel
+RUN pip install --upgrade pip setuptools wheel
+
+# Install compatible pyparsing version before certbot packages
+RUN pip install 'pyparsing<3.0.0'
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, and installs project-specific dependencies
+RUN git clone https://github.com/certbot/certbot /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 57d2429e4f42c6617d6bfbd969427d538591ea76 && \
+    git remote remove origin
+
+# Install Python packages in the correct order (editable installations required)
+RUN cd /testbed && \
+    pip install -e ./acme && \
+    pip install -e ./certbot && \
+    pip install -e ./certbot-nginx
+
+# Install test dependencies
+RUN pip install pytest pytest-cov pytest-xdist coverage
+
+# Ensure nginx binary is available in PATH (verify installation)
+RUN which nginx && nginx -v
+
+# Set bash as default shell
+SHELL ["/bin/bash", "-c"]

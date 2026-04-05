@@ -1,0 +1,73 @@
+# Base image specification. Using Ubuntu 22.04 for compatibility with Bazel build requirements
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for Bazel build and test execution
+RUN apt-get update && apt-get install -y \
+    openjdk-21-jdk \
+    build-essential \
+    gcc \
+    g++ \
+    zip \
+    unzip \
+    git \
+    python3 \
+    python3-pip \
+    python3-dev \
+    curl \
+    wget \
+    bash \
+    openssl \
+    coreutils \
+    sed \
+    grep \
+    findutils \
+    ca-certificates \
+    locales \
+    locales-all \
+    tzdata \
+    patch \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Configure Java environment variables as required by .bazelrc
+ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Install Python dependencies required by Bazel
+RUN pip3 install --no-cache-dir bazel-runfiles==0.24.0
+
+# Install Bazelisk to manage Bazel version automatically based on .bazelversion file
+RUN wget -O /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-linux-amd64 \
+    && chmod +x /usr/local/bin/bazel
+
+# Set default workdir to testbed
+WORKDIR /testbed/
+
+# Clone the Bazel repository and checkout the specific commit SHA
+RUN git clone https://github.com/bazelbuild/bazel /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard ebd5a01cf1bcc3e02dfb2d96be4c9d4e41ecf317 && \
+    git remote remove origin
+
+# Ensure .bazelversion file contains the correct Bazel version (8.2.1 as specified)
+RUN echo "8.2.1" > /testbed/.bazelversion
+
+# Configure shell to use bash
+SHELL ["/bin/bash", "-c"]
+
+# Set up environment for interactive shells
+RUN echo "export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64" >> /root/.bashrc \
+    && echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> /root/.bashrc
+
+# Pre-fetch Bazel dependencies to speed up subsequent builds and test execution
+# This caches external dependencies without running actual tests
+RUN cd /testbed && bazel fetch //src/test/java/com/google/devtools/build/lib/packages:PackagesTests || true
+RUN cd /testbed && bazel fetch //src/test/java/com/google/devtools/build/lib/skyframe:PackageFunctionTest || true

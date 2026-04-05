@@ -1,0 +1,59 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    patch \
+    build-essential \
+    libgflags-dev \
+    zlib1g-dev \
+    libbz2-dev \
+    libsnappy-dev \
+    liblz4-dev \
+    libzstd-dev \
+    clang-format \
+    curl \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Verify GCC version (Ubuntu 22.04 comes with GCC 11 by default)
+RUN gcc --version && g++ --version
+
+# Set up locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set default workdir to testbed. (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version
+RUN git clone https://github.com/facebook/rocksdb /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard b9951ded37ba48d3fdcd1f2b484973b40b3d245e && \
+    git remote remove origin
+
+# Set environment variables for test execution
+ENV GTEST_THROW_ON_FAILURE=1
+ENV GTEST_HAS_EXCEPTIONS=1
+ENV TEST_TMPDIR=/tmp/rocksdb_test
+
+# Create test temporary directory
+RUN mkdir -p /tmp/rocksdb_test && chmod 777 /tmp/rocksdb_test
+
+# Set working directory to the repository path as specified in the context
+WORKDIR /testbed/
+
+# Ensure bash is the default shell
+SHELL ["/bin/bash", "-c"]
+
+# Add a default bashrc configuration
+RUN echo "export PATH=/usr/local/bin:$PATH" >> /root/.bashrc

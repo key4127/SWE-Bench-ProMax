@@ -1,0 +1,78 @@
+# Base image specification. Using Debian Trixie as recommended for this project
+# Debian Trixie provides the required packages (libei-dev, libtomlplusplus-dev, libportal-dev) that are not available in older distributions
+FROM --platform=linux/x86_64 debian:trixie-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Install essential build tools and all required libraries
+# This includes build tools, X11 libraries, Qt6, core libraries, desktop integration, testing frameworks, and configuration libraries
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    build-essential \
+    cmake \
+    ninja-build \
+    pkg-config \
+    xorg-dev \
+    libx11-dev \
+    libxtst-dev \
+    libxkbfile-dev \
+    libssl-dev \
+    libglib2.0-dev \
+    qt6-base-dev \
+    qt6-tools-dev \
+    libgtk-3-dev \
+    libgtest-dev \
+    libgmock-dev \
+    libei-dev \
+    libportal-dev \
+    libtomlplusplus-dev \
+    libcli11-dev \
+    help2man \
+    locales \
+    locales-all \
+    tzdata \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale configuration for proper internationalization support
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set QT_QPA_PLATFORM environment variable for headless Qt execution
+# This is required for running Qt-based tests without a display server
+ENV QT_QPA_PLATFORM=offscreen
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the repository and checkout to the specific commit
+RUN git clone https://github.com/deskflow/deskflow /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard ead49c402512c6b9faff71280897de43efdf9364 && \
+    git remote remove origin
+
+# Configure the project with CMake using Ninja generator
+# Enable tests with BUILD_TESTS=ON and SKIP_BUILD_TESTS=OFF, use Debug build type for better test diagnostics
+# CMAKE_COMPILE_WARNING_AS_ERROR is set to OFF to avoid build failures from warnings
+RUN cd /testbed && \
+    cmake -B build -S . \
+    -G Ninja \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_TESTS=ON \
+    -DSKIP_BUILD_TESTS=OFF \
+    -DCMAKE_COMPILE_WARNING_AS_ERROR=OFF \
+    -DCMAKE_CXX_STANDARD=20
+
+# Build the project with parallel compilation
+# This builds all dependencies required for the ArgParserTests and CoreArgParserTests
+# (app, arch, base libraries and Qt6::Test framework)
+RUN cd /testbed && \
+    cmake --build build --parallel $(nproc)
+
+# Set bash as default shell for compatibility
+SHELL ["/bin/bash", "-c"]

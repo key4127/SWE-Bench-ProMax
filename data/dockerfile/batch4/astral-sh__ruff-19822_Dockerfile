@@ -1,0 +1,56 @@
+# Base image specification. Using official Rust 1.89 image which includes the Rust toolchain
+FROM --platform=linux/x86_64 rust:1.89
+
+# Set environment variables
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    git \
+    build-essential \
+    curl \
+    wget \
+    ca-certificates \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Install cargo-insta for snapshot testing (required for the test suite)
+RUN cargo install cargo-insta --locked
+
+# Optional: Install cargo-nextest for faster test execution
+RUN cargo install cargo-nextest --locked
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the repository and checkout to the target commit
+RUN git clone https://github.com/astral-sh/ruff /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 827456f977c3ab81fd419bafd490d502413c336d && \
+    git remote remove origin
+
+# Build the ty_server crate to ensure all dependencies are compiled
+# This step ensures the environment is fully prepared for test execution
+RUN cd /testbed && \
+    cargo build -p ty_server --release
+
+# Verify the test file exists
+RUN test -f /testbed/crates/ty_server/tests/e2e/initialize.rs || \
+    (echo "Test file not found!" && exit 1)
+
+# Set up Rust environment variables for optimal performance
+ENV CARGO_HOME=/usr/local/cargo
+ENV RUSTUP_HOME=/usr/local/rustup
+ENV PATH=/usr/local/cargo/bin:$PATH
+
+# Ensure bash is the default shell
+SHELL ["/bin/bash", "-c"]

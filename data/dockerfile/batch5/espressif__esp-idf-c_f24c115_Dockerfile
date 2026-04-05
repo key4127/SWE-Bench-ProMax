@@ -1,0 +1,152 @@
+# Base image specification. Using Debian Bookworm for Python 3.10+ compatibility with ESP-IDF requirements
+FROM --platform=linux/x86_64 debian:bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for ESP-IDF development
+RUN apt-get update && apt-get install -y \
+    apt-utils \
+    bison \
+    bzip2 \
+    ca-certificates \
+    ccache \
+    check \
+    curl \
+    flex \
+    git \
+    git-lfs \
+    gperf \
+    lcov \
+    libbsd-dev \
+    libffi-dev \
+    libglib2.0-0 \
+    libncurses-dev \
+    libpixman-1-0 \
+    libsdl2-2.0-0 \
+    libslirp0 \
+    libusb-1.0-0-dev \
+    make \
+    ninja-build \
+    python3 \
+    python3-pip \
+    python3-venv \
+    ruby \
+    unzip \
+    wget \
+    xz-utils \
+    zip \
+    gcc \
+    g++ \
+    build-essential \
+    pkg-config \
+    autoconf \
+    automake \
+    libtool \
+    libssl-dev \
+    dfu-util \
+    cmake \
+    locales \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up locale for proper character encoding support
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Clone ESP-IDF repository and checkout to the target commit SHA
+RUN git clone https://github.com/espressif/esp-idf.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 5e8f251b7150e4d8aef37b5b9a7c6b0e741c7dcc
+
+# Initialize and update all submodules (including micro-ecc and other dependencies)
+RUN cd /testbed && git submodule update --init --recursive
+
+# Set IDF_PATH and other ESP-IDF environment variables
+ENV IDF_PATH=/testbed
+ENV IDF_TOOLS_PATH=/opt/esp
+ENV IDF_PYTHON_CHECK_CONSTRAINTS=no
+ENV IDF_CCACHE_ENABLE=1
+ENV IDF_CI_BUILD=1
+
+# Set PYTHONPATH for ESP-IDF tools and components
+ENV PYTHONPATH=${IDF_PATH}/tools:${IDF_PATH}/tools/ci:${IDF_PATH}/tools/esp_app_trace:${IDF_PATH}/components/partition_table:${IDF_PATH}/tools/ci/python_packages
+
+# Install ESP-IDF Python dependencies with --break-system-packages flag to bypass PEP 668
+# Install core requirements, test-specific requirements, and build tools
+RUN cd /testbed && \
+    python3 -m pip install --break-system-packages --upgrade pip setuptools wheel && \
+    python3 -m pip install --break-system-packages \
+        setuptools \
+        packaging \
+        click \
+        pyserial \
+        cryptography \
+        pyparsing \
+        pyelftools \
+        esp-coredump \
+        esptool \
+        esp-idf-kconfig \
+        esp-idf-monitor \
+        esp-idf-nvs-partition-gen \
+        esp-idf-size \
+        esp-idf-diag \
+        esp-idf-panic-decoder \
+        pyclang \
+        construct \
+        rich \
+        psutil \
+        tree_sitter \
+        tree_sitter_c \
+        freertos_gdb \
+        "idf-component-manager>=2.2" \
+        scapy \
+        websocket-client \
+        netifaces \
+        rangehttpserver \
+        protobuf \
+        bleak \
+        paho-mqtt \
+        paramiko \
+        netmiko \
+        pyecharts \
+        python-can \
+        "pytest>=7.0" \
+        "pytest-embedded>=1.11.1" \
+        pytest-embedded-serial \
+        pytest-embedded-idf \
+        pytest-embedded-qemu \
+        pyyaml \
+        "idf-build-apps~=2.5.0"
+
+# Install ESP-IDF toolchains for all supported targets using --enable-ci flag
+RUN cd /testbed && ./install.sh --enable-ci
+
+# Set up environment variables for ESP-IDF tools
+# Add export.sh sourcing to bashrc for interactive sessions
+RUN echo "export IDF_PATH=/testbed" >> /root/.bashrc && \
+    echo "export IDF_TOOLS_PATH=/opt/esp" >> /root/.bashrc && \
+    echo "export IDF_PYTHON_CHECK_CONSTRAINTS=no" >> /root/.bashrc && \
+    echo "export IDF_CCACHE_ENABLE=1" >> /root/.bashrc && \
+    echo "export IDF_CI_BUILD=1" >> /root/.bashrc && \
+    echo "export PYTHONPATH=\${IDF_PATH}/tools:\${IDF_PATH}/tools/ci:\${IDF_PATH}/tools/esp_app_trace:\${IDF_PATH}/components/partition_table:\${IDF_PATH}/tools/ci/python_packages" >> /root/.bashrc && \
+    echo "source /testbed/export.sh" >> /root/.bashrc && \
+    echo "export CI_PIPELINE_ID=test-pipeline" >> /root/.bashrc
+
+# Pre-source the export script to set up PATH and other environment variables
+# This ensures tools are available in subsequent layers
+RUN /bin/bash -c "source /testbed/export.sh && env > /tmp/esp_env.txt"
+
+# Make sure Python packages are in PATH
+ENV PATH="/root/.local/bin:${PATH}"
+
+# Set a dummy CI_PIPELINE_ID for test configuration
+ENV CI_PIPELINE_ID=test-pipeline
+
+# Ensure bash is the default shell
+SHELL ["/bin/bash", "-c"]

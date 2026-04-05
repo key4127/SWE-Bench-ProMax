@@ -1,0 +1,69 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 golang:1.23.6
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Asia/Shanghai
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    patch \
+    build-essential \
+    gcc \
+    g++ \
+    make \
+    curl \
+    jq \
+    locales \
+    locales-all \
+    tzdata \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+RUN locale-gen en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set timezone
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Configure Go environment variables
+ENV CGO_ENABLED=1
+ENV GO111MODULE=on
+ENV GOPROXY=https://proxy.golang.org,direct
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, configures it, and installs project-specific dependencies
+RUN git clone https://github.com/pingcap/tidb /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 444c38fba0753d84448a39a72ce2fc01102d49b4 && \
+    git remote remove origin
+
+# Download Go dependencies
+RUN cd /testbed && \
+    go mod download && \
+    go mod verify
+
+# Install failpoint tool for test execution
+RUN go install github.com/pingcap/failpoint/failpoint-ctl@latest
+
+# Ensure failpoint-ctl is in PATH
+ENV PATH=/go/bin:$PATH
+
+# Build necessary tools from the repository
+RUN cd /testbed && \
+    make parser || true
+
+# Set up shell environment
+RUN echo 'export CGO_ENABLED=1' >> /root/.bashrc && \
+    echo 'export GO111MODULE=on' >> /root/.bashrc && \
+    echo 'export TZ=Asia/Shanghai' >> /root/.bashrc
+
+# Ensure bash is the default shell
+SHELL ["/bin/bash", "-c"]

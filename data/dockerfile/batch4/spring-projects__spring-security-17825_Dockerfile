@@ -1,0 +1,56 @@
+# Base image specification. Using Eclipse Temurin JDK 17 as recommended for Spring Security
+FROM --platform=linux/x86_64 eclipse-temurin:17-jdk
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    git \
+    wget \
+    curl \
+    unzip \
+    build-essential \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set JAVA_HOME environment variable
+ENV JAVA_HOME=/opt/java/openjdk
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version
+RUN git clone https://github.com/spring-projects/spring-security.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard bd593a63d073361f7d33ed5f10168fcdd69f1b83 && \
+    git remote remove origin
+
+# Make gradlew executable
+RUN chmod +x /testbed/gradlew
+
+# Download Gradle dependencies and build the project without running tests
+# This ensures all dependencies are cached and the project is properly configured
+RUN cd /testbed && \
+    ./gradlew --version && \
+    ./gradlew --no-daemon build -x test -x check || true
+
+# Pre-compile the crypto module to ensure all dependencies are resolved
+RUN cd /testbed && \
+    ./gradlew --no-daemon :crypto:compileJava :crypto:compileTestJava || true
+
+# Set up shell environment
+RUN echo 'export JAVA_HOME=/opt/java/openjdk' >> /root/.bashrc && \
+    echo 'export PATH="${JAVA_HOME}/bin:${PATH}"' >> /root/.bashrc
+
+# Set default shell to bash
+SHELL ["/bin/bash", "-c"]

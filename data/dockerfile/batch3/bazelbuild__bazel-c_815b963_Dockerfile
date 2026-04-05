@@ -1,0 +1,67 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 ubuntu:22.04
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    openjdk-21-jdk \
+    build-essential \
+    gcc \
+    g++ \
+    zip \
+    unzip \
+    python3 \
+    python3-pip \
+    git \
+    curl \
+    wget \
+    bash \
+    sed \
+    grep \
+    findutils \
+    coreutils \
+    patch \
+    pkg-config \
+    libssl-dev \
+    locales \
+    locales-all \
+    tzdata \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up environment variables for Java (Required for Bazel and test execution)
+ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Install Python dependencies required for build scripts
+RUN pip3 install --no-cache-dir bazel-runfiles==0.24.0
+
+# Install Bazelisk (which will download and use the correct Bazel version specified in .bazelversion)
+RUN wget -O /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-linux-amd64 \
+    && chmod +x /usr/local/bin/bazel
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code and checkouts to the target version
+RUN git clone https://github.com/bazelbuild/bazel /testbed \
+    && chmod -R 777 /testbed \
+    && cd /testbed \
+    && git reset --hard 61987ae7a644ed90bb764d8926ce382ad2b02b0e \
+    && git remote remove origin
+
+# Configure shell to use bash for proper environment variable handling
+SHELL ["/bin/bash", "-c"]
+
+# Set up environment for interactive shells
+RUN echo "export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64" >> /root/.bashrc \
+    && echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> /root/.bashrc
+
+# Pre-fetch Bazel dependencies to speed up subsequent test executions
+# This caches external dependencies without running tests
+RUN cd /testbed && bazel fetch //src/test/java/com/google/devtools/build/lib/analysis/actions:all || true
+RUN cd /testbed && bazel fetch //src/test/java/com/google/devtools/build/lib/analysis/starlark:all || true
+RUN cd /testbed && bazel fetch //src/test/java/com/google/devtools/build/lib/rules/starlarkdocextract:all || true
+RUN cd /testbed && bazel fetch //src/test/java/com/google/devtools/build/lib/starlark:all || true
+RUN cd /testbed && bazel fetch //src/test/java/com/google/devtools/build/lib/starlarkdocextract:all || true

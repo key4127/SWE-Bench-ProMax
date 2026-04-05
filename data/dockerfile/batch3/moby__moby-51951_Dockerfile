@@ -1,0 +1,103 @@
+# Base image specification. Using official Go image with Debian Bookworm as recommended
+FROM --platform=linux/x86_64 golang:1.25.6-bookworm
+
+# Set environment variables for non-interactive installation
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Install essential tools and libraries required for Docker development
+RUN apt-get update && apt-get install -y \
+    git \
+    build-essential \
+    gcc \
+    make \
+    pkg-config \
+    clang \
+    lld \
+    llvm \
+    iptables \
+    nftables \
+    apparmor \
+    libseccomp-dev \
+    libsystemd-dev \
+    e2fsprogs \
+    xfsprogs \
+    btrfs-progs \
+    thin-provisioning-tools \
+    iproute2 \
+    net-tools \
+    libnet1 \
+    libnl-3-200 \
+    pigz \
+    xz-utils \
+    zip \
+    zstd \
+    jq \
+    vim-common \
+    procps \
+    curl \
+    wget \
+    ca-certificates \
+    bash-completion \
+    fuse-overlayfs \
+    uidmap \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up Go environment variables as per requirements
+ENV GO111MODULE=on \
+    CGO_ENABLED=1 \
+    GOTOOLCHAIN=local \
+    GOOS=linux \
+    GOARCH=amd64 \
+    GOPATH=/go
+
+# Update PATH to include Go binaries
+ENV PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
+
+# Install Go tools required for testing (only gotestsum, skip golangci-lint due to version issues)
+RUN go install gotest.tools/gotestsum@v1.13.0
+
+# Create the working directory structure matching the expected Go workspace layout
+RUN mkdir -p /go/src/github.com/docker
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the moby/moby repository and checkout to the specific commit
+RUN git clone https://github.com/moby/moby.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard d5fd0c50e8f660772204191a3a2ce4f521ca7f75 && \
+    git remote remove origin
+
+# Create a symbolic link to match the expected working directory structure
+# This ensures compatibility with the Go module path and test execution requirements
+RUN ln -s /testbed /go/src/github.com/docker/docker
+
+# Configure Git safe directory to avoid ownership issues
+RUN git config --global --add safe.directory /testbed
+
+# Set environment variables for Docker build
+ENV DOCKER_GITCOMMIT=d5fd0c50e8f660772204191a3a2ce4f521ca7f75 \
+    VERSION=29.2 \
+    GO_VERSION=1.25.6
+
+# Disable Go telemetry
+RUN go telemetry off
+
+# Download Go dependencies using Go modules
+# This leverages Docker layer caching - dependencies are only re-downloaded if go.mod/go.sum change
+RUN cd /testbed && \
+    go mod download && \
+    go mod verify
+
+# Set bash as default shell for compatibility
+SHELL ["/bin/bash", "-c"]
+
+# Configure bash environment
+RUN echo 'export GOPATH=/go' >> /root/.bashrc && \
+    echo 'export PATH=$GOPATH/bin:/usr/local/go/bin:$PATH' >> /root/.bashrc && \
+    echo 'export GO111MODULE=on' >> /root/.bashrc && \
+    echo 'export GOTOOLCHAIN=local' >> /root/.bashrc && \
+    echo 'export CGO_ENABLED=1' >> /root/.bashrc && \
+    echo 'cd /testbed' >> /root/.bashrc

@@ -1,0 +1,43 @@
+# Base image specification. Using Node.js 20 on Debian-based image for bash compatibility
+FROM --platform=linux/x86_64 node:20-bookworm
+
+# Set environment variables to avoid interactive prompts
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Install essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    python3 \
+    locales \
+    locales-all \
+    tzdata \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install pnpm 9.15.0 globally as the package manager (specific version as per requirements)
+RUN npm install -g pnpm@9.15.0
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the repository and checkout to the target commit
+RUN git clone https://github.com/TabbyML/tabby.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 9266e3f9dd726c6c0deb318d5fa7896058edb77c && \
+    git remote remove origin
+
+# Install dependencies using pnpm with frozen lockfile
+# This ensures reproducible builds and installs all workspace dependencies
+RUN cd /testbed && \
+    pnpm install --frozen-lockfile
+
+# Set the working directory to the tabby-agent client where the test files are located
+WORKDIR /testbed/clients/tabby-agent
+
+# Configure bash environment to default to the test directory
+RUN echo "cd /testbed/clients/tabby-agent" >> /root/.bashrc

@@ -1,0 +1,75 @@
+# Base image specification. Using Debian-based golang image for better compatibility with /bin/bash
+FROM --platform=linux/x86_64 golang:1.23.0-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    git \
+    wget \
+    curl \
+    build-essential \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set Go environment variables
+ENV CGO_ENABLED=0
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version
+RUN git clone https://github.com/syncthing/syncthing.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 8461ca539b21f60292e9b06ddf19b3e5560cf7d1 && \
+    git remote remove origin
+
+# Download Go module dependencies
+RUN cd /testbed && \
+    go mod download && \
+    go mod verify
+
+# Ensure the test packages are available by running go mod tidy
+RUN cd /testbed && \
+    go mod tidy
+
+# CRITICAL: Generate required assets for lib/api tests
+# This generates lib/api/auto/gui.files.go containing the auto.Assets() function
+# Without this step, tests will fail with "undefined: auto.Assets" error
+RUN cd /testbed && \
+    go run build.go assets
+
+# Verify that the critical asset file was generated
+RUN test -f /testbed/lib/api/auto/gui.files.go || \
+    (echo "ERROR: Asset generation failed - gui.files.go not found" && exit 1)
+
+# Set bash as default shell
+SHELL ["/bin/bash", "-c"]
+
+# Create a simple script to verify environment setup
+RUN echo '#!/bin/bash' > /testbed/verify_env.sh && \
+    echo 'echo "Go version: $(go version)"' >> /testbed/verify_env.sh && \
+    echo 'echo "CGO_ENABLED: $CGO_ENABLED"' >> /testbed/verify_env.sh && \
+    echo 'echo "GOPATH: $GOPATH"' >> /testbed/verify_env.sh && \
+    echo 'echo "Working directory: $(pwd)"' >> /testbed/verify_env.sh && \
+    echo 'echo "Test file exists: $(test -f /testbed/lib/api/api_test.go && echo YES || echo NO)"' >> /testbed/verify_env.sh && \
+    echo 'echo "Generated assets exist: $(test -f /testbed/lib/api/auto/gui.files.go && echo YES || echo NO)"' >> /testbed/verify_env.sh && \
+    chmod +x /testbed/verify_env.sh
+
+# Set environment variable for logger suppression (recommended for tests)
+ENV LOGGER_DISCARD=1
+
+# Set default command to bash
+CMD ["/bin/bash"]

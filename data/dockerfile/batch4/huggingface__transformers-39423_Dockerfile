@@ -1,0 +1,67 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 python:3.9-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    git \
+    build-essential \
+    libjpeg-dev \
+    libpng-dev \
+    wget \
+    curl \
+    locales \
+    locales-all \
+    tzdata \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LC_ALL=en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+
+# Upgrade pip, setuptools, and wheel
+RUN pip install --upgrade pip setuptools wheel
+
+# Set environment variables for testing
+ENV PYTHONUNBUFFERED=1
+ENV TRANSFORMERS_VERBOSITY=info
+ENV PYTEST_TIMEOUT=600
+ENV HF_HOME=/workspace/.cache
+ENV PYTHONPATH=/testbed/src:/testbed:$PYTHONPATH
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, configures it, and installs project-specific dependencies
+RUN git clone https://github.com/huggingface/transformers /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 2b819ba4e383dd5b82d6d251039e30c3e94761b1 && \
+    git remote remove origin
+
+# Install PyTorch CPU version first (required for most tests)
+RUN pip install torch>=2.1 torchvision --index-url https://download.pytorch.org/whl/cpu
+
+# Install core dependencies
+RUN pip install "Pillow>=10.0.1,<=15.0" "numpy>=1.17"
+
+# Install testing dependencies
+RUN pip install "pytest>=7.2.0" pytest-xdist pytest-timeout pytest-asyncio pytest-rich pytest-order pytest-rerunfailures parameterized psutil timeout-decorator
+
+# Install additional dependencies required by transformers
+RUN pip install "timm<=1.0.11" "accelerate>=0.26.0" "huggingface-hub>=0.30.0,<1.0" \
+    "tokenizers>=0.21,<0.22" "safetensors>=0.4.3" filelock packaging pyyaml regex requests tqdm \
+    datasets dill evaluate "ruff==0.11.2" sentencepiece
+
+# Install the package in editable mode with testing dependencies (avoiding dev extras due to JAX conflicts)
+RUN cd /testbed && pip install -e ".[testing,torch]"
+
+# Create cache directory for HuggingFace
+RUN mkdir -p /workspace/.cache && chmod -R 777 /workspace/.cache
+
+# Set bash as default shell
+SHELL ["/bin/bash", "-c"]

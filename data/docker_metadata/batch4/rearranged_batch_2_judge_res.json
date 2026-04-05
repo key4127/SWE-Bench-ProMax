@@ -1,0 +1,1136 @@
+{
+  "dataset_instances": 554,
+  "provided_instances": 124,
+  "provided_rate": 0.22382671480144403,
+  "summary": {
+    "total_instances": 124,
+    "failed_before_patch": 80,
+    "passed_after_patch": 119,
+    "details": {
+      "f2p_instance": 75,
+      "p2p_instance": 44,
+      "f2f_instance": 5,
+      "p2f_instance": 0,
+      "resolved": 75,
+      "stable": 75
+    }
+  },
+  "instance_details": [
+    {
+      "instance_id": "syncthing__syncthing-9905",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "syncthing__syncthing-10472",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "confident-ai__deepeval-c_ce72651",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "apache__maven-9311",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "django__django-19643",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "apache__maven-10975",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "huggingface__sentence-transformers-c_6ed4a1c",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "hashicorp__nomad-25422",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "hashicorp__nomad-26681",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "hashicorp__nomad-27062",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "BerriAI__litellm-11642",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "zauberzeug__nicegui-5358",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "BerriAI__litellm-18443",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "orientechnologies__orientdb-c_ba3e218",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "jj-vcs__jj-8441",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "huggingface__sentence-transformers-c_e212adc",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "BerriAI__litellm-18574",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "orientechnologies__orientdb-c_db8bf79",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "orientechnologies__orientdb-c_ac386c9",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "confident-ai__deepeval-2162",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "huggingface__sentence-transformers-3222",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "terrastruct__d2-2330",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "orientechnologies__orientdb-c_c7f26e2",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "syncthing__syncthing-9980",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "terrastruct__d2-c_710cfe5",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "jax-ml__jax-33996",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "BerriAI__litellm-18552",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "confident-ai__deepeval-2346",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "orientechnologies__orientdb-c_ec52e83",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "orientechnologies__orientdb-c_e1c42ea",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "orientechnologies__orientdb-c_f5ad945",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "orientechnologies__orientdb-c_468325c",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "DLR-RM__stable-baselines3-2139",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "spf13__cobra-2231",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "orientechnologies__orientdb-c_f16aecd",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "apache__maven-2175",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "BerriAI__litellm-18504",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "firecracker-microvm__firecracker-5453",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "huggingface__sentence-transformers-c_e9ee1a5",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "orientechnologies__orientdb-c_6228b79",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "orientechnologies__orientdb-c_e3cb890",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "hibernate__hibernate-orm-c_5bde39f",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "zauberzeug__nicegui-4122",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "jax-ml__jax-33752",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "containers__podman-26553",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "BerriAI__litellm-16862",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "rustfs__rustfs-498",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "hashicorp__nomad-25252",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "rustfs__rustfs-685",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "hashicorp__nomad-26324",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "hashicorp__nomad-26042",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "hibernate__hibernate-orm-c_5687749",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "django__django-19161",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "albumentations-team__albumentations-2495",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "syncthing__syncthing-9979",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "BerriAI__litellm-18416",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "rustfs__rustfs-c_4ccdeb9",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "orientechnologies__orientdb-c_5cac94c",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "confident-ai__deepeval-2369",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "hibernate__hibernate-orm-9551",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "rustfs__rustfs-825",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "confident-ai__deepeval-2113",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "jj-vcs__jj-8295",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "jj-vcs__jj-7275",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "hashicorp__nomad-26325",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "orientechnologies__orientdb-c_4683dd5",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "jax-ml__jax-c_b841f5b",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "BerriAI__litellm-11417",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "syncthing__syncthing-10132",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "rustfs__rustfs-788",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "confident-ai__deepeval-2345",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "hashicorp__nomad-27064",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "jax-ml__jax-26383",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "jax-ml__jax-26136",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "confident-ai__deepeval-2293",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "syncthing__syncthing-10136",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "rustfs__rustfs-586",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "confident-ai__deepeval-c_116d584",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "orientechnologies__orientdb-c_593976e",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "hashicorp__nomad-26292",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "spf13__viper-2027",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "orientechnologies__orientdb-c_41f086f",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "orientechnologies__orientdb-c_1f71f52",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "zauberzeug__nicegui-5618",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "hibernate__hibernate-orm-c_8509166",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "syncthing__syncthing-c_bb91f53",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "huggingface__sentence-transformers-c_2e6ddea",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "orientechnologies__orientdb-c_919928e",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "albumentations-team__albumentations-2337",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "confident-ai__deepeval-2190",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "orientechnologies__orientdb-c_d832fa0",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "spring-projects__spring-security-17825",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "jax-ml__jax-26099",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "unclecode__crawl4ai-c_bac92a4",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "dromara__Sa-Token-c_55f0c94",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "PDFMathTranslate__PDFMathTranslate-c_0d4b7b6",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "jj-vcs__jj-8691",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "rustfs__rustfs-548",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "unclecode__crawl4ai-c_ada7441",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "confident-ai__deepeval-c_08844c8",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "albumentations-team__albumentations-2481",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "unclecode__crawl4ai-c_2ab0bf2",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "terrastruct__d2-2572",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "zauberzeug__nicegui-5257",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "dottxt-ai__outlines-c_dd215b4",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "huggingface__sentence-transformers-3401",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "spf13__viper-c_d8387f6",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "orientechnologies__orientdb-c_a1246e0",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "apache__maven-11322",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "zauberzeug__nicegui-5040",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "django__django-19669",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "confident-ai__deepeval-2378",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "AtsushiSakai__PythonRobotics-1211",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "syncthing__syncthing-10094",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "unclecode__crawl4ai-c_539a324",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "huggingface__sentence-transformers-c_8e03452",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "hashicorp__nomad-25909",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "jj-vcs__jj-7231",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "orientechnologies__orientdb-c_9b67c1a",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "jax-ml__jax-26556",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "firecracker-microvm__firecracker-c_0fa8dfc",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "albumentations-team__albumentations-2325",
+      "failed_before_patch": true,
+      "passed_after_patch": true,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 1.0,
+      "resolved": true,
+      "stable": true
+    },
+    {
+      "instance_id": "unclecode__crawl4ai-c_ac5f461",
+      "failed_before_patch": true,
+      "passed_after_patch": false,
+      "bug_fail_rate": 1.0,
+      "fix_pass_rate": 0.0,
+      "resolved": false,
+      "stable": false
+    },
+    {
+      "instance_id": "freqtrade__freqtrade-c_5e7246d",
+      "failed_before_patch": false,
+      "passed_after_patch": true,
+      "bug_fail_rate": 0.0,
+      "fix_pass_rate": 1.0,
+      "resolved": false,
+      "stable": false
+    }
+  ]
+}

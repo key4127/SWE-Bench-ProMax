@@ -1,0 +1,45 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 python:3.10-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    build-essential \
+    libgl1 \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set default workdir to testbed. (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, configures it, and installs project-specific dependencies
+RUN git clone https://github.com/roboflow/supervision /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 25edd9be211b71a2a905fabddb95d7d7945f919d && \
+    git remote remove origin
+
+# Install Python dependencies
+# First upgrade pip to ensure compatibility
+RUN pip install --upgrade pip
+
+# Install the package in editable mode with dev extras
+# This ensures the local repository code is used during testing
+RUN pip install -e ".[dev]"
+
+# Ensure pytest is installed with the correct version constraints
+RUN pip install "pytest>=7.2.2,<9.0.0"
+
+# Set Python to use UTF-8 encoding
+ENV PYTHONIOENCODING=utf-8
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8

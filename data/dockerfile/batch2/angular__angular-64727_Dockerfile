@@ -1,0 +1,45 @@
+# Base image specification. Using Node.js 22.21.0 as the base image
+FROM --platform=linux/x86_64 node:22.21.0-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    python3 \
+    python3-pip \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install pnpm 10.19.0 globally as required by the project
+RUN npm install -g pnpm@10.19.0
+
+# Verify installations
+RUN node --version && npm --version && pnpm --version
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Clone the Angular repository and checkout the specific commit
+RUN git clone https://github.com/angular/angular.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 46d5670688e76f76510f3e3fd5388af6449fc0cb && \
+    git remote remove origin
+
+# Install all project dependencies using pnpm
+# This will install Bazel via @bazel/bazelisk and all other required dependencies
+RUN cd /testbed && pnpm install
+
+# Set up environment to ensure bash is used by default
+SHELL ["/bin/bash", "-c"]
+
+# Verify the test file exists
+RUN test -f /testbed/packages/forms/signals/test/node/field_node.spec.ts && \
+    echo "Test file found successfully"

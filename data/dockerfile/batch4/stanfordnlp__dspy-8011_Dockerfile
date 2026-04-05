@@ -1,0 +1,58 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 python:3.9-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    patch \
+    build-essential \
+    libffi-dev \
+    curl \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Upgrade pip and install build tools
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, configures it, and installs project-specific dependencies
+RUN git clone https://github.com/stanfordnlp/dspy /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 320ca3d407a00e14cef31f4dc8943c25ebc0527c && \
+    git remote remove origin
+
+# Install dependencies from requirements files if they exist
+RUN cd /testbed && \
+    if [ -f requirements.txt ]; then pip install --no-cache-dir -r requirements.txt; fi && \
+    if [ -f requirements-dev.txt ]; then pip install --no-cache-dir -r requirements-dev.txt; fi
+
+# Install the package in editable mode with test dependencies
+RUN cd /testbed && \
+    pip install -e .[tests]
+
+# Install additional test dependencies and litellm with proxy support
+RUN pip install --no-cache-dir pytest pytest-mock pytest-timeout pytest-xdist && \
+    pip install --no-cache-dir 'litellm[proxy]' && \
+    pytest --version
+
+# Set up shell environment
+RUN echo "cd /testbed" >> /root/.bashrc
+
+# Set Python to use UTF-8 encoding
+ENV PYTHONIOENCODING=utf-8
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1

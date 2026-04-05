@@ -1,0 +1,52 @@
+# Base image specification. Using official Go image with version 1.21 for better compatibility
+FROM --platform=linux/x86_64 golang:1.21-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    build-essential \
+    make \
+    curl \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set Go environment variables
+ENV GO111MODULE=on
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, and sets up dependencies
+RUN git clone https://github.com/spf13/cobra /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 17b6dca2ffaf6113cbd1cf433ec988fa7d63c6f3 && \
+    git remote remove origin
+
+# Download Go module dependencies
+RUN cd /testbed && \
+    go mod download && \
+    go mod verify
+
+# Ensure all dependencies are properly installed
+RUN cd /testbed && \
+    go get -v ./...
+
+# Set working directory to testbed for test execution
+WORKDIR /testbed/
+
+# Set bash as default shell
+SHELL ["/bin/bash", "-c"]

@@ -1,0 +1,61 @@
+# Base image specification. Using Rust official image with version >= 1.92 as required by MSRV
+FROM --platform=linux/x86_64 rust:1.92-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for Cargo/Rust development
+RUN apt-get update && apt-get install -y \
+    git \
+    build-essential \
+    pkg-config \
+    libssl-dev \
+    libcurl4-openssl-dev \
+    libgit2-dev \
+    libssh2-1-dev \
+    zlib1g-dev \
+    libsecret-1-0 \
+    libsecret-1-dev \
+    gcc-multilib \
+    perl \
+    make \
+    curl \
+    wget \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Verify Rust installation and version
+RUN rustc --version && cargo --version
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the Cargo repository and checkout to the specific commit
+RUN git clone https://github.com/rust-lang/cargo /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 459c03ee38c2539ad5e4719871d33f1a7bf0a5e7 && \
+    git remote remove origin
+
+# Build the project (without running tests)
+# This compiles cargo and all its dependencies, preparing the environment for test execution
+RUN cd /testbed && \
+    cargo build --release
+
+# Set environment variables for testing
+ENV CARGO_PROFILE_DEV_DEBUG=1
+ENV CARGO_PROFILE_TEST_DEBUG=1
+ENV CARGO_INCREMENTAL=0
+
+# Ensure the shell environment is properly set up
+RUN echo 'export PATH=/testbed/target/release:$PATH' >> /root/.bashrc
+
+# Set the default shell to bash
+SHELL ["/bin/bash", "-c"]

@@ -1,0 +1,68 @@
+# Base image specification. Using Ubuntu 22.04 as it includes /bin/bash by default
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+# Set environment variables for non-interactive installation
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# Install system dependencies including Go, build tools, and git
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    build-essential \
+    gcc \
+    libc6-dev \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Go 1.24.0
+RUN wget https://go.dev/dl/go1.24.0.linux-amd64.tar.gz -O /tmp/go.tar.gz \
+    && tar -C /usr/local -xzf /tmp/go.tar.gz \
+    && rm /tmp/go.tar.gz
+
+# Set Go environment variables
+ENV PATH=/usr/local/go/bin:$PATH
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:$PATH
+
+# Create Go workspace directory
+RUN mkdir -p /go/src /go/bin /go/pkg \
+    && chmod -R 777 /go
+
+# Set default workdir to testbed
+WORKDIR /testbed/
+
+# Clone the repository and checkout the specific commit
+RUN git clone https://github.com/gohugoio/hugo.git /testbed \
+    && git remote remove origin \
+    && git reset --hard 18b9b6488bb3667f1d0649de2d2a9a5c6d62ca0a
+
+# Install mage build tool
+RUN go install github.com/magefile/mage@v1.15.0
+
+# Set build environment variables for extended features
+ENV CGO_ENABLED=1
+ENV HUGO_BUILD_TAGS=extended
+
+# Install Go modules and build dependencies
+RUN go mod download
+
+# Install the project in development mode (equivalent to go install but ensures local code is used)
+RUN go install -tags extended
+
+# Set up environment for testing (without running tests)
+ENV HUGO_TESTRUN=true
+ENV CI=true
+
+# Create cache directories with proper permissions
+RUN mkdir -p /tmp/hugo_cache \
+    && chmod -R 777 /tmp/hugo_cache
+
+# Add Go binaries to PATH for easy access
+ENV PATH=/testbed:$PATH
+
+# Set up bashrc for convenience
+RUN echo 'export PATH=/usr/local/go/bin:/go/bin:$PATH' >> /root/.bashrc \
+    && echo 'export GOPATH=/go' >> /root/.bashrc \
+    && echo 'export CGO_ENABLED=1' >> /root/.bashrc \
+    && echo 'export HUGO_BUILD_TAGS=extended' >> /root/.bashrc

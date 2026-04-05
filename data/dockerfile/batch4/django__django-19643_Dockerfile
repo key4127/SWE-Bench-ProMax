@@ -1,0 +1,79 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 python:3.13-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    patch \
+    build-essential \
+    libffi-dev \
+    libtiff-dev \
+    jq \
+    curl \
+    locales \
+    locales-all \
+    tzdata \
+    gettext \
+    libmemcached-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Environment variables for Python
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Upgrade pip, setuptools, and wheel
+RUN pip install --upgrade pip setuptools wheel
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, configures it, and installs project-specific dependencies
+RUN git clone https://github.com/django/django.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard fda3c1712a1eb7b20dfc91e6c9abae32bd64d081 && \
+    git remote remove origin
+
+# Install Python dependencies
+# First, install dependencies from requirements file if it exists
+RUN if [ -f /testbed/tests/requirements/py3.txt ]; then \
+        pip install -r /testbed/tests/requirements/py3.txt; \
+    fi
+
+# Install additional key packages that may be needed
+RUN pip install \
+    aiosmtpd>=1.4.5 \
+    asgiref>=3.9.1 \
+    tblib>=3.0.0 \
+    argon2-cffi>=23.1.0 \
+    bcrypt>=4.1.1 \
+    docutils>=0.19 \
+    sqlparse>=0.5.0 \
+    PyYAML>=6.0.2 \
+    tzdata \
+    jinja2>=2.11.0 \
+    Pillow>=10.1.0 || true
+
+# Install Django itself in editable mode
+RUN pip install -e /testbed
+
+# Verify installation
+RUN python -c "import django; print(f'Django version: {django.get_version()}')"
+
+# Set bash as default shell
+SHELL ["/bin/bash", "-c"]
+
+# Create a simple activation script for convenience
+RUN echo '#!/bin/bash' > /root/.bashrc && \
+    echo 'cd /testbed' >> /root/.bashrc && \
+    echo 'export PYTHONDONTWRITEBYTECODE=1' >> /root/.bashrc && \
+    echo 'export PYTHONUNBUFFERED=1' >> /root/.bashrc

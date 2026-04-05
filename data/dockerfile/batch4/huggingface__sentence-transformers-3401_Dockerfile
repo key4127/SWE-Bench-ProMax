@@ -1,0 +1,67 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    build-essential \
+    curl \
+    ca-certificates \
+    locales \
+    locales-all \
+    tzdata \
+    software-properties-common \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python 3.9 directly via apt (more reliable than downloading Miniconda)
+RUN add-apt-repository ppa:deadsnakes/ppa -y && \
+    apt-get update && \
+    apt-get install -y \
+    python3.9 \
+    python3.9-venv \
+    python3.9-dev \
+    python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set Python 3.9 as the default python3
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 1 && \
+    update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
+
+# Upgrade pip for Python 3.9
+RUN python3.9 -m pip install --upgrade pip setuptools wheel
+
+# Create a virtual environment named testbed
+RUN python3.9 -m venv /opt/testbed
+
+# Set environment to use the virtual environment
+ENV PATH=/opt/testbed/bin:$PATH
+ENV VIRTUAL_ENV=/opt/testbed
+
+# Upgrade pip, setuptools, and wheel in the virtual environment
+RUN /opt/testbed/bin/pip install --upgrade pip setuptools wheel
+
+# Set default workdir to testbed. (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, configures it, and installs project-specific dependencies
+RUN git clone https://github.com/huggingface/sentence-transformers /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard f8f111ea05547ecd4f747537143cf4cf8e432664 && \
+    git remote remove origin
+
+# Install the package with required extras for testing
+# Using editable install with [train,dev] extras as specified
+RUN cd /testbed && \
+    /opt/testbed/bin/pip install -e '.[train,dev]'
+
+# Ensure virtual environment is activated by default
+RUN echo "source /opt/testbed/bin/activate" >> /root/.bashrc
+
+# Set environment variables for HuggingFace Hub (optional but helpful for model downloads)
+ENV HF_HOME=/testbed/.cache/huggingface
+ENV TRANSFORMERS_CACHE=/testbed/.cache/huggingface/transformers

@@ -1,0 +1,69 @@
+# Base image specification. Using official Rust image with Debian Bookworm as foundation
+FROM --platform=linux/x86_64 rust:1.85-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for Rust development, FUSE, and protocol buffer compilation
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    ca-certificates \
+    curl \
+    git \
+    pkg-config \
+    libssl-dev \
+    protobuf-compiler \
+    libfuse-dev \
+    fuse3 \
+    cmake \
+    wget \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up Cargo environment variables for optimal build configuration
+ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
+ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
+ENV CARGO_INCREMENTAL=0
+ENV CARGO_TERM_COLOR=always
+ENV RUST_BACKTRACE=1
+ENV RUST_LOG=warn
+ENV CARGO_HOME=/usr/local/cargo
+ENV RUSTUP_HOME=/usr/local/rustup
+ENV PATH=/usr/local/cargo/bin:$PATH
+
+# Install Rust components required for development and testing
+RUN rustup component add rustfmt clippy rust-src rust-analyzer
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the repository and checkout to the specific commit
+RUN git clone https://github.com/rustfs/rustfs /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 7dcf01f12700ff21529348879bfd12df034013ee && \
+    git remote remove origin
+
+# Fetch dependencies using Cargo with locked versions to ensure reproducibility
+RUN cd /testbed && cargo fetch --locked
+
+# Run critical prebuild step to generate protocol buffer code (required before building/testing)
+# This step is essential for the workspace to build correctly
+RUN cd /testbed && cargo run --bin gproto || true
+
+# Build the workspace dependencies to ensure everything is ready for testing
+# Build specific crates that are dependencies for the test
+RUN cd /testbed && cargo build -p rustfs --lib || true
+
+# Set the shell to bash for better compatibility
+SHELL ["/bin/bash", "-c"]
+
+# Configure bash environment
+RUN echo 'export RUST_BACKTRACE=1' >> /root/.bashrc && \
+    echo 'export RUST_LOG=warn' >> /root/.bashrc && \
+    echo 'export CARGO_TERM_COLOR=always' >> /root/.bashrc && \
+    echo 'export CARGO_HOME=/usr/local/cargo' >> /root/.bashrc && \
+    echo 'export RUSTUP_HOME=/usr/local/rustup' >> /root/.bashrc && \
+    echo 'cd /testbed' >> /root/.bashrc

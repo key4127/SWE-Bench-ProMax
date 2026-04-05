@@ -1,0 +1,67 @@
+# Base image specification. Using Eclipse Temurin Java 11 JDK as the foundation for Apache Iceberg
+FROM --platform=linux/x86_64 eclipse-temurin:11-jdk
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    unzip \
+    build-essential \
+    locales \
+    locales-all \
+    tzdata \
+    docker.io \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale to avoid potential encoding issues
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set Java environment variables
+ENV JAVA_HOME=/opt/java/openjdk
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Configure Gradle daemon settings for container environment
+# Increased heap size to 1536m as per project requirements
+ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx1536m"
+
+# Set Spark environment variable
+ENV SPARK_LOCAL_IP=localhost
+
+# Set working directory to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the Apache Iceberg repository and checkout to the specific commit
+RUN git clone https://github.com/apache/iceberg.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 317ebe53ea295e92e440913c6369189a664691db && \
+    git remote remove origin
+
+# Make Gradle wrapper executable
+RUN chmod +x /testbed/gradlew
+
+# Pre-download dependencies and build the required module to cache dependencies
+# This builds the spark-extensions-3.5 module without running tests
+# Using -x test to skip tests, --no-daemon to avoid daemon issues in container
+RUN cd /testbed && \
+    ./gradlew :iceberg-spark:spark-extensions-3.5_2.12:build -x test -DsparkVersions=3.5 -DscalaVersion=2.12 --no-daemon || true
+
+# Create a shell initialization script to ensure proper environment setup
+RUN echo '#!/bin/bash' > /root/.bashrc && \
+    echo 'export JAVA_HOME=/opt/java/openjdk' >> /root/.bashrc && \
+    echo 'export PATH=$JAVA_HOME/bin:$PATH' >> /root/.bashrc && \
+    echo 'export GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx1536m"' >> /root/.bashrc && \
+    echo 'export SPARK_LOCAL_IP=localhost' >> /root/.bashrc && \
+    echo 'cd /testbed' >> /root/.bashrc
+
+# Set the default shell to bash for compatibility
+SHELL ["/bin/bash", "-c"]
+
+# Ensure the working directory is set correctly
+WORKDIR /testbed

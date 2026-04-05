@@ -1,0 +1,93 @@
+# Base image specification. Using Ubuntu 22.04 for modern package support and compatibility
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+# Environment setup to prevent interactive prompts during package installation
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    ninja-build \
+    git \
+    wget \
+    curl \
+    pkg-config \
+    doxygen \
+    graphviz \
+    python3-lxml \
+    # Compiler toolchain
+    g++ \
+    make \
+    # Qt5 and related packages
+    qtbase5-dev \
+    qtbase5-dev-tools \
+    qtbase5-private-dev \
+    qttools5-dev \
+    qttools5-dev-tools \
+    qtpositioning5-dev \
+    libqt5sensors5-dev \
+    libqt5serialport5-dev \
+    libqt5sql5-sqlite \
+    libqt5svg5-dev \
+    qt5-image-formats-plugins \
+    # Graphics and display libraries
+    libegl-dev \
+    libgl-dev \
+    libcups2-dev \
+    # Geospatial and mapping libraries
+    libgdal-dev \
+    libproj-dev \
+    libpolyclipping-dev \
+    # Compression library
+    zlib1g-dev \
+    # Additional utilities
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale for proper character encoding support
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Environment variables for test execution and Qt headless mode
+ENV CTEST_OUTPUT_ON_FAILURE=1
+ENV QT_QPA_PLATFORM=offscreen
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Set default workdir to testbed
+WORKDIR /testbed/
+
+# Target Project setup. Clone the repository and checkout to the specific commit
+RUN git clone https://github.com/OpenOrienteering/mapper.git /testbed && \
+    cd /testbed && \
+    git checkout de663f973488615a03ce9e1d960d77a8b8ec6812 && \
+    chmod -R 777 /testbed
+
+# Configure the project using CMake with appropriate options for testing
+RUN cd /testbed && \
+    cmake -S . -B build -G Ninja \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DBUILD_SHARED_LIBS=0 \
+    -DMapper_AUTORUN_SYSTEM_TESTS=0 \
+    -DMapper_USE_GDAL=ON \
+    -DMapper_BUILD_CLIPPER=auto \
+    -DMapper_CI_ENABLE_CODECHECKS=0 \
+    -DCMAKE_CXX_STANDARD=14
+
+# Build the project with all available cores
+RUN cd /testbed && \
+    cmake --build build -j$(nproc)
+
+# Ensure shell compatibility by setting bash as default
+SHELL ["/bin/bash", "-c"]
+
+# Add bash initialization for interactive sessions
+RUN echo 'export QT_QPA_PLATFORM=offscreen' >> /root/.bashrc && \
+    echo 'export CTEST_OUTPUT_ON_FAILURE=1' >> /root/.bashrc
+
+# Reset workdir back to /testbed/
+WORKDIR /testbed/

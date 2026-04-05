@@ -1,0 +1,107 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    git \
+    wget \
+    curl \
+    flex \
+    bison \
+    gperf \
+    python3 \
+    python3-pip \
+    python3-venv \
+    cmake \
+    ninja-build \
+    ccache \
+    libffi-dev \
+    libssl-dev \
+    libncurses5-dev \
+    libusb-1.0-0-dev \
+    libdbus-1-dev \
+    libglib2.0-dev \
+    dfu-util \
+    build-essential \
+    gcc \
+    g++ \
+    make \
+    pkg-config \
+    libudev-dev \
+    locales \
+    locales-all \
+    tzdata \
+    libncurses5 \
+    tar \
+    gzip \
+    bzip2 \
+    xz-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Ensure python3 is the default python
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+
+# Set up working directory (Required)
+WORKDIR /testbed/
+
+# Clone the ESP-IDF repository and checkout the specific commit
+RUN git clone https://github.com/espressif/esp-idf.git /testbed && \
+    cd /testbed && \
+    git checkout bfcba51ca10b1c777cc9fa36facdb9bca9741277 && \
+    git submodule update --init --recursive && \
+    chmod -R 777 /testbed
+
+# Set ESP-IDF environment variables
+ENV IDF_PATH=/testbed
+ENV IDF_TOOLS_PATH=/root/.espressif
+ENV IDF_SKIP_CHECK_SUBMODULES=1
+
+# Install Python requirements for ESP-IDF
+# Upgrade pip first
+RUN python3 -m pip install --upgrade pip setuptools wheel
+
+# Install core requirements
+RUN cd /testbed && \
+    python3 -m pip install --no-cache-dir -r tools/requirements/requirements.core.txt
+
+# Install CI requirements
+RUN cd /testbed && \
+    if [ -f tools/requirements/requirements.ci.txt ]; then \
+        python3 -m pip install --no-cache-dir -r tools/requirements/requirements.ci.txt; \
+    fi
+
+# Install additional requirements files if they exist
+RUN cd /testbed && \
+    for req_file in tools/requirements/requirements.*.txt; do \
+        if [ -f "$req_file" ] && [ "$req_file" != "tools/requirements/requirements.core.txt" ] && [ "$req_file" != "tools/requirements/requirements.ci.txt" ]; then \
+            python3 -m pip install --no-cache-dir -r "$req_file" || true; \
+        fi; \
+    done
+
+# Install ESP-IDF tools (toolchains, OpenOCD, etc.) with CI support
+RUN cd /testbed && \
+    bash install.sh --enable-ci all
+
+# Set up environment activation in bashrc
+RUN echo "export IDF_PATH=/testbed" >> /root/.bashrc && \
+    echo "export IDF_TOOLS_PATH=/root/.espressif" >> /root/.bashrc && \
+    echo "export IDF_SKIP_CHECK_SUBMODULES=1" >> /root/.bashrc && \
+    echo "source /testbed/export.sh" >> /root/.bashrc
+
+# Create a wrapper script to ensure environment is sourced before running commands
+RUN echo '#!/bin/bash\n\
+export IDF_PATH=/testbed\n\
+export IDF_TOOLS_PATH=/root/.espressif\n\
+export IDF_SKIP_CHECK_SUBMODULES=1\n\
+source /testbed/export.sh\n\
+exec "$@"' > /usr/local/bin/idf-env.sh && \
+    chmod +x /usr/local/bin/idf-env.sh
+
+# Set bash as default shell
+SHELL ["/bin/bash", "-c"]
+
+# Set working directory to testbed
+WORKDIR /testbed/

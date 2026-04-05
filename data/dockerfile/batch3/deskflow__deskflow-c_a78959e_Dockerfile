@@ -1,0 +1,96 @@
+# Base image specification. Using Debian Trixie as recommended for this project
+# Debian Trixie provides the required packages and newer CMake version (3.24+) needed for this project
+FROM --platform=linux/x86_64 debian:trixie-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Install essential build tools and all required libraries
+# This includes build tools, CMake 3.24+, X11 libraries, Qt6, OpenSSL, and other core dependencies
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    build-essential \
+    cmake \
+    ninja-build \
+    pkg-config \
+    # X11 and windowing system libraries
+    xorg-dev \
+    libx11-dev \
+    libxtst-dev \
+    libxinerama-dev \
+    libxrandr-dev \
+    libxi-dev \
+    libxkbfile-dev \
+    libxkbcommon-dev \
+    libxkbcommon-x11-dev \
+    # Qt6 development packages
+    qt6-base-dev \
+    qt6-base-dev-tools \
+    qt6-tools-dev \
+    # Security and networking libraries
+    libssl-dev \
+    libglib2.0-dev \
+    # Optional DNS-SD support
+    libavahi-compat-libdnssd-dev \
+    # Testing frameworks (Google Test/GMock)
+    libgtest-dev \
+    libgmock-dev \
+    # Desktop integration libraries
+    libgtk-3-dev \
+    # Configuration libraries
+    libei-dev \
+    libportal-dev \
+    libtomlplusplus-dev \
+    libcli11-dev \
+    # Utilities
+    help2man \
+    locales \
+    locales-all \
+    tzdata \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale configuration for proper internationalization support
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set QT_QPA_PLATFORM environment variable for headless Qt execution
+# This is required for running Qt-based tests without a display server
+ENV QT_QPA_PLATFORM=offscreen
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the repository and checkout to the specific commit
+RUN git clone https://github.com/deskflow/deskflow /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 5fc00f7af49b3fa9a8997fafda256e8e139fb2ef && \
+    git remote remove origin
+
+# Configure the project with CMake using Ninja generator
+# Enable tests with BUILD_TESTS=ON, use Debug build type for better debugging
+# CMAKE_COMPILE_WARNING_AS_ERROR is set to OFF to avoid build failures from warnings
+# Google Test will be auto-fetched via CMake FetchContent
+RUN cd /testbed && \
+    cmake -B build -S . \
+    -G Ninja \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_TESTS=ON \
+    -DSKIP_BUILD_TESTS=OFF \
+    -DBUILD_INSTALLER=OFF \
+    -DCMAKE_COMPILE_WARNING_AS_ERROR=OFF \
+    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+    -DCMAKE_CXX_STANDARD=20
+
+# Build the project with parallel compilation
+# This builds all dependencies required for the ArgParserTests and CoreArgParserTests
+# The unittests executable will be located at build/bin/unittests
+RUN cd /testbed && \
+    cmake --build build --parallel $(nproc)
+
+# Set bash as default shell for compatibility
+SHELL ["/bin/bash", "-c"]

@@ -1,0 +1,46 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 golang:1.25.1-bookworm
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    git \
+    make \
+    gcc \
+    g++ \
+    build-essential \
+    ca-certificates \
+    locales \
+    locales-all \
+    tzdata \
+    jq \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up Go environment variables (already set in golang base image, but explicitly defining for clarity)
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
+
+# Verify Go installation
+RUN go version
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version
+RUN git clone https://github.com/kubernetes/kubernetes.git /testbed \
+    && chmod -R 777 /testbed \
+    && cd /testbed \
+    && git reset --hard 1ffdc16b71e48dddcc123b197434b67f87c810a0 \
+    && git remote remove origin
+
+# Set up Go workspace - the repository uses go.work for multi-module workspace management
+# The workspace file and vendored dependencies are already in the repository
+RUN cd /testbed && go work sync
+
+# Ensure bash is the default shell
+SHELL ["/bin/bash", "-c"]
+
+# Set up bash profile for interactive sessions
+RUN echo 'export PATH=/usr/local/go/bin:$GOPATH/bin:$PATH' >> /root/.bashrc \
+    && echo 'export GOPATH=/go' >> /root/.bashrc

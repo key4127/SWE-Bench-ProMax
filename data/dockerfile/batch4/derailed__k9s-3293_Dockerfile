@@ -1,0 +1,58 @@
+# Base image specification. Using golang:1.24-alpine3.21 for Go 1.24.x with Alpine Linux 3.21
+FROM --platform=linux/x86_64 golang:1.24-alpine3.21
+
+# Set environment variables to avoid interactive prompts and configure timezone
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Install essential tools and libraries required for development and runtime
+# Alpine uses apk package manager instead of apt
+RUN apk update && apk add --no-cache \
+    wget \
+    git \
+    curl \
+    bash \
+    make \
+    ca-certificates \
+    && rm -rf /var/cache/apk/*
+
+# Set Go environment variables for static compilation as specified in requirements
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone source code and checkout to the target commit SHA
+RUN git clone https://github.com/derailed/k9s /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard c2694ee3e59876a584a9c0ad0a7d7cc7a3793f44 && \
+    git remote remove origin
+
+# Download Go module dependencies
+# This ensures all dependencies from go.mod and go.sum are fetched
+RUN cd /testbed && \
+    go mod download && \
+    go mod verify
+
+# Verify the test files and testdata directory exist
+RUN test -f /testbed/internal/client/config_test.go && \
+    test -f /testbed/internal/config/config_test.go && \
+    test -d /testbed/internal/config/testdata/configs/ && \
+    test -f /testbed/internal/config/testdata/configs/default.yaml && \
+    test -f /testbed/internal/config/testdata/configs/expected.yaml && \
+    test -f /testbed/internal/config/testdata/configs/k9s.yaml && \
+    test -f /testbed/internal/model/stack_test.go && \
+    test -f /testbed/internal/ui/crumbs_test.go && \
+    test -f /testbed/internal/ui/table_helper_test.go && \
+    test -f /testbed/internal/ui/table_test.go && \
+    test -f /testbed/internal/view/alias_test.go && \
+    test -f /testbed/internal/view/table_int_test.go && \
+    echo "All test files verified successfully"
+
+# Set working directory to repository root where go.mod exists
+WORKDIR /testbed
+
+# Ensure bash is the default shell for any subsequent commands
+SHELL ["/bin/bash", "-c"]

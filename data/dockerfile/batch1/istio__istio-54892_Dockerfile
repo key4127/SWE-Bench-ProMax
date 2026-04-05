@@ -1,0 +1,58 @@
+# Base image with Go 1.23.0 and build tools
+FROM golang:1.23.0-bookworm
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive \
+    TZ=Etc/UTC \
+    GOPATH=/go \
+    GO111MODULE=on \
+    BUILD_WITH_CONTAINER=0
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    ca-certificates \
+    curl \
+    docker.io \
+    git \
+    jq \
+    libc6-dev \
+    make \
+    pkg-config \
+    protobuf-compiler \
+    software-properties-common \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Rust toolchain for ztunnel components
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Set working directory
+WORKDIR /testbed
+
+# Clone the repository
+RUN git clone https://github.com/istio/istio.git /testbed
+
+# Checkout specific commit
+RUN git reset --hard 757281770445eae71e62413ace4e19d06941af22
+
+# Initialize go modules and download dependencies
+RUN go mod download
+
+# Install build dependencies using make init
+RUN make init
+
+# Set up environment for development mode installation
+RUN go install ./...
+
+# Create bashrc setup for convenience
+RUN echo 'export PATH="/root/.cargo/bin:$PATH"' >> /root/.bashrc && \
+    echo 'export GOPATH=/go' >> /root/.bashrc && \
+    echo 'export GO111MODULE=on' >> /root/.bashrc
+
+# Clean up to reduce image size
+RUN apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Set default shell to bash
+SHELL ["/bin/bash", "-c"]

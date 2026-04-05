@@ -1,0 +1,43 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 python:3.9-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    git \
+    wget \
+    curl \
+    build-essential \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Upgrade pip to latest version
+RUN pip install --upgrade pip
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, and installs project-specific dependencies
+RUN git clone https://github.com/mikf/gallery-dl /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 158ba1b95a9a0de49bc815b253595fd4b96f4fa8 && \
+    git remote remove origin
+
+# Install core dependencies
+RUN pip install "requests>=2.11.0"
+
+# Install gallery-dl in editable/development mode to ensure local code is used
+RUN pip install -e .
+
+# Set up shell environment
+SHELL ["/bin/bash", "-c"]

@@ -1,0 +1,67 @@
+# Base image specification. Using Ubuntu 22.04 for compatibility with Java 17 and Maven
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    locales \
+    locales-all \
+    tzdata \
+    ca-certificates \
+    gnupg \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Install Java 17 (Eclipse Temurin distribution from Adoptium)
+RUN mkdir -p /etc/apt/keyrings && \
+    wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc && \
+    echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list && \
+    apt-get update && \
+    apt-get install -y temurin-17-jdk && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set Java environment variables
+ENV JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Install Maven 3.9.0
+RUN wget https://archive.apache.org/dist/maven/maven-3/3.9.0/binaries/apache-maven-3.9.0-bin.tar.gz && \
+    tar -xzf apache-maven-3.9.0-bin.tar.gz -C /opt && \
+    rm apache-maven-3.9.0-bin.tar.gz && \
+    ln -s /opt/apache-maven-3.9.0 /opt/maven
+
+ENV MAVEN_HOME=/opt/maven
+ENV PATH=$MAVEN_HOME/bin:$PATH
+
+# Verify installations
+RUN java -version && mvn -version
+
+# Set default workdir to testbed
+WORKDIR /testbed/
+
+# Clone the target repository and checkout the specific commit
+RUN git clone https://github.com/spring-cloud/spring-cloud-gateway /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 2ebd776f1bec94d1480e417e5f4e293671fad0e5 && \
+    git remote remove origin
+
+# Build the project and install dependencies (skip tests during build)
+# This ensures all dependencies are resolved and the project is properly set up
+RUN cd /testbed && \
+    ./mvnw clean install -DskipTests -B -U -Pspring \
+    -Dmaven.wagon.http.pool=false \
+    -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
+
+# Set up environment for test execution
+ENV MAVEN_OPTS="-Xmx2048m -XX:MaxPermSize=512m"

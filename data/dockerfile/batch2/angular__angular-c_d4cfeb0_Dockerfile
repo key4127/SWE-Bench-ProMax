@@ -1,0 +1,58 @@
+# Base image specification. Using Node.js 20.11.1 on Debian Bookworm for Angular requirements
+FROM --platform=linux/x86_64 node:20.11.1-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    build-essential \
+    gcc \
+    g++ \
+    make \
+    python3 \
+    python3-pip \
+    curl \
+    gnupg \
+    ca-certificates \
+    bash \
+    patch \
+    unzip \
+    openjdk-17-jdk \
+    && rm -rf /var/lib/apt/lists/*
+
+# Verify Node.js version (should be 20.11.1 from base image)
+RUN node --version && npm --version
+
+# Enable Corepack for Yarn management as per Angular requirements
+RUN corepack enable
+
+# Install Bazelisk (automatically downloads and uses Bazel 5.0.0 as specified in .bazelversion)
+RUN npm install -g @bazel/bazelisk@^1.7.5
+
+# Verify installations
+RUN node --version && bazelisk --version
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones the Angular repository and checkouts to the specific commit SHA
+RUN git clone https://github.com/angular/angular.git /testbed && \
+    cd /testbed && \
+    git checkout 3089ab4ac148d13b03d9d9e085a34968d15bef00 && \
+    chmod -R 777 /testbed
+
+# Install project dependencies using yarn with frozen lockfile to ensure reproducibility
+# Yarn version will be managed by Corepack based on package.json specification
+RUN cd /testbed && yarn install --frozen-lockfile
+
+# Ensure Bazel cache directory exists and has proper permissions
+RUN mkdir -p /root/.cache/bazel && chmod -R 777 /root/.cache/bazel
+
+# Ensure bash is the default shell for better compatibility
+SHELL ["/bin/bash", "-c"]
+
+# Set up shell environment
+RUN echo 'export PATH=/testbed/node_modules/.bin:$PATH' >> /root/.bashrc

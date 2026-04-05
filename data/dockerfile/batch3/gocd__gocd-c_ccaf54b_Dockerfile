@@ -1,0 +1,46 @@
+# Base image specification. Using Eclipse Temurin JDK 25 as required for the project
+FROM --platform=linux/x86_64 eclipse-temurin:25-jdk
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# Set locale environment variables as specified in requirements
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Configure locale
+RUN locale-gen en_US.UTF-8 && \
+    update-locale LANG=en_US.UTF-8
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code and checkouts to the target commit SHA
+RUN git clone https://github.com/gocd/gocd /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 6c079134804385810caa9c15af16ca897e2cae29 && \
+    git remote remove origin
+
+# Make gradlew executable as specified in setup steps
+RUN chmod +x /testbed/gradlew
+
+# Pre-download dependencies by running a gradle task (but not running tests)
+# This ensures all dependencies are cached in the container
+RUN cd /testbed && \
+    ./gradlew :common:dependencies --no-daemon --no-build-cache || true
+
+# Set bash as default shell for runtime compatibility
+SHELL ["/bin/bash", "-c"]

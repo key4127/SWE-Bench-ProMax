@@ -1,0 +1,32 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 python:3.10-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set environment variables
+ENV PYTHONWARNINGS=ignore
+
+# Set default workdir to testbed. (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, configures it, and installs project-specific dependencies
+RUN git clone https://github.com/google/langextract /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard cbcf1c1d09b5e850cbc7f0265d2b63b622fa2a56 && \
+    git remote remove origin
+
+# Install the package in editable mode with all dependencies including test dependencies
+RUN pip install --no-cache-dir -e ".[all,test]"
+
+# Ensure bash is available for script execution
+SHELL ["/bin/bash", "-c"]

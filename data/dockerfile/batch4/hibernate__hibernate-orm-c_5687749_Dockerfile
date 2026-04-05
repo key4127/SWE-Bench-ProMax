@@ -1,0 +1,68 @@
+# Base image specification. Using OpenJDK 17 on Ubuntu for Java development
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    locales \
+    locales-all \
+    tzdata \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale and encoding
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+RUN locale-gen en_US.UTF-8
+
+# Install OpenJDK 17
+RUN apt-get update && apt-get install -y \
+    openjdk-17-jdk \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set Java environment variables
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Set system properties for tests
+ENV user.language=en
+ENV user.country=US
+ENV user.timezone=UTC
+ENV file.encoding=UTF-8
+ENV log4j2.disableJmx=true
+
+# Set Gradle JVM arguments for memory management
+ENV GRADLE_OPTS="-Xmx2g -XX:MaxMetaspaceSize=256m -XX:+HeapDumpOnOutOfMemoryError -Duser.language=en -Duser.country=US -Duser.timezone=UTC -Dfile.encoding=UTF-8 -Dlog4j2.disableJmx=true"
+
+# Set default workdir to testbed
+WORKDIR /testbed/
+
+# Clone the repository and checkout to the target commit
+RUN git clone https://github.com/hibernate/hibernate-orm.git /testbed && \
+    cd /testbed && \
+    git checkout 05b8d0dbe92fc8e70d32d55a41f7af82f9882130 && \
+    git remote remove origin && \
+    chmod -R 777 /testbed
+
+# Make Gradle wrapper executable
+RUN chmod +x /testbed/gradlew
+
+# Pre-download Gradle dependencies and build the project (without running tests)
+# This ensures all dependencies are cached in the Docker image
+RUN cd /testbed && \
+    ./gradlew --no-daemon clean build -x test -x checkstyleMain -x checkstyleTest || true
+
+# Set up shell environment
+RUN echo 'export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64' >> /root/.bashrc && \
+    echo 'export PATH=$JAVA_HOME/bin:$PATH' >> /root/.bashrc && \
+    echo 'export GRADLE_OPTS="-Xmx2g -XX:MaxMetaspaceSize=256m -XX:+HeapDumpOnOutOfMemoryError -Duser.language=en -Duser.country=US -Duser.timezone=UTC -Dfile.encoding=UTF-8 -Dlog4j2.disableJmx=true"' >> /root/.bashrc
+
+# Set the default shell to bash
+SHELL ["/bin/bash", "-c"]

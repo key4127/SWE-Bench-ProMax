@@ -1,0 +1,62 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    build-essential \
+    libffi-dev \
+    software-properties-common \
+    python3-pip \
+    python-is-python3 \
+    curl \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Add deadsnakes PPA to get Python 3.9 on Ubuntu 22.04
+RUN add-apt-repository ppa:deadsnakes/ppa -y && \
+    apt-get update && \
+    apt-get install -y \
+    python3.9 \
+    python3.9-venv \
+    python3.9-dev \
+    python3.9-distutils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create a virtual environment for isolation
+RUN python3.9 -m venv /opt/testbed_env
+
+# Update pip, setuptools, and wheel in the virtual environment
+RUN /bin/bash -c "source /opt/testbed_env/bin/activate && \
+    pip install --upgrade pip setuptools wheel"
+
+# Set default workdir to testbed. (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, configures it, and installs project-specific dependencies
+RUN git clone https://github.com/DLR-RM/stable-baselines3 /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 8cd8c62890a2637654662531c4bc9c771d856c96 && \
+    git remote remove origin
+
+# Install dependencies for stable-baselines3
+RUN /bin/bash -c "source /opt/testbed_env/bin/activate && \
+    cd /testbed && \
+    pip install torch>=2.3.0 --index-url https://download.pytorch.org/whl/cpu && \
+    pip install -e .[tests,extra]"
+
+# Set environment variable for test execution
+ENV PYTHONHASHSEED=0
+
+# Ensure virtual environment is activated by default
+RUN echo "source /opt/testbed_env/bin/activate" >> /root/.bashrc
+
+# Set PATH to include the virtual environment
+ENV PATH=/opt/testbed_env/bin:$PATH

@@ -1,0 +1,70 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    libffi-dev \
+    libssl-dev \
+    ca-certificates \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python 3.11 (within the supported range >=3.10 and <3.14)
+RUN apt-get update && apt-get install -y \
+    software-properties-common \
+    && add-apt-repository ppa:deadsnakes/ppa -y \
+    && apt-get update \
+    && apt-get install -y \
+    python3.11 \
+    python3.11-dev \
+    python3.11-venv \
+    python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set Python 3.11 as the default python3
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1 \
+    && update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1
+
+# Upgrade pip to latest version
+RUN python3 -m pip install --upgrade pip
+
+# Install uv package manager (primary package manager for this project)
+RUN pip install uv
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checks out to the target version, and sets up the environment
+RUN git clone https://github.com/crewAIInc/crewAI /testbed \
+    && chmod -R 777 /testbed \
+    && cd /testbed \
+    && git reset --hard ec1eff02a8b98851230b27c7b5351b857cf6ccb7 \
+    && git remote remove origin
+
+# Set environment variables to disable telemetry and configure the environment
+ENV OTEL_SDK_DISABLED=true
+ENV PYTHONUNBUFFERED=1
+
+# Sync dependencies using uv (respects uv.lock file for reproducible builds)
+RUN cd /testbed && uv sync
+
+# Install the project in development mode to ensure local code is used
+RUN cd /testbed && uv pip install -e .
+
+# Set up shell environment for interactive sessions
+RUN echo 'export OTEL_SDK_DISABLED=true' >> /root/.bashrc \
+    && echo 'export PYTHONUNBUFFERED=1' >> /root/.bashrc \
+    && echo 'cd /testbed' >> /root/.bashrc
+
+# Ensure the test directory and cassettes directory exist
+RUN mkdir -p /testbed/tests/agents \
+    && mkdir -p /testbed/tests/cassettes

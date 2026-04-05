@@ -1,0 +1,52 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 python:3.9-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    patch \
+    build-essential \
+    libffi-dev \
+    curl \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Upgrade pip and install build tools
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, configures it, and installs project-specific dependencies
+RUN git clone https://github.com/stanfordnlp/dspy /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 0bf4c50fbdc9099483baaa112ee9859973312e50 && \
+    git remote remove origin
+
+# Install dependencies from requirements files
+RUN cd /testbed && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir -r requirements-dev.txt
+
+# Install the package in editable mode to ensure proper imports
+RUN cd /testbed && \
+    pip install -e .
+
+# Set up shell environment
+RUN echo "cd /testbed" >> /root/.bashrc
+
+# Set Python to use UTF-8 encoding
+ENV PYTHONIOENCODING=utf-8
+ENV PYTHONUNBUFFERED=1

@@ -1,0 +1,103 @@
+# Base image specification. Ubuntu 22.04 provides a stable foundation with /bin/bash by default
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for embedded ARM development
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    ninja-build \
+    git \
+    wget \
+    curl \
+    xz-utils \
+    python3 \
+    python3-pip \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Download and install ARM GCC Toolchain 13.3.Rel1
+RUN cd /tmp && \
+    wget -q https://developer.arm.com/-/media/Files/downloads/gnu/13.3.rel1/binrel/arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi.tar.xz && \
+    tar -xf arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi.tar.xz -C /opt && \
+    rm arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi.tar.xz
+
+# Add ARM toolchain to PATH
+ENV PATH="/opt/arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi/bin:${PATH}"
+
+# Verify ARM toolchain installation
+RUN arm-none-eabi-gcc --version && \
+    arm-none-eabi-g++ --version && \
+    arm-none-eabi-objcopy --version
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones TinyUF2 repository and checks out to the target commit
+RUN git clone https://github.com/adafruit/tinyuf2 /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 4192f25e7fac1058921ced9f3fd0d15c684a81f8 && \
+    git remote remove origin
+
+# Display .gitmodules to understand submodule structure
+RUN cd /testbed && \
+    echo "=== .gitmodules content ===" && \
+    cat .gitmodules
+
+# Initialize git submodules (tinyusb, uf2, etc.)
+RUN cd /testbed && \
+    echo "=== Syncing submodules ===" && \
+    git submodule sync --recursive && \
+    echo "=== Initializing and updating submodules ===" && \
+    git submodule update --init --recursive && \
+    echo "=== Submodule status ===" && \
+    git submodule status --recursive
+
+# CRITICAL: Run get_deps.py to download mcux-sdk (NOT a git submodule)
+# This is the key step that was missing - mcux-sdk is downloaded by this script
+RUN cd /testbed && \
+    echo "=== Running get_deps.py for mimxrt10xx ===" && \
+    python3 tools/get_deps.py mimxrt10xx
+
+# Verify that mcux-sdk was downloaded correctly
+RUN cd /testbed && \
+    echo "=== Verifying mcux-sdk structure ===" && \
+    ls -la /testbed/lib/mcu/nxp/ && \
+    ls -la /testbed/lib/mcu/nxp/mcux-sdk/ && \
+    ls -la /testbed/lib/mcu/nxp/mcux-sdk/devices/ && \
+    ls -la /testbed/lib/mcu/nxp/mcux-sdk/devices/MIMXRT1011/ && \
+    ls -la /testbed/lib/mcu/nxp/mcux-sdk/devices/MIMXRT1011/drivers/
+
+# Critical verification: Check for the specific required file
+RUN cd /testbed && \
+    echo "=== Checking for fsl_clock.c ===" && \
+    if [ -f /testbed/lib/mcu/nxp/mcux-sdk/devices/MIMXRT1011/drivers/fsl_clock.c ]; then \
+        echo "SUCCESS: fsl_clock.c found"; \
+        ls -lh /testbed/lib/mcu/nxp/mcux-sdk/devices/MIMXRT1011/drivers/fsl_clock.c; \
+    else \
+        echo "ERROR: fsl_clock.c not found after get_deps.py"; \
+        echo "Directory contents:"; \
+        find /testbed/lib/mcu/nxp/mcux-sdk/devices/MIMXRT1011/drivers/ -type f 2>/dev/null || echo "drivers directory not found"; \
+        exit 1; \
+    fi
+
+# Verify CMake version (minimum 3.17 required)
+RUN cmake --version
+
+# Set up environment variables for the build
+ENV BOARD=metro_m7_1011_sd
+ENV FAMILY=mimxrt10xx
+ENV MCU=MIMXRT1011
+
+# Create a shell initialization script to ensure the environment is ready
+RUN echo "cd /testbed" >> /root/.bashrc

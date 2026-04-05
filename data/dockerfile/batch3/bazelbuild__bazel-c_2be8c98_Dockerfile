@@ -1,0 +1,64 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 ubuntu:22.04
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    openjdk-21-jdk \
+    build-essential \
+    gcc \
+    g++ \
+    zip \
+    unzip \
+    python3 \
+    python3-pip \
+    git \
+    curl \
+    wget \
+    bash \
+    locales \
+    locales-all \
+    tzdata \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set up environment variables for Java
+ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Install Bazelisk (which will download and use the correct Bazel version)
+RUN wget -O /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-linux-amd64 \
+    && chmod +x /usr/local/bin/bazel
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version
+RUN git clone https://github.com/bazelbuild/bazel /testbed \
+    && chmod -R 777 /testbed \
+    && cd /testbed \
+    && git reset --hard 9997810ad638a48d6fd7de7f76b4a4d79da665a5 \
+    && git remote remove origin
+
+# Set up .bazelversion to ensure correct Bazel version is used
+RUN echo "8.4.2" > /testbed/.bazelversion
+
+# Configure shell to use bash
+SHELL ["/bin/bash", "-c"]
+
+# Set up environment for interactive shells
+RUN echo "export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64" >> /root/.bashrc \
+    && echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> /root/.bashrc
+
+# Verify Bazel installation and pre-fetch dependencies
+RUN cd /testbed && bazel version
+
+# Pre-fetch Bazel dependencies to speed up subsequent builds
+# This helps cache external dependencies without running tests
+RUN bazel fetch //src/test/java/net/starlark/java/syntax:SyntaxTests || true

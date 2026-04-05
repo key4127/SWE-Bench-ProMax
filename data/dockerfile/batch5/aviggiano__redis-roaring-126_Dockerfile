@@ -1,0 +1,56 @@
+# Base image specification. Using official Redis image as base per strategy
+FROM --platform=linux/x86_64 redis:latest
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    cmake \
+    gcc \
+    g++ \
+    git \
+    make \
+    valgrind \
+    wget \
+    curl \
+    build-essential \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set default shell to bash for compatibility
+SHELL ["/bin/bash", "-c"]
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone source code and checkout to the target commit SHA
+RUN git clone https://github.com/aviggiano/redis-roaring /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 0f31e2c8ab2dd2e747780a063904897cac43b47e && \
+    git remote remove origin
+
+# Initialize and update git submodules (REQUIRED before building)
+RUN cd /testbed && \
+    git submodule update --init --recursive
+
+# Build the project using configure.sh (recommended approach)
+# This will:
+# - Initialize git submodules
+# - Amalgamate CRoaring library
+# - Build Redis and dependencies
+# - Build hiredis
+# - Run CMake build
+# - Create libredis-roaring.so module in build/ directory
+RUN cd /testbed && \
+    bash configure.sh
+
+# Verify that the Redis module was created
+RUN test -f /testbed/build/libredis-roaring.so || (echo "Redis module not found at /testbed/build/libredis-roaring.so" && exit 1)
+
+# Set up bash environment
+RUN echo "cd /testbed" >> /root/.bashrc

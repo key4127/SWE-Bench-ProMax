@@ -1,0 +1,54 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 python:3.10-slim
+
+# Prevent Python from writing pyc files and enable unbuffered output
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV POETRY_VERSION=1.8.3
+ENV CXXFLAGS='-std=c++11'
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    git \
+    g++ \
+    build-essential \
+    curl \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Poetry package manager
+RUN pip install --no-cache-dir poetry==${POETRY_VERSION}
+
+# Configure Poetry to not create virtual environments (install globally in container)
+RUN poetry config virtualenvs.create false
+
+# Set default workdir to testbed. (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, configures it, and installs project-specific dependencies
+RUN git clone https://github.com/emcie-co/parlant /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 74d7445696b0e8b1b1dc479b17b4a296917c33ed && \
+    git remote remove origin
+
+# Regenerate lock file and install all dependencies including dev dependencies using Poetry
+RUN cd /testbed && \
+    poetry lock --no-update && \
+    poetry install --no-root
+
+# Set environment variables for the application
+ENV PYTHONPATH=/testbed/src
+ENV PARLANT_HOME=/testbed/data
+ENV OPENAI_API_KEY="sk-test-dummy-key-for-testing"
+
+# Create data directory
+RUN mkdir -p /testbed/data
+
+# Set bash as default shell
+SHELL ["/bin/bash", "-c"]
+
+# Add bash configuration
+RUN echo "export PYTHONPATH=/testbed/src" >> /root/.bashrc && \
+    echo "export PARLANT_HOME=/testbed/data" >> /root/.bashrc && \
+    echo "export OPENAI_API_KEY=sk-test-dummy-key-for-testing" >> /root/.bashrc

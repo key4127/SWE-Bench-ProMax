@@ -1,0 +1,55 @@
+# Base image specification. Defines the foundation OS and architecture for the container (Required)
+FROM --platform=linux/x86_64 python:3.11-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime (Required)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    libffi-dev \
+    libssl-dev \
+    ca-certificates \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create a virtual environment for the testbed
+RUN python3.11 -m venv /opt/testbed_env
+
+# Update PATH to use the virtual environment
+ENV PATH=/opt/testbed_env/bin:$PATH
+
+# Upgrade pip, setuptools, and wheel in the virtual environment
+RUN /bin/bash -c "source /opt/testbed_env/bin/activate && \
+    pip install --upgrade pip setuptools wheel"
+
+# Set default workdir to testbed. (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, configures it, and installs project-specific dependencies
+RUN /bin/bash -c "source /opt/testbed_env/bin/activate && \
+    git clone https://github.com/google/adk-python /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard fe8b37b0d3046a9c0dd90e8ddca2940c28d1a93f && \
+    git remote remove origin && \
+    pip install -e '.[test,eval,a2a]'"
+
+# Configure shell to automatically activate the testbed environment
+RUN echo "source /opt/testbed_env/bin/activate" >> /root/.bashrc
+
+# Set environment variables for proper Python execution
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# Set required environment variables for unit tests
+ENV GOOGLE_API_KEY=fake_google_api_key
+ENV GOOGLE_CLOUD_PROJECT=fake_google_cloud_project
+ENV GOOGLE_CLOUD_LOCATION=fake_google_cloud_location
+ENV ADK_ALLOW_WIP_FEATURES=true
+ENV GOOGLE_GENAI_USE_VERTEXAI=0

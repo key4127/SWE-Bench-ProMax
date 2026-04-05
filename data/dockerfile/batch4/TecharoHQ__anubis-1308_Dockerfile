@@ -1,0 +1,62 @@
+# Base image specification. Using official Go 1.24.2 image with Debian base for bash compatibility
+FROM --platform=linux/x86_64 golang:1.24.2-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    ca-certificates \
+    gnupg \
+    locales \
+    locales-all \
+    tzdata \
+    bash \
+    make \
+    zstd \
+    brotli \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js and npm (required for building frontend assets)
+# Using NodeSource repository to get a recent stable version
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# Verify installations
+RUN go version && node --version && npm --version
+
+# Set default workdir to testbed
+WORKDIR /testbed/
+
+# Target Project setup. Clone source code and checkout to the target commit
+RUN git clone https://github.com/TecharoHQ/anubis /testbed \
+    && chmod -R 777 /testbed \
+    && cd /testbed \
+    && git reset --hard 4ead3ed16ef037f22ace6966130bf21f65f3df7c \
+    && git remote remove origin
+
+# Install Go dependencies
+RUN cd /testbed && go mod download
+
+# Install Node.js dependencies
+RUN cd /testbed && npm ci
+
+# Build assets (required before running tests)
+# This includes go generate, web/build.sh, and xess/build.sh
+RUN cd /testbed && make assets
+
+# Set Go environment variables
+ENV CGO_ENABLED=1
+ENV GOCACHE=/tmp/go-build
+ENV GOPATH=/go
+
+# Ensure bash is the default shell
+SHELL ["/bin/bash", "-c"]
+
+# Set bash as default for interactive sessions
+RUN echo "export PS1='testbed:\w\$ '" >> /root/.bashrc

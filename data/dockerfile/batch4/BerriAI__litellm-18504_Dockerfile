@@ -1,0 +1,65 @@
+# Base image specification. Using Node.js 20 slim for better compatibility with modern packages
+FROM --platform=linux/x86_64 node:20-slim
+
+# Set environment variables to avoid interactive prompts during package installation
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    python3 \
+    ca-certificates \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale to avoid potential encoding issues
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Verify Node.js and npm versions (should be >=18.17.0 and >=8.3.0 respectively)
+RUN node --version && npm --version
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the repository and checkout to the specific commit
+RUN git clone https://github.com/BerriAI/litellm.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 710ae2f1ce688f2847484b27c5a3dcb9deca0800 && \
+    git remote remove origin
+
+# Navigate to the UI dashboard directory
+WORKDIR /testbed/ui/litellm-dashboard/
+
+# Install all npm dependencies using npm install to handle out-of-sync package-lock.json
+RUN npm install
+
+# Verify that the test files exist
+RUN test -f src/components/all_keys_table.test.tsx && \
+    test -f src/components/templates/KeyInfoView.handleKeyUpdate.test.tsx && \
+    test -f src/components/templates/key_info_view.test.tsx && \
+    test -f tests/setupTests.ts
+
+# Verify installed versions of critical packages
+RUN npm list vite vitest || true
+
+# Set the working directory back to testbed root for consistency
+WORKDIR /testbed/
+
+# Configure bash as the default shell
+SHELL ["/bin/bash", "-c"]
+
+# Set up environment variables for test execution
+ENV NODE_ENV=test
+ENV CI=true
+
+# Create a default bashrc that sets up the environment
+RUN echo 'cd /testbed/ui/litellm-dashboard' >> /root/.bashrc

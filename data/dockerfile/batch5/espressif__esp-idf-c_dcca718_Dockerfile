@@ -1,0 +1,90 @@
+# Base image specification. Using Debian Bookworm for Python 3.10+ compatibility with ESP-IDF requirements
+FROM --platform=linux/x86_64 debian:bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for ESP-IDF development
+RUN apt-get update && apt-get install -y \
+    git \
+    wget \
+    flex \
+    bison \
+    gperf \
+    python3 \
+    python3-pip \
+    python3-venv \
+    cmake \
+    ninja-build \
+    ccache \
+    libffi-dev \
+    libssl-dev \
+    dfu-util \
+    libusb-1.0-0 \
+    gcc \
+    g++ \
+    make \
+    libncurses5-dev \
+    curl \
+    ca-certificates \
+    locales \
+    build-essential \
+    pkg-config \
+    autoconf \
+    automake \
+    libtool \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up locale for proper character encoding support
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Clone ESP-IDF repository and checkout to the target commit SHA
+# Keep origin remote to allow submodule initialization
+RUN git clone https://github.com/espressif/esp-idf.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard a4293b1c3f0b4cf6e0ea2c799df1ac979317bd17
+
+# Initialize and update all submodules (including micro-ecc and other dependencies)
+RUN cd /testbed && git submodule update --init --recursive
+
+# Set IDF_PATH environment variable
+ENV IDF_PATH=/testbed
+
+# Install ESP-IDF Python dependencies with --break-system-packages flag to bypass PEP 668
+# Install core requirements, build tools, and test framework dependencies
+RUN cd /testbed && \
+    python3 -m pip install --break-system-packages --upgrade pip && \
+    python3 -m pip install --break-system-packages --user -r ${IDF_PATH}/tools/requirements/requirements.core.txt && \
+    ([ -f ${IDF_PATH}/tools/requirements/requirements.ci.txt ] && python3 -m pip install --break-system-packages --user -r ${IDF_PATH}/tools/requirements/requirements.ci.txt || true) && \
+    python3 -m pip install --break-system-packages --user "idf-build-apps~=2.5.0" && \
+    python3 -m pip install --break-system-packages --user "pytest>=7.0" "pytest-embedded>=1.11.1" "pytest-embedded-serial" "pytest-embedded-idf" "pytest-embedded-qemu" && \
+    python3 -m pip install --break-system-packages --user pyyaml
+
+# Install ESP-IDF toolchains for all supported targets
+RUN cd /testbed && ./install.sh all
+
+# Set up environment variables for ESP-IDF tools
+# Add export.sh sourcing to bashrc for interactive sessions
+RUN echo "export IDF_PATH=/testbed" >> /root/.bashrc && \
+    echo "source /testbed/export.sh" >> /root/.bashrc && \
+    echo "export CI_PIPELINE_ID=test-pipeline" >> /root/.bashrc
+
+# Pre-source the export script to set up PATH and other environment variables
+# This ensures tools are available in subsequent layers
+RUN /bin/bash -c "source /testbed/export.sh && env > /tmp/esp_env.txt"
+
+# Make sure Python packages are in PATH
+ENV PATH="/root/.local/bin:${PATH}"
+
+# Set a dummy CI_PIPELINE_ID for test configuration
+ENV CI_PIPELINE_ID=test-pipeline
+
+# Ensure bash is the default shell
+SHELL ["/bin/bash", "-c"]

@@ -1,0 +1,88 @@
+# Base image specification. Using Python 3.11 on Debian Bookworm as recommended
+FROM --platform=linux/x86_64 python:3.11-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gcc \
+    g++ \
+    python3-dev \
+    pkg-config \
+    git \
+    wget \
+    curl \
+    locales \
+    locales-all \
+    tzdata \
+    bash-completion \
+    libhdf5-dev \
+    libgles2-mesa-dev \
+    libegl1 \
+    libopengl0 \
+    libblosc-dev \
+    libbz2-dev \
+    liblz4-dev \
+    libzstd-dev \
+    libsnappy-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Create and set working directory
+WORKDIR /testbed/
+
+# Clone the pandas repository and checkout the specific commit
+RUN git clone https://github.com/pandas-dev/pandas /testbed && \
+    cd /testbed && \
+    git reset --hard 9bd352d89ca27f5cfa5fdb6388221966f5108bf7 && \
+    git remote remove origin && \
+    chmod -R 777 /testbed
+
+# Upgrade pip, setuptools, and wheel
+RUN pip install --upgrade pip setuptools wheel
+
+# Install build dependencies with exact versions as specified
+RUN pip install \
+    "meson==1.2.1" \
+    "meson-python==0.13.1" \
+    ninja \
+    "cython~=3.0.5" \
+    "numpy>=2.0.0rc1" \
+    "versioneer[toml]"
+
+# Install runtime dependencies
+RUN pip install \
+    "numpy>=1.23.5" \
+    "python-dateutil>=2.8.2" \
+    "pytz>=2023.4" \
+    "tzdata>=2022.7"
+
+# Install test dependencies (removed pytest-qt as it's not needed for target tests)
+RUN pip install \
+    "pytest>=7.3.2" \
+    "pytest-xdist>=3.4.0" \
+    "pytest-cov" \
+    "pytest-localserver>=0.8.1" \
+    "hypothesis>=6.84.0"
+
+# Build and install pandas in editable mode with no build isolation
+# This ensures C/Cython extensions are compiled correctly
+RUN cd /testbed && \
+    pip install --no-build-isolation -e .
+
+# Set environment variables for test execution
+ENV PANDAS_CI=1
+ENV PYTHONPATH=/testbed:$PYTHONPATH
+
+# Verify installation
+RUN python -c "import pandas; print(f'Pandas version: {pandas.__version__}')" && \
+    python -c "import pandas._testing as tm; print('pandas._testing imported successfully')"
+
+# Set bash as default shell
+SHELL ["/bin/bash", "-c"]

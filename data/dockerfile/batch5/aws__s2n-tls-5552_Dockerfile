@@ -1,0 +1,58 @@
+# Base image specification. Using Ubuntu 22.04 for Tier 1 support compatibility
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+# Prevent interactive prompts during package installation
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Install essential build tools and libraries required for s2n-tls
+RUN apt-get update && apt-get install -y \
+    git \
+    cmake \
+    build-essential \
+    libssl-dev \
+    pkg-config \
+    libclang-dev \
+    wget \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Rust toolchain via rustup (version 1.91.0 required to satisfy all dependencies)
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.91.0
+ENV PATH="/root/.cargo/bin:$PATH"
+
+# Verify Rust installation
+RUN rustc --version && cargo --version
+
+# Set environment variable to prevent mlock() calls that may fail in containers
+ENV S2N_DONT_MLOCK=1
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clone the repository and checkout to the specific commit
+RUN git clone https://github.com/aws/s2n-tls.git /testbed && \
+    cd /testbed && \
+    git checkout 389e627dc423207d15ae1f74057ef0ac04641f23 && \
+    chmod -R 777 /testbed
+
+# Build the C library with CMake and install to system paths
+RUN cd /testbed && \
+    cmake . -Bbuild -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local && \
+    cmake --build build -j $(nproc) && \
+    cmake --install build
+
+# Update library cache to ensure the installed s2n-tls library is found
+RUN ldconfig
+
+# Pre-fetch Rust dependencies for the target crate (without running tests)
+RUN cd /testbed/bindings/rust/aws-kms-tls-auth && \
+    cargo fetch
+
+# Set bash as the default shell
+SHELL ["/bin/bash", "-c"]
+
+# Configure bash environment
+RUN echo 'export S2N_DONT_MLOCK=1' >> /root/.bashrc && \
+    echo 'export PATH="/root/.cargo/bin:$PATH"' >> /root/.bashrc

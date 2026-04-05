@@ -1,0 +1,102 @@
+# Base image specification. Using Ubuntu with bash support for better compatibility
+FROM --platform=linux/x86_64 ubuntu:22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    curl \
+    build-essential \
+    ca-certificates \
+    gnupg \
+    lsb-release \
+    make \
+    tar \
+    gzip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Go 1.23
+RUN wget https://go.dev/dl/go1.23.0.linux-amd64.tar.gz && \
+    tar -C /usr/local -xzf go1.23.0.linux-amd64.tar.gz && \
+    rm go1.23.0.linux-amd64.tar.gz
+
+# Set Go environment variables
+ENV PATH=/usr/local/go/bin:$PATH
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:$PATH
+
+# Verify Go installation
+RUN go version
+
+# Install Docker CLI and Docker Compose v2
+# Add Docker's official GPG key and repository
+RUN install -m 0755 -d /etc/apt/keyrings && \
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
+    chmod a+r /etc/apt/keyrings/docker.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Install Docker CLI and Docker Compose plugin
+RUN apt-get update && apt-get install -y \
+    docker-ce-cli \
+    docker-compose-plugin \
+    && rm -rf /var/lib/apt/lists/*
+
+# Verify Docker Compose installation
+RUN docker compose version
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version, and installs project-specific dependencies
+RUN git clone https://github.com/redis/go-redis /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard 3d4310ae9696cadc8eaeab747158abe1d03d8b7a && \
+    git remote remove origin
+
+# Download Go module dependencies
+RUN cd /testbed && go mod download
+
+# Set environment variables for test execution
+ENV CLIENT_LIBS_TEST_IMAGE=redislabs/client-libs-test:rs-7.4.0-v2
+ENV REDIS_IMAGE=redis:7.4.2
+ENV REDIS_MAJOR_VERSION=7
+ENV RCE_DOCKER=true
+ENV RE_CLUSTER=false
+
+# Ensure Go environment is properly configured
+ENV GO111MODULE=on
+ENV CGO_ENABLED=1
+
+# Create a helper script to check Docker availability
+RUN echo '#!/bin/bash' > /check_docker.sh && \
+    echo 'set -e' >> /check_docker.sh && \
+    echo '# Check if Docker socket is accessible' >> /check_docker.sh && \
+    echo 'if [ ! -S /var/run/docker.sock ]; then' >> /check_docker.sh && \
+    echo '  echo "ERROR: Docker socket not found at /var/run/docker.sock"' >> /check_docker.sh && \
+    echo '  echo "Please run container with: -v /var/run/docker.sock:/var/run/docker.sock"' >> /check_docker.sh && \
+    echo '  exit 1' >> /check_docker.sh && \
+    echo 'fi' >> /check_docker.sh && \
+    echo '# Wait for Docker to be accessible' >> /check_docker.sh && \
+    echo 'echo "Checking Docker availability..."' >> /check_docker.sh && \
+    echo 'for i in {1..30}; do' >> /check_docker.sh && \
+    echo '  if docker info >/dev/null 2>&1; then' >> /check_docker.sh && \
+    echo '    echo "Docker is accessible and ready"' >> /check_docker.sh && \
+    echo '    docker version' >> /check_docker.sh && \
+    echo '    exit 0' >> /check_docker.sh && \
+    echo '  fi' >> /check_docker.sh && \
+    echo '  echo "Waiting for Docker to be ready... ($i/30)"' >> /check_docker.sh && \
+    echo '  sleep 1' >> /check_docker.sh && \
+    echo 'done' >> /check_docker.sh && \
+    echo 'echo "ERROR: Docker is not accessible after 30 seconds"' >> /check_docker.sh && \
+    echo 'exit 1' >> /check_docker.sh && \
+    chmod +x /check_docker.sh
+
+# Set working directory to testbed
+WORKDIR /testbed/
+
+# Use bash as default shell
+SHELL ["/bin/bash", "-c"]

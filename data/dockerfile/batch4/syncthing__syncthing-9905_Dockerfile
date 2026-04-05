@@ -1,0 +1,66 @@
+# Base image specification. Using Debian-based golang image for better compatibility with /bin/bash
+FROM --platform=linux/x86_64 golang:1.22.0-bookworm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# System dependencies installation. Installs essential tools and libraries required for development and runtime
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    git \
+    wget \
+    curl \
+    build-essential \
+    locales \
+    locales-all \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up locale
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+# Set Go environment variables based on syncthing requirements
+ENV CGO_ENABLED=0
+ENV GOPATH=/go
+ENV PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
+
+# Set default workdir to testbed (Required)
+WORKDIR /testbed/
+
+# Target Project setup. Clones source code, checkouts to the target version
+RUN git clone https://github.com/syncthing/syncthing.git /testbed && \
+    chmod -R 777 /testbed && \
+    cd /testbed && \
+    git reset --hard dcd280e6e2f21ca3e59ada7950460c86f1d4f81d && \
+    git remote remove origin
+
+# Download Go module dependencies
+RUN cd /testbed && \
+    go mod download && \
+    go mod verify
+
+# Ensure the test packages are available by running go mod tidy
+RUN cd /testbed && \
+    go mod tidy
+
+# Pre-generate any required code (mocks, protocol buffers) if needed
+# This ensures all generated code is available before tests run
+RUN cd /testbed && \
+    go generate ./lib/model/... || true
+
+# Set bash as default shell
+SHELL ["/bin/bash", "-c"]
+
+# Create a simple script to verify environment setup
+RUN echo '#!/bin/bash' > /testbed/verify_env.sh && \
+    echo 'echo "Go version: $(go version)"' >> /testbed/verify_env.sh && \
+    echo 'echo "CGO_ENABLED: $CGO_ENABLED"' >> /testbed/verify_env.sh && \
+    echo 'echo "GOPATH: $GOPATH"' >> /testbed/verify_env.sh && \
+    echo 'echo "Working directory: $(pwd)"' >> /testbed/verify_env.sh && \
+    echo 'echo "Test file exists: $(test -f lib/model/model_test.go && echo yes || echo no)"' >> /testbed/verify_env.sh && \
+    chmod +x /testbed/verify_env.sh
+
+# Set default command to bash
+CMD ["/bin/bash"]
