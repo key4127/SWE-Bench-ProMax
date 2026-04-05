@@ -1,1 +1,4 @@
 result/preds_result/** filter=lfs diff=lfs merge=lfs -text
+result/harness_result/** filter=lfs diff=lfs merge=lfs -text
+swe-cascade/** filter=lfs diff=lfs merge=lfs -text
+data/** filter=lfs diff=lfs merge=lfs -text
