@@ -1,0 +1,30 @@
+[
+    {
+        "language": "c++",
+        "instances": 20
+    },
+    {
+        "language": "c",
+        "instances": 25
+    },
+    {
+        "language": "java",
+        "instances": 31
+    },
+    {
+        "language": "go",
+        "instances": 27
+    },
+    {
+        "language": "rust",
+        "instances": 20
+    },
+    {
+        "language": "python",
+        "instances": 33
+    },
+    {
+        "language": "typescript",
+        "instances": 33
+    }
+]

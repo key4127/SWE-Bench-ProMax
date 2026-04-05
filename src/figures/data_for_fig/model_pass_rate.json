@@ -1,0 +1,202 @@
+[
+    {
+        "model": "gemini",
+        "result": [
+            {
+                "benchmark": "SWE-Cascade",
+                "total": "184",
+                "pass": "38",
+                "language_details": {
+                    "c++": {
+                        "total": 18,
+                        "pass": 6
+                    },
+                    "c": {
+                        "total": 25,
+                        "pass": 2
+                    },
+                    "python": {
+                        "total": 33,
+                        "pass": 6
+                    },
+                    "go": {
+                        "total": 25,
+                        "pass": 2
+                    },
+                    "java": {
+                        "total": 30,
+                        "pass": 4
+                    },
+                    "rust": {
+                        "total": 20,
+                        "pass": 7
+                    },
+                    "typescript": {
+                        "total": 33,
+                        "pass": 8
+                    }
+                }
+            },
+            {
+                "benchmark": "SWE Bench Verified",
+                "total": "",
+                "pass": ""
+            },
+            {
+                "benchmark": "SWE Bench Pro",
+                "total": "",
+                "pass": ""
+            }
+        ]
+    },
+    {
+        "model": "glm",
+        "result": [
+            {
+                "benchmark": "SWE-Cascade",
+                "total": "190",
+                "pass": "55",
+                "language_details": {
+                    "c++": {
+                        "total": 20,
+                        "pass": 9
+                    },
+                    "c": {
+                        "total": 25,
+                        "pass": 4
+                    },
+                    "python": {
+                        "total": 34,
+                        "pass": 13
+                    },
+                    "go": {
+                        "total": 27,
+                        "pass": 6
+                    },
+                    "java": {
+                        "total": 31,
+                        "pass": 8
+                    },
+                    "rust": {
+                        "total": 20,
+                        "pass": 6
+                    },
+                    "typescript": {
+                        "total": 33,
+                        "pass": 9
+                    }
+                }
+            },
+            {
+                "benchmark": "SWE Bench Verified",
+                "total": "",
+                "pass": ""
+            },
+            {
+                "benchmark": "SWE Bench Pro",
+                "total": "",
+                "pass": ""
+            }
+        ]
+    },
+    {
+        "model": "kimi",
+        "result": [
+            {
+                "benchmark": "SWE-Cascade",
+                "total": "189",
+                "pass": "49",
+                "language_details": {
+                    "c++": {
+                        "total": 20,
+                        "pass": 6
+                    },
+                    "c": {
+                        "total": 25,
+                        "pass": 6
+                    },
+                    "python": {
+                        "total": 33,
+                        "pass": 13
+                    },
+                    "go": {
+                        "total": 27,
+                        "pass": 6
+                    },
+                    "java": {
+                        "total": 31,
+                        "pass": 6
+                    },
+                    "rust": {
+                        "total": 20,
+                        "pass": 7
+                    },
+                    "typescript": {
+                        "total": 33,
+                        "pass": 5
+                    }
+                }
+            },
+            {
+                "benchmark": "SWE Bench Verified",
+                "total": "",
+                "pass": ""
+            },
+            {
+                "benchmark": "SWE Bench Pro",
+                "total": "",
+                "pass": ""
+            }
+        ]
+    },
+    {
+        "model": "claude",
+        "result": [
+            {
+                "benchmark": "SWE-Cascade",
+                "total": "187",
+                "pass": "29",
+                "language_details": {
+                    "c++": {
+                        "total": 20,
+                        "pass": 5
+                    },
+                    "c": {
+                        "total": 25,
+                        "pass": 3
+                    },
+                    "python": {
+                        "total": 34,
+                        "pass": 5
+                    },
+                    "go": {
+                        "total": 25,
+                        "pass": 3
+                    },
+                    "java": {
+                        "total": 30,
+                        "pass": 7
+                    },
+                    "rust": {
+                        "total": 20,
+                        "pass": 2
+                    },
+                    "typescript": {
+                        "total": 33,
+                        "pass": 4
+                    }
+                }
+            },
+            {
+                "benchmark": "SWE Bench Verified",
+                "total": "",
+                "pass": ""
+            },
+            {
+                "benchmark": "SWE Bench Pro",
+                "total": "",
+                "pass": ""
+            }
+        ]
+    }
+]
