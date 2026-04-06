@@ -31,7 +31,9 @@ All code for this repository lives under `src/`.
 
 ## `swe-cascade/`
 
-Released dataset JSON files. Each file has **299** rows. Typical fields include `instance_id`, `repo`, `base_commit`, `patch`, `test_patch`, `problem_statement`, `hints_text`, `language`, `image_name`, `loc`, `num_files`, and related metadata. Rows with `discard: true` are excluded from the published benchmark counts below.
+Released dataset JSON files. Each file has **299** rows. Typical fields include `instance_id`, `repo`, `base_commit`, `patch`, `test_patch`, `problem_statement`, `hints_text`, `language`, `image_name`, `loc`, `num_files`, and related metadata.
+
+**Current benchmark:** use **`v2.json` excluding rows with `discard: true`**—that is the active evaluation split (**196** instances). Other files are for ablations or archival comparison; `v3.json` remains experimental and is not the default.
 
 | File | Description | `discard` count | Effective instances |
 | --- | --- | --- | --- |
