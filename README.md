@@ -2,13 +2,6 @@
 
 A multilingual, SWE-bench–style benchmark for building instances, running tests in Docker, scoring model-generated patches, and analyzing outcomes. End-to-end story: collect commits from GitHub → format evaluation instances → run tests in containerized environments → apply patches → parse logs for pass/fail.
 
-Across the pipeline we used four generations of `problem_statement`:
-
-- **v0**: raw commit message
-- **v1**: LLM-rewritten text, in both PRD-style markdown and plain natural language (PRD-style was dropped in later stages)
-- **v2**: expanded from the v1 natural-language form to reduce overly broad or narrow tests
-- **v3**: intentionally fuzzed v2 statements to raise difficulty (experimental; not enabled by default)
-
 ---
 
 ## `src/`
@@ -29,15 +22,8 @@ All code for this repository lives under `src/`.
 
 ---
 
-## `swe-cascade/`
+## Benchmark
 
-Released dataset JSON files. Each file has **299** rows. Typical fields include `instance_id`, `repo`, `base_commit`, `patch`, `test_patch`, `problem_statement`, `hints_text`, `language`, `image_name`, `loc`, `num_files`, and related metadata.
+**`swe-cascade.json`** in the repository root contains all 196 instances.
 
-**Current benchmark:** use **`v2.json` excluding rows with `discard: true`**—that is the active evaluation split (**196** instances). Other files are for ablations or archival comparison; `v3.json` remains experimental and is not the default.
-
-| File | Description | `discard` count | Effective instances |
-| --- | --- | --- | --- |
-| `v1_mkd.json` | v1 `problem_statement`, PRD-style markdown | 0 | 299 |
-| `v1_nl.json` | v1 `problem_statement`, natural language | 0 | 299 |
-| `v2.json` | v2 expansion of v1 NL (addresses broad/narrow tests) | 103 | 196 |
-| `v3.json` | v3 fuzzed v2 (experimental; not enabled by default) | 103 | 196 |
+Each record includes: `instance_id`, `repo`, `base_commit`, `environment_setup_commit`, `patch`, `test_patch`, `problem_statement`, `hints_text`, `created_at`, `language`, `image_name`, and `working_dir`. Some instances also include `pull_number` or `issue_numbers` when that metadata is available.
