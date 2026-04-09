@@ -169,7 +169,7 @@ def analyze_test_output(stdout: str, stderr: str, returncode: int, apply_success
     return _analyze_with_heuristic(cleaned_stdout, stderr, returncode)
 
 def run_single_patch(container_name, image_name, patch_content, eval_script, language="", repo=""):
-    run_command(f"docker run -d --name {container_name} --memory='4g' --cpus='4' {image_name} tail -f /dev/null")
+    run_command(f"docker run -d --name {container_name} --cpus='4' {image_name} tail -f /dev/null")
     
     apply_res = None
     eval_res = None
