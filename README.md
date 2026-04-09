@@ -15,10 +15,16 @@ All code for this repository lives under `src/`.
 
 ### `evaluation/`
 
-- **`harness/`**: Core harness. `constants.py` defines instance field names and parse-status constants; `utils.py` has helpers (e.g. stripping ANSI escapes); `test_run.py` runs Docker/subprocess tests and aggregates pass rates; `log_parsers/` registers per-language parsers (Python, Java, Go, C, C++, Rust, TypeScript).
+- **`harness/`**: Core harness. `constants.py` defines instance field names and parse-status constants; `utils.py` has helpers (e.g. stripping ANSI escapes); `test_run.py` evaluates **model predictions vs golden patches** in Docker (pulls `key4127/refactor-dockerhub:{instance_id}`, applies each patch, runs the per-instance shell from the eval JSON, parses logs for pass/fail). CLI: `--pred` / `--golden` / `--eval` (defaults `./preds.json`, `./golden.json`, `./eval.json`) and `--output` (default `./pass_rate.json`). Point `--eval` at `data/eval.json` when running from the repo root. `log_parsers/` registers per-language parsers (Python, Java, Go, C, C++, Rust, TypeScript).
 - **`log_parse.py`**: Runs the harness log parser on a single harness JSON record.
 - **`parse_pass_rate.py`**: Reuses log parsers offline from `pass_rate.json` stdout without a full `test_run`.
 - **`reapply_log_parser.py`**: Re-runs log parsers on harness or pass-rate JSON by language.
+
+---
+
+## `data/`
+
+**`data/eval.json`** — evaluation bundle aligned with the same 196 instances as `swe-cascade.json`. It is a JSON object keyed by `instance_id`; each value includes at least `instance_id`, `dockerfile`, **`eval_script`** (shell run inside the container after a patch is applied), and `setup_scripts`. The harness reads **`eval_script`** per instance when scoring model output (`src/evaluation/harness/test_run.py`).
 
 ---
 
