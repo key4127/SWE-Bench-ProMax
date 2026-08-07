@@ -1,35 +1,47 @@
 # SWE-Cascade
 
-A multilingual, SWE-bench–style benchmark for building instances, running tests in Docker, scoring model-generated patches, and analyzing outcomes. End-to-end story: collect commits from GitHub → format evaluation instances → run tests in containerized environments → apply patches → parse logs for pass/fail.
+A multilingual, SWE-bench style benchmark for building instances, running
+tests in Docker, scoring model-generated patches, and analyzing outcomes.
 
----
+## Data
 
-## `src/`
+`swe-cascade.json` contains the benchmark instances. Its content is updated
+from `../swe-cascade/handout/data/swe-cascade-pure.json`.
 
-All code for this repository lives under `src/`.
+`data/eval.json` contains the evaluation bundle updated from
+`../swe-cascade/handout/data/eval.json`. It is keyed by `instance_id`; each
+entry contains the Docker/evaluation metadata used by the harness, including
+`eval_script`.
 
-### `pipeline/`
+The current benchmark contains 170 instances. The eval bundle is filtered to
+the same 170 `instance_id` values.
 
-- **`bulk_collect.py`**: Batch driver that applies the collection stack (language, stars, license filters, etc.) until enough commits are gathered.
-- **`collection/`**: Single-repository data pipeline. See [`src/pipeline/collection/README.md`](src/pipeline/collection/README.md) for CLI usage and environment variables. `curl_data.py` is the main entry; it chains commit fetching and formatting. `curl_commits.py` pulls history, languages, and CI signals via GraphQL/REST and filters candidates. `format_data.py` turns commit/PR metadata into instance records (PR linkage, patch assembly, optional LLM steps).
+## Evaluation
 
-### `evaluation/`
+Evaluation code lives under `src/evaluation`.
 
-- **`harness/`**: Core harness. `constants.py` defines instance field names and parse-status constants; `utils.py` has helpers (e.g. stripping ANSI escapes); `test_run.py` evaluates **model predictions vs golden patches** in Docker (pulls `key4127/refactor-dockerhub:{instance_id}`, applies each patch, runs the per-instance shell from the eval JSON, parses logs for pass/fail). CLI: `--pred` / `--golden` / `--eval` (defaults `./preds.json`, `./golden.json`, `./eval.json`) and `--output` (default `./pass_rate.json`). Point `--eval` at `data/eval.json` when running from the repo root. `log_parsers/` registers per-language parsers (Python, Java, Go, C, C++, Rust, TypeScript).
-- **`log_parse.py`**: Runs the harness log parser on a single harness JSON record.
-- **`parse_pass_rate.py`**: Reuses log parsers offline from `pass_rate.json` stdout without a full `test_run`.
-- **`reapply_log_parser.py`**: Re-runs log parsers on harness or pass-rate JSON by language.
+Evaluate model predictions:
 
----
+```bash
+python3 -B src/evaluation/harness/test_run.py \
+  --pred /abs/path/to/preds.json \
+  --golden swe-cascade.json \
+  --eval data/eval.json \
+  --output /abs/path/to/pass_rate.json \
+  --workers 2
+```
 
-## `data/`
+Run the base commit / base image check without applying model patches:
 
-**`data/eval.json`** — evaluation bundle aligned with the same 196 instances as `swe-cascade.json`. It is a JSON object keyed by `instance_id`; each value includes at least `instance_id`, `dockerfile`, **`eval_script`** (shell run inside the container after a patch is applied), and `setup_scripts`. The harness reads **`eval_script`** per instance when scoring model output (`src/evaluation/harness/test_run.py`).
+```bash
+python3 -B src/evaluation/check_base_pass.py \
+  --benchmark swe-cascade.json \
+  --eval data/eval.json \
+  --output result/base_pass_results.json \
+  --workers 2
+```
 
----
+By default, base checks only use local Docker images. Add `--pull` to allow the
+script to pull missing images.
 
-## Benchmark
-
-**`swe-cascade.json`** in the repository root contains all 196 instances.
-
-Each record includes: `instance_id`, `repo`, `base_commit`, `environment_setup_commit`, `patch`, `test_patch`, `problem_statement`, `hints_text`, `created_at`, `language`, `image_name`, and `working_dir`. Some instances also include `pull_number` or `issue_numbers` when that metadata is available.
+The original collection utilities remain under `src/pipeline`.

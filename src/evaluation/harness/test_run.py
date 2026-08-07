@@ -5,16 +5,19 @@ import tempfile
 import subprocess
 import re
 import argparse
+import shlex
 from concurrent.futures import ThreadPoolExecutor
 
-from harness.constants import TestStatus
-from harness.log_parsers.python import MAP_REPO_TO_PARSER_PY
-from harness.log_parsers.java import MAP_REPO_TO_PARSER_JAVA
-from harness.log_parsers.go import MAP_REPO_TO_PARSER_GO
-from harness.log_parsers.rust import MAP_REPO_TO_PARSER_RUST
-from harness.log_parsers.c import MAP_REPO_TO_PARSER_C
-from harness.log_parsers.cpp import MAP_REPO_TO_PARSER_CPP
-from harness.log_parsers.typescript import MAP_REPO_TO_PARSER_TS
+LOCAL_IMAGES_ONLY = False
+DOCKER_NETWORK = "host"
+DOCKER_DNS = ()
+DOCKER_ENV = {}
+FLAKY_MAX_RETRIES = 2
+EVAL_TIMEOUT = 2400
+_PROXY_ENV_KEYS = (
+    "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "NO_PROXY",
+    "http_proxy", "https_proxy", "all_proxy", "no_proxy",
+)
 
 def create_temp_file(content, suffix="", prefix="tmp"):
     with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', suffix=suffix, prefix=prefix, delete=False) as f:
@@ -28,148 +31,156 @@ def run_command(cmd, check=False, timeout=600):
         if check and result.returncode != 0:
             print(f"Command failed with retcode {result.returncode}")
         return result, False
-    except subprocess.TimeoutExpired:
+    except subprocess.TimeoutExpired as exc:
         print(f"CRITICAL ERROR: Command timed out after {timeout}s")
-        return subprocess.CompletedProcess(cmd, 1, stdout="TIMEOUT", stderr=f"TIMEOUT AFTER {timeout}s"), True
+        stdout = _decode_timeout_stream(exc.stdout)
+        stderr = _decode_timeout_stream(exc.stderr)
+        timeout_msg = f"TIMEOUT AFTER {timeout}s"
+        stderr = f"{stderr.rstrip()}\n{timeout_msg}" if stderr else timeout_msg
+        return subprocess.CompletedProcess(cmd, 124, stdout=stdout, stderr=stderr), True
+
+
+def _decode_timeout_stream(value) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, bytes):
+        return value.decode("utf-8", errors="replace")
+    return str(value)
+
+
+def _local_images_only_enabled() -> bool:
+    return LOCAL_IMAGES_ONLY
+
+
+def _local_image_exists(image_name: str) -> bool:
+    result, _ = run_command(f"docker image inspect {image_name}", timeout=30)
+    return result.returncode == 0
+
 
 _OMNIGRIL_EXIT_RE = re.compile(r"OMNIGRIL_EXIT_CODE=(\d+)\s*$", re.MULTILINE)
+_TEST_PATCH_APPLY_FAILED_MARKER = "OMNIGRIL_TEST_PATCH_APPLY_FAILED=1"
 
 
-def _strip_omnigril_exit(text: str) -> str:
-    """Remove OMNIGRIL_EXIT_CODE=... line from text (so parsers see clean log)."""
-    return re.sub(_OMNIGRIL_EXIT_RE, "", text).strip("\n")
-
-# Language key -> (repo -> parser) mapping
-_LANG_TO_REPO_PARSER = {
-    "python": MAP_REPO_TO_PARSER_PY,
-    "java": MAP_REPO_TO_PARSER_JAVA,
-    "go": MAP_REPO_TO_PARSER_GO,
-    "rust": MAP_REPO_TO_PARSER_RUST,
-    "c": MAP_REPO_TO_PARSER_C,
-    "cpp": MAP_REPO_TO_PARSER_CPP,
-    "c++": MAP_REPO_TO_PARSER_CPP,
-    "typescript": MAP_REPO_TO_PARSER_TS
-}
-
-def get_log_parser(language: str, repo: str):
-    """Return the log parser for (language, repo), or None if none registered."""
-    lang = (language or "").strip().lower()
-    repo = (repo or "").strip()
-    if not repo:
-        return None
-    repo_map = _LANG_TO_REPO_PARSER.get(lang)
-    if not repo_map:
-        return None
-    return repo_map.get(repo)
+def _extract_omnigril_exit(text: str) -> int | None:
+    match = _OMNIGRIL_EXIT_RE.search(text or "")
+    return int(match.group(1)) if match else None
 
 
-# 与 log_parse.py 输出对齐：reason -> (final_result, parse_reason)
+# ---------------------------------------------------------------------------
+# Docker network/proxy configuration. Edit the constants above for defaults;
+# proxy variables are copied from the host environment when present.
+def _docker_network_flags() -> str:
+    """Build network/proxy-related `docker run` flags from host settings."""
+    flags = []
+    if DOCKER_NETWORK:
+        flags.append(f"--network {shlex.quote(DOCKER_NETWORK)}")
+    for dns in DOCKER_DNS:
+        if dns:
+            flags.append(f"--dns {shlex.quote(dns)}")
+    for key, val in DOCKER_ENV.items():
+        if val:
+            flags.append(f"-e {shlex.quote(f'{key}={val}')}")
+    for key in _PROXY_ENV_KEYS:
+        if os.environ.get(key):
+            # `-e KEY` lets docker copy the value from the host environment,
+            # avoiding shell quoting issues and keeping proxy secrets out of logs.
+            flags.append(f"-e {key}")
+    return " ".join(flags)
+
+
+def _execution_info(reason: str, proc, apply_success: bool, apply_res=None) -> dict:
+    stdout = proc.stdout if proc else ""
+    stderr = proc.stderr if proc else ""
+    return {
+        "is_passed": False,
+        "reason": reason,
+        "stdout": stdout,
+        "stderr": stderr,
+        "returncode": proc.returncode if proc else 124,
+        "script_exit_code": _extract_omnigril_exit(stdout + "\n" + stderr),
+        "apply_err": apply_res.stderr if apply_res is not None and not apply_success else "",
+    }
+
+
+# ---------------------------------------------------------------------------
+# Flaky-test retry configuration
+# ---------------------------------------------------------------------------
+# Some instances exhibit transient NON_ZERO_EXIT caused by cold-start timeouts
+# (e.g. codex-rs `archive_conversation_moves_rollout_into_archived_directory`
+# whose mcp-server initialize handshake races against a hard tokio timeout).
+# When the log matches one of these signatures we transparently re-run the
+# whole patch (golden or model) up to FLAKY_MAX_RETRIES additional times.
+_FLAKY_RETRY_PATTERNS = (
+    r"initialize timeout: Elapsed",
+    r"timeout: Elapsed\(\(\)\)",
+)
+_FLAKY_MAX_RETRIES = FLAKY_MAX_RETRIES
+
+
+def _is_flaky_result(res) -> bool:
+    """Return True if `res` looks like a known transient failure worth retrying."""
+    if not res:
+        return False
+    if res.get("reason") != "NON_ZERO_EXIT":
+        return False
+    blob = (res.get("stdout") or "") + "\n" + (res.get("stderr") or "")
+    return any(re.search(p, blob) for p in _FLAKY_RETRY_PATTERNS)
+
+# reason -> final_result.  The eval script is now authoritative, so no
+# repo-specific log parsing is used.
 _REASON_TO_FINAL_RESULT = {
-    "SUCCESS": ("success", "success"),
-    "APPLY_FAILED": ("apply_failed", "not run"),
-    "TIMEOUT_APPLY": ("timeout_apply", "not run"),
-    "TIMEOUT_EVAL": ("timeout_eval", "not run"),
-    "NON_ZERO_EXIT": ("non zero exit", "not run"),
-    "LOG_CONTAINS_FAILURE": ("test fail", "fail"),
-    "NETWORK_ERROR": ("network_error", "not run"),
-    "NO_PASS_SIGNAL": ("test fail", "fail"),
-    "NEED_HUMAN_REVIEW": ("need_human_review", "fail"),
+    "SUCCESS": "success",
+    "APPLY_FAILED": "apply_failed",
+    "TEST_PATCH_APPLY_FAILED": "test_patch_apply_failed",
+    "TIMEOUT_APPLY": "timeout_apply",
+    "TIMEOUT_EVAL": "timeout_eval",
+    "NON_ZERO_EXIT": "non zero exit",
+    "NEED_HUMAN_REVIEW": "need_human_review",
 }
 
 
-def _to_log_parse_style_info(info: dict, reason_fallback: str) -> dict:
-    """将 test_run 的 model_info/golden_info 转为 log_parse 输出的 model/golden 结构。"""
+def _to_result_info(info: dict, reason_fallback: str) -> dict:
+    """Normalize model/golden execution details for pass_rate.json."""
     reason = info.get("reason") if isinstance(info.get("reason"), str) else reason_fallback
-    final_result, parse_reason = _REASON_TO_FINAL_RESULT.get(
-        reason, (reason.lower().replace(" ", "_") if reason else "not run", "not run")
+    final_result = _REASON_TO_FINAL_RESULT.get(
+        reason, reason.lower().replace(" ", "_") if reason else "not run"
     )
     raw_reason = reason.lower().replace(" ", "_") if reason else "not run"
     return {
         "final_result": final_result,
         "raw_reason": raw_reason,
-        "parse_reason": parse_reason,
+        "eval_reason": raw_reason,
+        "returncode": info.get("returncode"),
+        "script_exit_code": info.get("script_exit_code"),
         "stdout": info.get("stdout", ""),
         "stderr": info.get("stderr", ""),
     }
 
 
-def _analyze_with_heuristic(stdout: str, stderr: str, returncode: int) -> tuple[bool, str]:
-    """Fallback when no language/repo parser is available."""
-    combined_raw = stdout + "\n" + stderr
-    combined_log = combined_raw.lower()
-    connect_fail_patterns = [
-        r"couldn't connect",
-        r"failed to connect",
-        r"error downloading",
-    ]
-    fail_patterns = [
-        r"failed to build",
-        r"--- fail",
-        r"\bfail\b",
-        r"error:",
-        r"panic:",
-        r"runtime error",
-        r"segmentation fault",
-        r"test failed",
-        r"traceback \(most recent call last\)",
-        r"\[error\]",
-        r"fail\t",
-    ]
-    for pattern in connect_fail_patterns:
-        if re.search(pattern, combined_log):
-            return False, "NETWORK_ERROR"
-    omnigril_match = _OMNIGRIL_EXIT_RE.search(combined_raw)
-    if omnigril_match:
-        exit_code = int(omnigril_match.group(1))
-        if exit_code != 0:
-            return False, "NON_ZERO_EXIT"
-        for pattern in fail_patterns:
-            if re.search(pattern, combined_log):
-                return False, "LOG_CONTAINS_FAILURE"
-        return True, "SUCCESS"
-    if returncode != 0:
-        return False, "NON_ZERO_EXIT"
-    for pattern in fail_patterns:
-        if re.search(pattern, combined_log):
-            return False, "LOG_CONTAINS_FAILURE"
-    if "pass" in combined_log or "ok" in combined_log:
-        return True, "SUCCESS"
-    return False, "NO_PASS_SIGNAL"
-
-
 def analyze_test_output(stdout: str, stderr: str, returncode: int, apply_success: bool, language: str = "", repo: str = ""):
-    """Determine pass/fail from test output. Uses log_parsers by language/repo when available."""
-    # 1) apply fail → 直接返回
+    """Determine pass/fail from the eval script exit status."""
     if not apply_success:
         return False, "APPLY_FAILED"
 
     combined_raw = stdout + "\n" + stderr
-    omnigril_match = _OMNIGRIL_EXIT_RE.search(combined_raw)
-    # 2) omit code (OMNIGRIL_EXIT_CODE) 非 0 → 直接返回
-    if omnigril_match and int(omnigril_match.group(1)) != 0:
-        return False, "NON_ZERO_EXIT"
+    if _TEST_PATCH_APPLY_FAILED_MARKER in combined_raw:
+        return False, "TEST_PATCH_APPLY_FAILED"
 
-    # 去掉 stdout 中的 omit code 行，再交给 parser / 启发式
-    cleaned_stdout = _strip_omnigril_exit(stdout)
-    combined_log = cleaned_stdout + "\n" + stderr
-    parser = get_log_parser(language, repo)
-
-    if parser is not None:
-        test_spec = {}
-        try:
-            test_status_map = parser(combined_log, test_spec)
-        except Exception:
-            return _analyze_with_heuristic(cleaned_stdout, stderr, returncode)
-        if test_status_map:
-            failed_statuses = {TestStatus.FAILED.value, TestStatus.ERROR.value}
-            if any(s in failed_statuses for s in test_status_map.values()):
-                return False, "LOG_CONTAINS_FAILURE"
+    script_exit_code = _extract_omnigril_exit(combined_raw)
+    if script_exit_code is not None:
+        if script_exit_code == 0 and returncode == 0:
             return True, "SUCCESS"
-        # Parser 返回空 map：回退到启发式
-    return _analyze_with_heuristic(cleaned_stdout, stderr, returncode)
+        return False, "NON_ZERO_EXIT"
+    if returncode != 0:
+        return False, "NON_ZERO_EXIT"
+    return True, "SUCCESS"
 
 def run_single_patch(container_name, image_name, patch_content, eval_script, language="", repo=""):
-    run_command(f"docker run -d --name {container_name} --cpus='4' {image_name} tail -f /dev/null")
+    net_flags = _docker_network_flags()
+    run_command(
+        f"docker run -d --name {container_name} {net_flags} "
+        f"{image_name} tail -f /dev/null"
+    )
     
     apply_res = None
     eval_res = None
@@ -181,26 +192,27 @@ def run_single_patch(container_name, image_name, patch_content, eval_script, lan
         patch_file = create_temp_file(patch_content or "", suffix=".diff")
         run_command(f"docker cp {patch_file} {container_name}:/tmp/patch.diff")
         
-        apply_cmd = f"docker exec {container_name} bash -c 'cd {repo_path} && (git apply -v /tmp/patch.diff || patch -p1 < /tmp/patch.diff)'"
+        apply_cmd = f"docker exec -u root {container_name} bash -c 'cd {repo_path} && (git apply -v /tmp/patch.diff || patch -p1 < /tmp/patch.diff)'"
         apply_res, is_timeout = run_command(apply_cmd, timeout=60)
         if os.path.exists(patch_file): os.unlink(patch_file)
         
         if is_timeout: 
-            return None, "TIMEOUT_APPLY", "APPLY", False
+            return _execution_info("TIMEOUT_APPLY", apply_res, False, apply_res), None, "APPLY", False
         
         apply_success = (apply_res.returncode == 0)
 
         # 2. Evaluate phase
         eval_file = create_temp_file(eval_script, suffix=".sh")
         run_command(f"docker cp {eval_file} {container_name}:/tmp/evaluate.sh")
-        eval_cmd = f"docker exec {container_name} bash -c 'chmod +x /tmp/evaluate.sh && /tmp/evaluate.sh'"
-        eval_res, is_timeout = run_command(eval_cmd, timeout=1200)
+        eval_cmd = f"docker exec -u root {container_name} bash -c 'chmod a+r /tmp/evaluate.sh && bash /tmp/evaluate.sh'"
+        eval_res, is_timeout = run_command(eval_cmd, timeout=EVAL_TIMEOUT)
         if os.path.exists(eval_file): os.unlink(eval_file)
         
         if is_timeout: 
-            return None, "TIMEOUT_EVAL", "EVAL", apply_success
+            return _execution_info("TIMEOUT_EVAL", eval_res, apply_success, apply_res), None, "EVAL", apply_success
 
-        # Analyze results (use log_parsers by language/repo when available)
+        # Analyze results from the eval script itself. The script's exit code
+        # or OMNIGRIL_EXIT_CODE marker is authoritative.
         is_passed, reason = analyze_test_output(
             eval_res.stdout, eval_res.stderr, eval_res.returncode, apply_success,
             language=language, repo=repo,
@@ -211,30 +223,64 @@ def run_single_patch(container_name, image_name, patch_content, eval_script, lan
             "reason": reason,
             "stdout": eval_res.stdout,
             "stderr": eval_res.stderr,
+            "returncode": eval_res.returncode,
+            "script_exit_code": _extract_omnigril_exit(eval_res.stdout + "\n" + eval_res.stderr),
             "apply_err": apply_res.stderr if not apply_success else ""
         }, None, False, apply_success
 
     finally:
         subprocess.run(f"docker rm -f {container_name}", shell=True, capture_output=True)
 
-def _process_one_instance(job):
-    """Process a single instance: pull image, run model/golden patch, return (instance_id, result_dict)."""
-    instance_id, item, eval_script, golden_patch, cleanup, language, repo = job
-    print(f"Processing {instance_id}...")
-    image_name = f'key4127/refactor-dockerhub:{instance_id}'
+def _run_single_patch_with_retry(role, image_name, patch_content, eval_script, language, repo):
+    """Run `run_single_patch` and transparently retry on known flaky failures.
 
-    try:
-        # Pull image
-        _, is_pull_timeout = run_command(f'docker pull {image_name}', timeout=300)
-
-        # Run model patch
-        m_res, m_err, m_timeout_loc, m_app = run_single_patch(
-            f"m_{uuid.uuid4().hex[:6]}", image_name, item.get('model_patch'), eval_script,
+    `role` is a short prefix used for the container name ("m" / "g"). A fresh
+    uuid suffix is generated per attempt so retried runs use a clean container.
+    """
+    last = (None, None, False, False)
+    for attempt in range(_FLAKY_MAX_RETRIES + 1):
+        container_name = f"{role}_{uuid.uuid4().hex[:6]}"
+        res, err, timeout_loc, app = run_single_patch(
+            container_name, image_name, patch_content, eval_script,
             language=language, repo=repo,
         )
-        # Run golden patch
-        g_res, g_err, g_timeout_loc, g_app = run_single_patch(
-            f"g_{uuid.uuid4().hex[:6]}", image_name, golden_patch, eval_script,
+        last = (res, err, timeout_loc, app)
+        if timeout_loc:
+            return last
+        if not _is_flaky_result(res):
+            return last
+        if attempt < _FLAKY_MAX_RETRIES:
+            print(
+                f"[flaky-retry] role={role} attempt {attempt + 1}/"
+                f"{_FLAKY_MAX_RETRIES} hit flaky pattern, retrying..."
+            )
+    return last
+
+
+def _process_one_instance(job):
+    """Process a single instance: pull image, run model/golden patch, return (instance_id, result_dict)."""
+    instance_id, item, eval_script, golden_patch, cleanup, language, repo, image_name = job
+    print(f"Processing {instance_id}...")
+
+    try:
+        if _local_images_only_enabled():
+            if not _local_image_exists(image_name):
+                raise RuntimeError(
+                    f"LOCAL_IMAGES_ONLY is enabled but image is missing locally: {image_name}"
+                )
+            print(f"Using local image {image_name}")
+        else:
+            # Pull image
+            _, is_pull_timeout = run_command(f'docker pull {image_name}', timeout=300)
+
+        # Run model patch (with flaky-pattern retry)
+        m_res, m_err, m_timeout_loc, m_app = _run_single_patch_with_retry(
+            "m", image_name, item.get('model_patch'), eval_script,
+            language=language, repo=repo,
+        )
+        # Run golden patch (with flaky-pattern retry)
+        g_res, g_err, g_timeout_loc, g_app = _run_single_patch_with_retry(
+            "g", image_name, golden_patch, eval_script,
             language=language, repo=repo,
         )
 
@@ -269,7 +315,7 @@ def _process_one_instance(job):
             m_reason = "NEED_HUMAN_REVIEW"
             g_reason = "NEED_HUMAN_REVIEW"
 
-    # 与 log_parse.py 输出格式对齐：model/golden 使用 final_result, raw_reason, parse_reason
+    # Keep the model/golden shape stable for downstream pass_rate consumers.
     model_info = (
         m_res
         if m_res
@@ -280,8 +326,8 @@ def _process_one_instance(job):
         if g_res
         else {"reason": g_err, "stdout": g_stdout, "stderr": g_stderr, "apply_err": ""}
     )
-    model_parsed = _to_log_parse_style_info(model_info, m_err or "")
-    golden_parsed = _to_log_parse_style_info(golden_info, g_err or "")
+    model_parsed = _to_result_info(model_info, m_err or "")
+    golden_parsed = _to_result_info(golden_info, g_err or "")
     passed = model_parsed["final_result"] == "success" and golden_parsed["final_result"] == "success"
 
     result = {
@@ -328,7 +374,8 @@ def stat_pass_rate(pred_path, golden_path, eval_path, output_path, workers=1, cl
         golden_patch = golden_entry.get('patch')
         language = lang_map.get(instance_id, "")
         repo = repo_map.get(instance_id, "")
-        jobs.append((instance_id, item, eval_script, golden_patch, cleanup, language, repo))
+        image_name = golden_entry.get("image_name") or f"key4127/refactor-dockerhub:{instance_id}"
+        jobs.append((instance_id, item, eval_script, golden_patch, cleanup, language, repo, image_name))
 
     if workers <= 1:
         results_list = [_process_one_instance(job)[1] for job in jobs]
@@ -371,21 +418,41 @@ def _is_passed(r):
     return False
 
 
+def _normalize_result(reason: str) -> str:
+    return (reason or "").strip().lower()
+
+
 def print_pass_rate_summary(results_list, lang_map):
-    total = sum(1 for r in results_list if _get_golden_result(r) == "success")
+    total_instances = len(results_list)
+    golden_success_results = [
+        r for r in results_list
+        if _normalize_result(_get_golden_result(r)) == "success"
+    ]
+    total = len(golden_success_results)
     if total == 0:
         print("\nNo results to summarize.")
         return
 
-    passed = sum(1 for r in results_list if _is_passed(r))
+    passed = sum(1 for r in golden_success_results if _is_passed(r))
+    model_passed = sum(
+        1 for r in results_list if _normalize_result(_get_model_result(r)) == "success"
+    )
+
     print(f"\n{'='*60}")
-    print(f"  Overall: {passed}/{total} passed ({100*passed/total:.1f}%)")
+    print(f"  Overall: {passed}/{total} passed ({100 * passed / total:.1f}%)")
+    print(f"  Instances:                  {total_instances}")
+    print(
+        f"  Model success:              {model_passed}/{total_instances} "
+        f"({100 * model_passed / total_instances:.1f}%)"
+    )
+    print(
+        f"  Golden success:             {total}/{total_instances} "
+        f"({100 * total / total_instances:.1f}%)"
+    )
     print(f"{'='*60}")
 
     lang_stats = {}
-    for r in results_list:
-        if _get_golden_result(r) != "success":
-            continue
+    for r in golden_success_results:
         lang = lang_map.get(r["instance_id"], "unknown")
         stats = lang_stats.setdefault(lang, {"total": 0, "passed": 0})
         stats["total"] += 1
@@ -399,15 +466,22 @@ def print_pass_rate_summary(results_list, lang_map):
         rate = 100 * s["passed"] / s["total"] if s["total"] else 0
         print(f"  {lang:<15} {s['passed']:>8} {s['total']:>8} {rate:>7.1f}%")
 
-    reason_counts = {}
+    model_reason_counts = {}
+    golden_reason_counts = {}
     for r in results_list:
-        reason = _get_model_result(r)
-        reason_counts[reason] = reason_counts.get(reason, 0) + 1
-    total_results = len(results_list)
+        model_reason = _get_model_result(r) or "unknown"
+        golden_reason = _get_golden_result(r) or "unknown"
+        model_reason_counts[model_reason] = model_reason_counts.get(model_reason, 0) + 1
+        golden_reason_counts[golden_reason] = golden_reason_counts.get(golden_reason, 0) + 1
 
-    print(f"\n  Results:")
-    for reason, count in sorted(reason_counts.items(), key=lambda x: -x[1]):
-        pct = 100 * count / total_results if total_results else 0
+    print(f"\n  Model results ({total_instances} instances):")
+    for reason, count in sorted(model_reason_counts.items(), key=lambda x: -x[1]):
+        pct = 100 * count / total_instances
+        print(f"    {reason:<25} {count:>4} ({pct:.1f}%)")
+
+    print(f"\n  Golden results ({total_instances} instances):")
+    for reason, count in sorted(golden_reason_counts.items(), key=lambda x: -x[1]):
+        pct = 100 * count / total_instances
         print(f"    {reason:<25} {count:>4} ({pct:.1f}%)")
     print(f"{'='*60}")
 
