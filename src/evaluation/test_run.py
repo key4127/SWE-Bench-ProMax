@@ -489,8 +489,8 @@ def print_pass_rate_summary(results_list, lang_map):
 def main():
     parser = argparse.ArgumentParser(description='Evaluate model patches against golden patches and report pass rate')
     parser.add_argument('--pred', '-p', default='./preds.json', help='Predictions JSON path (default: ./preds.json)')
-    parser.add_argument('--golden', '-g', default='./golden.json', help='Golden patches JSON path (default: ./golden.json)')
-    parser.add_argument('--eval', '-e', default='./eval.json', help='Eval scripts JSON path (default: ./eval.json)')
+    parser.add_argument('--golden', '-g', default='./data/swe-bench-promax.json', help='Golden patches JSON path (default: ./data/swe-bench-promax.json)')
+    parser.add_argument('--eval', '-e', default='./data/eval.json', help='Eval scripts JSON path (default: ./data/eval.json)')
     parser.add_argument('--output', '-o', default='./pass_rate.json', help='Output results JSON path (default: ./pass_rate.json)')
     parser.add_argument('--workers', '-w', type=int, default=1, help='Number of parallel workers (default: 1)')
     parser.add_argument('--cleanup', action='store_true', help='Remove docker images after evaluation (default: keep)')

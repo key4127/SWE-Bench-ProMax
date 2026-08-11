@@ -6,7 +6,7 @@ SWE-Bench-ProMax has been accepted to COLM 2026.
 
 ## Repository Contents
 
-- `swe-bench-promax.json`: benchmark instances.
+- `data/swe-bench-promax.json`: benchmark instances.
 - `data/eval.json`: evaluation scripts keyed by `instance_id`.
 - `src/evaluation/test_run.py`: Docker-based evaluation runner for model patches.
 - `src/pipeline/`: data collection utilities used to build the benchmark.
@@ -16,7 +16,7 @@ SWE-Bench-ProMax has been accepted to COLM 2026.
 - **Total instances**: 170
 - **Programming languages**: C, C++, Go, Java, Python, Rust, TypeScript
 - **Main split**: `test`
-- **Primary data file**: `swe-bench-promax.json`
+- **Primary data file**: `data/swe-bench-promax.json`
 - **Evaluation metadata**: `data/eval.json`, keyed by `instance_id`
 
 ## Language Coverage
@@ -38,7 +38,7 @@ Load the benchmark records from the local JSON file:
 ```python
 import json
 
-with open("swe-bench-promax.json", encoding="utf-8") as f:
+with open("data/swe-bench-promax.json", encoding="utf-8") as f:
     dataset = json.load(f)
 
 print(len(dataset))
@@ -78,7 +78,7 @@ Run the evaluator:
 ```bash
 python src/evaluation/test_run.py \
   --pred ./preds.json \
-  --golden ./swe-bench-promax.json \
+  --golden ./data/swe-bench-promax.json \
   --eval ./data/eval.json \
   --output ./pass_rate.json \
   --workers 1
