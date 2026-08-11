@@ -111,3 +111,19 @@ Each `data/eval.json` entry is keyed by the same `instance_id` and contains:
 ## Data Collection
 
 The collection utilities live under `src/pipeline/`. See `src/pipeline/collection/README.md` for the collection workflow and required environment variables.
+
+## Citation
+
+If you use this dataset, please cite:
+
+```
+@misc{shi2026swe,
+      title={SWE-Bench ProMax: Benchmarking Agents on Large-Scale Multilingual Code Refactoring}, 
+      author={Yuling Shi and Jinghan Xu and Kelin Fu and Wenhao Zeng and Shilin He and Lei Zhang and Yue Liu and Zelin Zhao and Terry Yue Zhuo and Jialun Cao and Siyu Ye and Tianyu Liu and Kai Cai and Shing-Chi Cheung and Xiaodong Gu},
+      year={2026},
+      eprint={2608.09802},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2608.09802}, 
+}
+```
