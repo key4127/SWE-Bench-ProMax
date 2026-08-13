@@ -30,7 +30,7 @@ We are actively maintaining this benchmark: a **v2 release is under preparation*
 
 - **[Ongoing]** 🚧 **v2** in preparation — a larger-scale benchmark built from post-2026 issues, with continuous updates planned. **If you are interested in collaborating, we would love to hear from you** — feel free to reach out via [email](mailto:yuling.shi@sjtu.edu.cn) or open an issue.
 - **[2026-07]** 🎉 SWE-Bench-ProMax is accepted to **COLM 2026**.
-- **[2026-04]** ✅ Benchmark construction completed; dataset and evaluation harness released.
+- **[2026-04]** ✅ Benchmark construction completed.
 
 ## 📦 Repository Contents
 
