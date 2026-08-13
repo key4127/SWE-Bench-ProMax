@@ -1,11 +1,25 @@
-# SWE-Bench-ProMax
+<div align="center">
 
-<p align="center">
-  <a href="https://arxiv.org/abs/2608.09802"><img src="https://img.shields.io/badge/arXiv-2608.09802-b31b1b.svg" alt="arXiv"></a>
-  <img src="https://img.shields.io/badge/COLM-2026-blue.svg" alt="COLM 2026">
-  <img src="https://img.shields.io/badge/Languages-7-green.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Instances-170-orange.svg" alt="Instances">
-</p>
+# 🚀 SWE-Bench-ProMax
+
+### A Contamination-Resistant, Multi-Language Benchmark for Repository-Level Issue Resolution
+
+**[📄 Paper](https://arxiv.org/abs/2608.09802)** ·
+**[📊 Dataset](data/swe-bench-promax.json)** ·
+**[⚙️ Evaluation](#️-evaluation)** ·
+**[📬 Contact](mailto:yuling.shi@sjtu.edu.cn)**
+
+<br>
+
+<a href="https://arxiv.org/abs/2608.09802"><img src="https://img.shields.io/badge/arXiv-2608.09802-b31b1b?style=for-the-badge&logo=arxiv&logoColor=white" alt="arXiv"></a>
+<img src="https://img.shields.io/badge/COLM-2026-4b44ce?style=for-the-badge" alt="COLM 2026">
+<img src="https://img.shields.io/badge/Languages-7-2ea44f?style=for-the-badge" alt="Languages">
+<img src="https://img.shields.io/badge/Instances-170-e8710a?style=for-the-badge" alt="Instances">
+<img src="https://img.shields.io/badge/License-Research-lightgrey?style=for-the-badge" alt="License">
+
+</div>
+
+---
 
 **SWE-Bench-ProMax** is a multi-language benchmark for repository-level software issue resolution, accepted to **COLM 2026**. All task instances are collected from real-world GitHub issues created **after 2025**, substantially reducing the risk of training-data contamination for contemporary language models. Each instance provides a task description, repository metadata, a reference patch, an evaluation test patch, and container-oriented metadata for reproducible, patch-based evaluation.
 
@@ -17,14 +31,14 @@ We are actively maintaining this benchmark: a **v2 release is under preparation*
 - **[2026-07]** 🎉 SWE-Bench-ProMax is accepted to **COLM 2026**.
 - **[2026-04]** ✅ Benchmark construction completed; dataset and evaluation harness released.
 
-## Repository Contents
+## 📦 Repository Contents
 
 - `data/swe-bench-promax.json`: benchmark instances.
 - `data/eval.json`: evaluation scripts keyed by `instance_id`.
 - `src/evaluation/test_run.py`: Docker-based evaluation runner for model patches.
 - `src/pipeline/`: data collection utilities used to build the benchmark.
 
-## Dataset Summary
+## 📊 Dataset Summary
 
 - **Total instances**: 170
 - **Programming languages**: C, C++, Go, Java, Python, Rust, TypeScript
@@ -33,7 +47,7 @@ We are actively maintaining this benchmark: a **v2 release is under preparation*
 - **Primary data file**: `data/swe-bench-promax.json`
 - **Evaluation metadata**: `data/eval.json`, keyed by `instance_id`
 
-## Language Coverage
+## 🌐 Language Coverage
 
 | Language | Instances |
 | --- | ---: |
@@ -45,7 +59,7 @@ We are actively maintaining this benchmark: a **v2 release is under preparation*
 | Rust | 22 |
 | TypeScript | 28 |
 
-## Quick Start
+## 🚀 Quick Start
 
 Load the benchmark records from the local JSON file:
 
@@ -72,7 +86,7 @@ print(first_instance_id)
 print(eval_metadata[first_instance_id]["eval_script"])
 ```
 
-## Evaluation
+## ⚙️ Evaluation
 
 The evaluation runner compares model patches against the reference patches and writes a pass-rate report. It expects Docker to be available because each instance is evaluated inside its task container.
 
@@ -100,7 +114,7 @@ python src/evaluation/test_run.py \
 
 Use `--workers` to evaluate multiple instances in parallel. Add `--cleanup` if you want the runner to remove Docker images after evaluation.
 
-## Data Structure
+## 🗂️ Data Structure
 
 Each benchmark record includes the core fields below:
 
@@ -126,17 +140,17 @@ Each `data/eval.json` entry is keyed by the same `instance_id` and contains:
 | `instance_id` | Matching benchmark instance identifier. |
 | `eval_script` | Shell script used to run the task-specific evaluation. |
 
-## Data Collection
+## 🔧 Data Collection
 
 The collection utilities live under `src/pipeline/`. See `src/pipeline/collection/README.md` for the collection workflow and required environment variables.
 
-## Roadmap
+## 🗺️ Roadmap
 
 - [x] v1 release: 170 instances across 7 languages, built from post-2025 issues.
 - [ ] v2 release: larger-scale benchmark built from post-2026 issues.
 - [ ] Continuous updates to keep the benchmark contamination-resistant.
 
-## Citation
+## 📖 Citation
 
 If you find SWE-Bench-ProMax useful, please cite:
 
