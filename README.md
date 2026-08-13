@@ -5,13 +5,14 @@
 ### A Contamination-Resistant, Multi-Language Benchmark for Repository-Level Issue Resolution
 
 **[📄 Paper](https://arxiv.org/abs/2608.09802)** ·
-**[📊 Dataset](data/swe-bench-promax.json)** ·
+**[📊 Dataset](https://huggingface.co/datasets/swe-bench-promax/SWE-Bench-ProMax)** ·
 **[⚙️ Evaluation](#️-evaluation)** ·
 **[📬 Contact](mailto:yuling.shi@sjtu.edu.cn)**
 
 <br>
 
 <a href="https://arxiv.org/abs/2608.09802"><img src="https://img.shields.io/badge/arXiv-2608.09802-b31b1b?style=for-the-badge&logo=arxiv&logoColor=white" alt="arXiv"></a>
+<a href="https://huggingface.co/datasets/swe-bench-promax/SWE-Bench-ProMax"><img src="https://img.shields.io/badge/🤗%20Dataset-SWE--Bench--ProMax-ffcc4d?style=for-the-badge" alt="Hugging Face Dataset"></a>
 <img src="https://img.shields.io/badge/COLM-2026-4b44ce?style=for-the-badge" alt="COLM 2026">
 <img src="https://img.shields.io/badge/Languages-7-2ea44f?style=for-the-badge" alt="Languages">
 <img src="https://img.shields.io/badge/Instances-170-e8710a?style=for-the-badge" alt="Instances">
