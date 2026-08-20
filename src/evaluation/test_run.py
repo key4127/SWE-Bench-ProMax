@@ -53,8 +53,54 @@ def _local_images_only_enabled() -> bool:
 
 
 def _local_image_exists(image_name: str) -> bool:
-    result, _ = run_command(f"docker image inspect {image_name}", timeout=30)
+    result, _ = run_command(
+        f"docker image inspect {shlex.quote(image_name)}", timeout=30
+    )
     return result.returncode == 0
+
+
+def _local_image_id(image_name: str) -> str:
+    command = shlex.join([
+        "docker", "image", "inspect", "--format", "{{.Id}}", image_name,
+    ])
+    result, timed_out = run_command(command, timeout=30)
+    if timed_out or result.returncode != 0 or not result.stdout.strip():
+        raise RuntimeError(f"cannot inspect Docker image: {image_name}")
+    return result.stdout.strip()
+
+
+def _verify_sealed_history(image_name: str, working_dir: str, base_commit: str) -> None:
+    """Fail unless a fresh container exposes only BASE and its ancestors."""
+    shell_script = f"""
+set -euo pipefail
+working_dir={shlex.quote(working_dir)}
+expected_base={shlex.quote(base_commit)}
+repo_root=$(git -C "$working_dir" rev-parse --show-toplevel)
+git_dir=$(git -C "$repo_root" rev-parse --absolute-git-dir)
+marker="$git_dir/swe-bench-promax-history-seal"
+test -f "$marker"
+grep -Fqx 'schema=1' "$marker"
+grep -Fqx "base_commit=$expected_base" "$marker"
+grep -Fqx "repo_root=$repo_root" "$marker"
+test "$(git -C "$repo_root" rev-parse HEAD)" = "$expected_base"
+test -z "$(git -C "$repo_root" rev-list --all --not "$expected_base")"
+test -z "$(git -C "$repo_root" remote)"
+test -z "$(git -C "$repo_root" fsck --full --no-reflogs --unreachable 2>/dev/null)"
+git -C "$repo_root" submodule foreach --quiet --recursive '
+  test "$(git rev-parse HEAD)" = "$sha1"
+  test -z "$(git rev-list --all --not "$sha1")"
+'
+"""
+    command = shlex.join([
+        "docker", "run", "--rm", "--entrypoint", "bash", image_name,
+        "-lc", shell_script,
+    ])
+    result, timed_out = run_command(command, timeout=120)
+    if timed_out or result.returncode != 0:
+        raise RuntimeError(
+            f"sealed-history verification failed for {image_name}: "
+            f"{result.stderr.strip()}"
+        )
 
 
 _OMNIGRIL_EXIT_RE = re.compile(r"OMNIGRIL_EXIT_CODE=(\d+)\s*$", re.MULTILINE)
@@ -177,9 +223,10 @@ def analyze_test_output(stdout: str, stderr: str, returncode: int, apply_success
 
 def run_single_patch(container_name, image_name, patch_content, eval_script, language="", repo=""):
     net_flags = _docker_network_flags()
+    image_arg = shlex.quote(image_name)
     run_command(
         f"docker run -d --name {container_name} {net_flags} "
-        f"{image_name} tail -f /dev/null"
+        f"{image_arg} tail -f /dev/null"
     )
     
     apply_res = None
@@ -259,34 +306,58 @@ def _run_single_patch_with_retry(role, image_name, patch_content, eval_script, l
 
 def _process_one_instance(job):
     """Process a single instance: pull image, run model/golden patch, return (instance_id, result_dict)."""
-    instance_id, item, eval_script, golden_patch, cleanup, language, repo, image_name = job
+    (
+        instance_id,
+        item,
+        eval_script,
+        golden_patch,
+        cleanup,
+        language,
+        repo,
+        base_commit,
+        working_dir,
+        local_images_only,
+        require_sealed_history,
+        image_name,
+    ) = job
     print(f"Processing {instance_id}...")
 
     try:
-        if _local_images_only_enabled():
+        if local_images_only:
             if not _local_image_exists(image_name):
                 raise RuntimeError(
-                    f"LOCAL_IMAGES_ONLY is enabled but image is missing locally: {image_name}"
+                    f"--local-images-only is enabled but image is missing: {image_name}"
                 )
             print(f"Using local image {image_name}")
         else:
             # Pull image
-            _, is_pull_timeout = run_command(f'docker pull {image_name}', timeout=300)
+            pull_result, is_pull_timeout = run_command(
+                f"docker pull {shlex.quote(image_name)}", timeout=300
+            )
+            if is_pull_timeout or pull_result.returncode != 0:
+                raise RuntimeError(
+                    f"failed to pull Docker image {image_name}: "
+                    f"{pull_result.stderr.strip()}"
+                )
+
+        image_id = _local_image_id(image_name)
+        if require_sealed_history:
+            _verify_sealed_history(image_id, working_dir, base_commit)
 
         # Run model patch (with flaky-pattern retry)
         m_res, m_err, m_timeout_loc, m_app = _run_single_patch_with_retry(
-            "m", image_name, item.get('model_patch'), eval_script,
+            "m", image_id, item.get('model_patch'), eval_script,
             language=language, repo=repo,
         )
         # Run golden patch (with flaky-pattern retry)
         g_res, g_err, g_timeout_loc, g_app = _run_single_patch_with_retry(
-            "g", image_name, golden_patch, eval_script,
+            "g", image_id, golden_patch, eval_script,
             language=language, repo=repo,
         )
 
     finally:
         if cleanup:
-            run_command(f"docker rmi {image_name}", timeout=60)
+            run_command(f"docker rmi {shlex.quote(image_name)}", timeout=60)
 
     # Aggregate status
     timeout_at = m_timeout_loc or g_timeout_loc or False
@@ -334,16 +405,47 @@ def _process_one_instance(job):
         "instance_id": instance_id,
         "language": language,
         "passed": passed,
+        "image": {
+            "name": image_name,
+            "id": image_id,
+            "history_sealed": require_sealed_history,
+        },
         "model": model_parsed,
         "golden": golden_parsed,
     }
     return (instance_id, result)
 
 
-def stat_pass_rate(pred_path, golden_path, eval_path, output_path, workers=1, cleanup=False):
+def stat_pass_rate(
+    pred_path,
+    golden_path,
+    eval_path,
+    output_path,
+    workers=1,
+    cleanup=False,
+    image_map_path=None,
+    local_images_only=False,
+    require_sealed_history=False,
+):
     with open(pred_path, 'r', encoding='utf-8') as f: pred_data = json.load(f)
     with open(golden_path, 'r', encoding='utf-8') as f: golden_list = json.load(f)
     with open(eval_path, 'r', encoding='utf-8') as f: eval_data = json.load(f)
+    image_map_supplied = image_map_path is not None
+    if image_map_supplied:
+        with open(image_map_path, 'r', encoding='utf-8') as f:
+            image_map = json.load(f)
+        if not isinstance(image_map, dict):
+            raise ValueError("image map must be a JSON object keyed by instance_id")
+        invalid_images = [
+            instance_id for instance_id, image in image_map.items()
+            if not isinstance(instance_id, str)
+            or not isinstance(image, str)
+            or not image.strip()
+        ]
+        if invalid_images:
+            raise ValueError("image map keys and values must be non-empty strings")
+    else:
+        image_map = {}
 
     # 以 preds 为主表：归一化为条目列表
     if isinstance(pred_data, dict):
@@ -370,12 +472,40 @@ def stat_pass_rate(pred_path, golden_path, eval_path, output_path, workers=1, cl
         golden_entry = golden_lookup.get(instance_id)
         if golden_entry is None:
             continue  # preds 中有但 golden 中无，跳过
+        if image_map_supplied and instance_id not in image_map:
+            raise ValueError(
+                f"image map is missing evaluated instance {instance_id!r}"
+            )
         eval_script = eval_data.get(instance_id, {}).get('eval_script', "")
         golden_patch = golden_entry.get('patch')
         language = lang_map.get(instance_id, "")
         repo = repo_map.get(instance_id, "")
-        image_name = golden_entry.get("image_name") or f"key4127/refactor-dockerhub:{instance_id}"
-        jobs.append((instance_id, item, eval_script, golden_patch, cleanup, language, repo, image_name))
+        base_commit = golden_entry.get("base_commit", "")
+        working_dir = golden_entry.get("working_dir", "")
+        if require_sealed_history and (not base_commit or not working_dir):
+            raise ValueError(
+                f"sealed-history verification needs base_commit and working_dir "
+                f"for {instance_id!r}"
+            )
+        image_name = (
+            (image_map[instance_id] if image_map_supplied else None)
+            or golden_entry.get("image_name")
+            or f"key4127/refactor-dockerhub:{instance_id}"
+        )
+        jobs.append((
+            instance_id,
+            item,
+            eval_script,
+            golden_patch,
+            cleanup,
+            language,
+            repo,
+            base_commit,
+            working_dir,
+            local_images_only or _local_images_only_enabled(),
+            require_sealed_history,
+            image_name,
+        ))
 
     if workers <= 1:
         results_list = [_process_one_instance(job)[1] for job in jobs]
@@ -494,8 +624,38 @@ def main():
     parser.add_argument('--output', '-o', default='./pass_rate.json', help='Output results JSON path (default: ./pass_rate.json)')
     parser.add_argument('--workers', '-w', type=int, default=1, help='Number of parallel workers (default: 1)')
     parser.add_argument('--cleanup', action='store_true', help='Remove docker images after evaluation (default: keep)')
+    parser.add_argument(
+        '--image-map',
+        help=(
+            'Evaluator-owned JSON object mapping instance_id to a prepared '
+            'image tag. Prediction rows cannot override task images.'
+        ),
+    )
+    parser.add_argument(
+        '--local-images-only',
+        action='store_true',
+        help='Never pull; fail if an evaluator-selected image is not local.',
+    )
+    parser.add_argument(
+        '--require-sealed-history',
+        action='store_true',
+        help=(
+            'Before scoring, verify the prepared-image marker and assert that '
+            'only base_commit and its ancestors are exposed.'
+        ),
+    )
     args = parser.parse_args()
-    stat_pass_rate(args.pred, args.golden, args.eval, args.output, workers=args.workers, cleanup=args.cleanup)
+    stat_pass_rate(
+        args.pred,
+        args.golden,
+        args.eval,
+        args.output,
+        workers=args.workers,
+        cleanup=args.cleanup,
+        image_map_path=args.image_map,
+        local_images_only=args.local_images_only,
+        require_sealed_history=args.require_sealed_history,
+    )
 
 
 if __name__ == '__main__':

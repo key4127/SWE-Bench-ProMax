@@ -36,6 +36,8 @@ We are actively maintaining this benchmark: a **v2 release is under preparation*
 
 - `data/swe-bench-promax.json`: benchmark instances.
 - `data/eval.json`: evaluation scripts keyed by `instance_id`.
+- `src/evaluation/prepare_task_image.py`: derives a task image whose Git
+  history stops at `base_commit` before an agent is run.
 - `src/evaluation/test_run.py`: Docker-based evaluation runner for model patches.
 - `src/pipeline/`: data collection utilities used to build the benchmark.
 
@@ -91,6 +93,56 @@ print(eval_metadata[first_instance_id]["eval_script"])
 
 The evaluation runner compares model patches against the reference patches and writes a pass-rate report. It expects Docker to be available because each instance is evaluated inside its task container.
 
+### Prepare Git-history-safe images before inference
+
+Do not expose a task image to an agent until its repository history has been
+checked. A task image can be checked out at `base_commit` while still retaining
+later commits in local branches, tags, reflogs, or unreachable objects. An agent
+can recover the reference change with ordinary commands such as `git log` and
+`git show` even though the worktree itself looks clean.
+
+Derive a sealed image before generating a prediction:
+
+```bash
+python src/evaluation/prepare_task_image.py INSTANCE_ID \
+  --tag swe-bench-promax-sealed:INSTANCE_ID
+```
+
+The derived image retains `base_commit`, its ancestors, and the nearest tag
+reachable from the base. It preserves the image's existing worktree and
+initialized submodules, recursively seals those submodules to their recorded
+gitlink commits, and removes later or unreachable Git objects from the normal
+container view. Use this same derived image for agent inference and evaluation.
+
+Create an evaluator-owned image map (prediction files must not choose their own
+images):
+
+```json
+{
+  "INSTANCE_ID": "swe-bench-promax-sealed:INSTANCE_ID"
+}
+```
+
+Then require local prepared images and verify their sealed-history marker while
+scoring:
+
+```bash
+python src/evaluation/test_run.py \
+  --pred ./preds.json \
+  --golden ./data/swe-bench-promax.json \
+  --eval ./data/eval.json \
+  --image-map ./sealed-images.json \
+  --local-images-only \
+  --require-sealed-history \
+  --output ./pass_rate.json \
+  --workers 1
+```
+
+When `--image-map` is supplied, it must cover every evaluated prediction. The
+runner records the selected image tag and local image ID in each result. See
+[`docs/TASK_IMAGE_INTEGRITY.md`](docs/TASK_IMAGE_INTEGRITY.md) for the threat
+model, validation details, and publishing recommendations.
+
 Prepare a predictions file such as `preds.json`:
 
 ```json
@@ -113,7 +165,7 @@ python src/evaluation/test_run.py \
   --workers 1
 ```
 
-Use `--workers` to evaluate multiple instances in parallel. Add `--cleanup` if you want the runner to remove Docker images after evaluation.
+Use `--workers` to evaluate multiple instances in parallel. Add `--cleanup` if you want the runner to remove Docker images after evaluation. Sealing at evaluation time is too late to make an already generated trajectory trustworthy; preparation must happen before inference.
 
 ## 🗂️ Data Structure
 
