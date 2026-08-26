@@ -86,6 +86,10 @@ python src/evaluation/test_run.py \
 
 Use `--workers` to evaluate multiple instances in parallel. Add `--cleanup` if you want the runner to remove Docker images after evaluation.
 
+## Change Log
+
+- 2026-08-26: Fixed the evaluation runner so benchmark instances can be evaluated offline. Docker evaluation containers now default to an isolated network configuration and offline package-manager settings, and `--local-images-only` can be used to skip pulling images during evaluation.
+
 ## Data Structure
 
 Each benchmark record includes the core fields below:
