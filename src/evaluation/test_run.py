@@ -9,9 +9,26 @@ import shlex
 from concurrent.futures import ThreadPoolExecutor
 
 LOCAL_IMAGES_ONLY = False
-DOCKER_NETWORK = "host"
+DOCKER_NETWORK = os.environ.get("PROMAX_DOCKER_NETWORK", "none")
 DOCKER_DNS = ()
-DOCKER_ENV = {}
+OFFLINE_HOST_IPV4 = "172.17.0.2"
+DOCKER_ENV = {
+    # Eval images are expected to carry the dependency caches produced during
+    # environment construction. These defaults make accidental runtime fetches
+    # fail fast instead of silently depending on the evaluator's network.
+    "PIP_NO_INDEX": "1",
+    "UV_OFFLINE": "1",
+    "CARGO_NET_OFFLINE": "true",
+    "GOPROXY": "off",
+    "GOSUMDB": "off",
+    "npm_config_offline": "true",
+    "pnpm_config_offline": "true",
+    "YARN_ENABLE_NETWORK": "0",
+    "COREPACK_ENABLE_DOWNLOAD_PROMPT": "0",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "HF_DATASETS_OFFLINE": "1",
+}
 FLAKY_MAX_RETRIES = 2
 EVAL_TIMEOUT = 2400
 _PROXY_ENV_KEYS = (
@@ -86,6 +103,13 @@ def _docker_network_flags() -> str:
             # avoiding shell quoting issues and keeping proxy secrets out of logs.
             flags.append(f"-e {key}")
     return " ".join(flags)
+
+
+def _docker_hostname(container_name: str) -> str:
+    hostname = re.sub(r"[^A-Za-z0-9-]+", "-", container_name).strip("-").lower()
+    if not hostname:
+        hostname = "promax"
+    return hostname[:63].rstrip("-") or "promax"
 
 
 def _execution_info(reason: str, proc, apply_success: bool, apply_res=None) -> dict:
@@ -177,8 +201,14 @@ def analyze_test_output(stdout: str, stderr: str, returncode: int, apply_success
 
 def run_single_patch(container_name, image_name, patch_content, eval_script, language="", repo=""):
     net_flags = _docker_network_flags()
+    hostname = _docker_hostname(container_name)
     run_command(
-        f"docker run -d --name {container_name} {net_flags} "
+        f"docker run -d --name {container_name} "
+        f"--hostname {shlex.quote(hostname)} "
+        f"--add-host {shlex.quote(f'{hostname}:{OFFLINE_HOST_IPV4}')} "
+        f"--add-host {shlex.quote(f'{hostname}:127.0.0.1')} "
+        f"-e {shlex.quote(f'HOSTNAME={hostname}')} "
+        f"{net_flags} "
         f"{image_name} tail -f /dev/null"
     )
     
@@ -340,7 +370,10 @@ def _process_one_instance(job):
     return (instance_id, result)
 
 
-def stat_pass_rate(pred_path, golden_path, eval_path, output_path, workers=1, cleanup=False):
+def stat_pass_rate(pred_path, golden_path, eval_path, output_path, workers=1, cleanup=False, local_images_only=False):
+    global LOCAL_IMAGES_ONLY
+    LOCAL_IMAGES_ONLY = local_images_only
+
     with open(pred_path, 'r', encoding='utf-8') as f: pred_data = json.load(f)
     with open(golden_path, 'r', encoding='utf-8') as f: golden_list = json.load(f)
     with open(eval_path, 'r', encoding='utf-8') as f: eval_data = json.load(f)
@@ -494,8 +527,17 @@ def main():
     parser.add_argument('--output', '-o', default='./pass_rate.json', help='Output results JSON path (default: ./pass_rate.json)')
     parser.add_argument('--workers', '-w', type=int, default=1, help='Number of parallel workers (default: 1)')
     parser.add_argument('--cleanup', action='store_true', help='Remove docker images after evaluation (default: keep)')
+    parser.add_argument('--local-images-only', action='store_true', help='Use local images and skip docker pull')
     args = parser.parse_args()
-    stat_pass_rate(args.pred, args.golden, args.eval, args.output, workers=args.workers, cleanup=args.cleanup)
+    stat_pass_rate(
+        args.pred,
+        args.golden,
+        args.eval,
+        args.output,
+        workers=args.workers,
+        cleanup=args.cleanup,
+        local_images_only=args.local_images_only,
+    )
 
 
 if __name__ == '__main__':
