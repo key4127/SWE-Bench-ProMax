@@ -9,9 +9,26 @@ import shlex
 from concurrent.futures import ThreadPoolExecutor
 
 LOCAL_IMAGES_ONLY = False
-DOCKER_NETWORK = "host"
+DOCKER_NETWORK = os.environ.get("PROMAX_DOCKER_NETWORK", "none")
 DOCKER_DNS = ()
-DOCKER_ENV = {}
+OFFLINE_HOST_IPV4 = "172.17.0.2"
+DOCKER_ENV = {
+    # Eval images are expected to carry the dependency caches produced during
+    # environment construction. These defaults make accidental runtime fetches
+    # fail fast instead of silently depending on the evaluator's network.
+    "PIP_NO_INDEX": "1",
+    "UV_OFFLINE": "1",
+    "CARGO_NET_OFFLINE": "true",
+    "GOPROXY": "off",
+    "GOSUMDB": "off",
+    "npm_config_offline": "true",
+    "pnpm_config_offline": "true",
+    "YARN_ENABLE_NETWORK": "0",
+    "COREPACK_ENABLE_DOWNLOAD_PROMPT": "0",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "HF_DATASETS_OFFLINE": "1",
+}
 FLAKY_MAX_RETRIES = 2
 EVAL_TIMEOUT = 2400
 _PROXY_ENV_KEYS = (
@@ -134,6 +151,13 @@ def _docker_network_flags() -> str:
     return " ".join(flags)
 
 
+def _docker_hostname(container_name: str) -> str:
+    hostname = re.sub(r"[^A-Za-z0-9-]+", "-", container_name).strip("-").lower()
+    if not hostname:
+        hostname = "promax"
+    return hostname[:63].rstrip("-") or "promax"
+
+
 def _execution_info(reason: str, proc, apply_success: bool, apply_res=None) -> dict:
     stdout = proc.stdout if proc else ""
     stderr = proc.stderr if proc else ""
@@ -224,8 +248,14 @@ def analyze_test_output(stdout: str, stderr: str, returncode: int, apply_success
 def run_single_patch(container_name, image_name, patch_content, eval_script, language="", repo=""):
     net_flags = _docker_network_flags()
     image_arg = shlex.quote(image_name)
+    hostname = _docker_hostname(container_name)
     run_command(
-        f"docker run -d --name {container_name} {net_flags} "
+        f"docker run -d --name {container_name} "
+        f"--hostname {shlex.quote(hostname)} "
+        f"--add-host {shlex.quote(f'{hostname}:{OFFLINE_HOST_IPV4}')} "
+        f"--add-host {shlex.quote(f'{hostname}:127.0.0.1')} "
+        f"-e {shlex.quote(f'HOSTNAME={hostname}')} "
+        f"{net_flags} "
         f"{image_arg} tail -f /dev/null"
     )
     
@@ -427,6 +457,9 @@ def stat_pass_rate(
     local_images_only=False,
     require_sealed_history=False,
 ):
+    global LOCAL_IMAGES_ONLY
+    LOCAL_IMAGES_ONLY = local_images_only
+
     with open(pred_path, 'r', encoding='utf-8') as f: pred_data = json.load(f)
     with open(golden_path, 'r', encoding='utf-8') as f: golden_list = json.load(f)
     with open(eval_path, 'r', encoding='utf-8') as f: eval_data = json.load(f)
