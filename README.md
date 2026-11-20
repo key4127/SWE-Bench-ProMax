@@ -117,6 +117,12 @@ Use `--workers` to evaluate multiple instances in parallel. Add `--cleanup` if y
 
 ## 📝 Change Log
 
+- 2026-11-20: Rebuilt the task images and fixed several eval scripts.
+  - **Removed upstream history newer than each task's base commit from the images.** The previous images kept the upstream clone's branches and tags, so the commit that fixed the issue could be read with `git log --all` / `git show`. See `docker/README.md`.
+  - **Eval scripts now fail when the build step fails** (21 scripts). Before, a failed build fell through to a stale test binary left in the image, so `deskflow__deskflow-c_5fa70d0` and `bloomberg__blazingmq-827` passed with an empty patch. `tools/make_eval_fix.py` regenerates the change.
+  - **11 images now include the dependencies their offline eval needs** (Angular: Bazel; PlantUML / Hibernate: Gradle jars).
+  - **Evaluation containers are capped at 12 GB memory and 4 CPUs** (`PROMAX_DOCKER_MEMORY` / `PROMAX_DOCKER_CPUS`, empty string disables). Without a cap, the empty-patch run of `astral-sh__ruff-20041` grew to over 150 GB.
+  - All 170 instances: reference patch passes, empty patch fails (`src/evaluation/test_run.py`, `--network none`).
 - 2026-08-26: Fixed the evaluation runner so benchmark instances can be evaluated offline. Docker evaluation containers now default to an isolated network configuration and offline package-manager settings, and `--local-images-only` can be used to skip pulling images during evaluation.
 
 ## 🗂️ Data Structure

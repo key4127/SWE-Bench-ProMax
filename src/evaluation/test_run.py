@@ -10,6 +10,10 @@ from concurrent.futures import ThreadPoolExecutor
 
 LOCAL_IMAGES_ONLY = False
 DOCKER_NETWORK = os.environ.get("PROMAX_DOCKER_NETWORK", "none")
+# Per-container resource caps. Without them one runaway test (e.g. astral-sh__ruff-20041 with an
+# empty patch expands types without bound) can take all host memory. Set to "" to disable.
+DOCKER_MEMORY = os.environ.get("PROMAX_DOCKER_MEMORY", "12g")
+DOCKER_CPUS = os.environ.get("PROMAX_DOCKER_CPUS", "4")
 DOCKER_DNS = ()
 OFFLINE_HOST_IPV4 = "172.17.0.2"
 DOCKER_ENV = {
@@ -102,6 +106,17 @@ def _docker_network_flags() -> str:
             # `-e KEY` lets docker copy the value from the host environment,
             # avoiding shell quoting issues and keeping proxy secrets out of logs.
             flags.append(f"-e {key}")
+    return " ".join(flags)
+
+
+def _docker_resource_flags() -> str:
+    """Memory / CPU caps for evaluation containers."""
+    flags = []
+    if DOCKER_MEMORY:
+        # memory-swap equal to memory: no swap on top of the cap
+        flags.append(f"--memory {shlex.quote(DOCKER_MEMORY)} --memory-swap {shlex.quote(DOCKER_MEMORY)}")
+    if DOCKER_CPUS:
+        flags.append(f"--cpus {shlex.quote(DOCKER_CPUS)}")
     return " ".join(flags)
 
 
@@ -209,6 +224,7 @@ def run_single_patch(container_name, image_name, patch_content, eval_script, lan
         f"--add-host {shlex.quote(f'{hostname}:127.0.0.1')} "
         f"-e {shlex.quote(f'HOSTNAME={hostname}')} "
         f"{net_flags} "
+        f"{_docker_resource_flags()} "
         f"{image_name} tail -f /dev/null"
     )
     
