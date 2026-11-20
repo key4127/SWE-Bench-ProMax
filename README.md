@@ -2,7 +2,7 @@
 
 # 🚀 SWE-Bench-ProMax
 
-### A Contamination-Resistant, Multi-Language Benchmark for Repository-Level Issue Resolution
+### A Contamination-Resistant Benchmark for Large-Scale Multilingual Code Refactoring
 
 **[📄 Paper](https://arxiv.org/abs/2608.09802)** ·
 **[📊 Dataset](https://huggingface.co/datasets/swe-bench-promax/SWE-Bench-ProMax)** ·
@@ -22,7 +22,7 @@
 
 ---
 
-**SWE-Bench-ProMax** is a multi-language benchmark for repository-level software issue resolution, accepted to **COLM 2026**. All task instances are collected from real-world GitHub issues created **after 2025**, substantially reducing the risk of training-data contamination for contemporary language models. Each instance provides a task description, repository metadata, a reference patch, an evaluation test patch, and container-oriented metadata for reproducible, patch-based evaluation.
+**SWE-Bench-ProMax** is a multi-language benchmark for large-scale, cross-file code refactoring, accepted to **COLM 2026**. All task instances are collected from real-world GitHub issues created **after 2025**, substantially reducing the risk of training-data contamination for contemporary language models. Each instance provides a task description, repository metadata, a reference patch, an evaluation test patch, and container-oriented metadata for reproducible, patch-based evaluation.
 
 We are actively maintaining this benchmark: a **v2 release is under preparation**, featuring a significantly larger set of tasks collected from issues created **after 2026**, and we will continue to refresh the benchmark over time to keep it contamination-resistant and up to date.
 
