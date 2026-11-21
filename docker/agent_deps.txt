@@ -1,0 +1,15 @@
+CESNET__libyang-c_8d3d805	curl ca-certificates
+LMMS__lmms-7454	curl ca-certificates
+davidesantangelo__krep-18	curl ca-certificates
+davidesantangelo__krep-c_1eb6a4a	curl ca-certificates
+deskflow__deskflow-8413	curl ca-certificates
+deskflow__deskflow-c_2cb3677	curl ca-certificates
+deskflow__deskflow-c_6fa8ba0	curl ca-certificates
+deskflow__deskflow-c_9601180	curl ca-certificates
+deskflow__deskflow-c_c2ee366	curl ca-certificates
+hibernate__hibernate-orm-c_5bde39f	build-essential
+hugo__gohugoio-13982	curl ca-certificates
+nacos__alibaba-13142	build-essential
+nacos__alibaba-13207	build-essential
+openssl__openssl-c_3638ffc	curl ca-certificates
+radare2__radareorg-24332	curl ca-certificates

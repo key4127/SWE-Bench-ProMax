@@ -37,6 +37,7 @@ We are actively maintaining this benchmark: a **v2 release is under preparation*
 - `data/swe-bench-promax.json`: benchmark instances.
 - `data/eval.json`: evaluation scripts keyed by `instance_id`.
 - `src/evaluation/test_run.py`: Docker-based evaluation runner for model patches.
+- `src/inference/run_mini_swe_agent.py`: runs [mini-swe-agent](https://github.com/SWE-agent/mini-swe-agent) on the instances and writes `preds.json` for the evaluator.
 - `src/pipeline/`: data collection utilities used to build the benchmark.
 
 ## 📊 Dataset Summary
@@ -87,6 +88,32 @@ print(first_instance_id)
 print(eval_metadata[first_instance_id]["eval_script"])
 ```
 
+## 🤖 Running an Agent
+
+`src/inference/run_mini_swe_agent.py` runs [mini-swe-agent](https://github.com/SWE-agent/mini-swe-agent) on the benchmark and writes a `preds.json` the evaluator reads directly. The agent runs on the host and executes its commands in the task container with `docker exec`. The container has **no network** (`--network none`), so the agent cannot download the upstream fix; only the model calls leave the host. The task container is capped at 12 GB memory and 4 CPUs, the same as during evaluation.
+
+For each instance the script starts the task image, gives the agent the issue text (with one line saying the repository is at `/testbed` and existing tests should not be modified), runs mini-swe-agent's default `mini` config without a cost limit and with a one-hour wall-clock limit, then saves everything the agent changed relative to the base commit (`git diff --binary`, new files included) as the instance's `model_patch`.
+
+```bash
+pip install mini-swe-agent==2.4.6
+export OPENAI_API_KEY=...                        # any litellm-supported provider works
+export OPENAI_BASE_URL=https://your-endpoint/v1  # for OpenAI-compatible endpoints
+
+python src/inference/run_mini_swe_agent.py \
+  --model openai/your-model \
+  --workers 4 \
+  --output runs/my_model
+
+python src/evaluation/test_run.py \
+  --pred runs/my_model/preds.json \
+  --golden ./data/swe-bench-promax.json \
+  --eval ./data/eval.json \
+  --output runs/my_model/pass_rate.json \
+  --workers 4
+```
+
+Use `--instance-ids ids.txt` (one id per line) to run a subset, and `--time-limit`, `--step-limit`, `--cost-limit` to change the limits. Each instance's trajectory and run summary are saved under `runs/my_model/<instance_id>/`; finished instances are skipped when the command is rerun.
+
 ## ⚙️ Evaluation
 
 The evaluation runner compares model patches against the reference patches and writes a pass-rate report. It expects Docker to be available because each instance is evaluated inside its task container.
@@ -117,6 +144,9 @@ Use `--workers` to evaluate multiple instances in parallel. Add `--cleanup` if y
 
 ## 📝 Change Log
 
+- 2026-11-21: Agent runner and agent-install prerequisites.
+  - **`src/inference/run_mini_swe_agent.py`** runs mini-swe-agent on the benchmark with the task container offline and writes `preds.json` for `test_run.py` (see [Running an Agent](#-running-an-agent)).
+  - **15 images gained `curl` (12) or `gcc`/`make` (3)**, which agents that install themselves inside the task container check for (see `docker/README.md`). Reference patch passes and empty patch fails on all 15.
 - 2026-11-20: Rebuilt the task images and fixed several eval scripts.
   - **Removed upstream history newer than each task's base commit from the images.** The previous images kept the upstream clone's branches and tags, so the commit that fixed the issue could be read with `git log --all` / `git show`. See `docker/README.md`.
   - **Eval scripts now fail when the build step fails** (21 scripts). Before, a failed build fell through to a stale test binary left in the image, so `deskflow__deskflow-c_5fa70d0` and `bloomberg__blazingmq-827` passed with an empty patch. `tools/make_eval_fix.py` regenerates the change.

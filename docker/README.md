@@ -30,6 +30,12 @@ under `--network none`.
    tracked files are marked skip-worktree (2 Bazel images rewrite `.bazelversion`). A candidate patch
    collected with `git add -A` / `git diff` then contains only what the agent changed.
 
+5. **Agent install prerequisites for 15 images** (`Dockerfile.agent-deps`, list in `agent_deps.txt`).
+   Agents that install themselves inside the task container (Harbor's `mini-swe-agent`, `codex`,
+   `claude-code`, ...) need `curl`, `bash`, `git`, `gcc` and `make`, and fall back to `apt-get install`
+   when one is missing. 12 images (11 C/C++, 1 Go) lacked `curl` and 3 Java images lacked `gcc`/`make`; they get those
+   packages, nothing else. All Go images already had `gcc`, so cgo defaults are unchanged.
+
 ## Rebuild
 
 ```bash
