@@ -1,0 +1,15 @@
+# Final task image: the original (or warmed-up) image with upstream history newer than the task's
+# base commit removed. See docker/README.md.
+ARG BASE
+FROM ${BASE}
+COPY strip_future_history.sh /tmp/strip_future_history.sh
+RUN bash /tmp/strip_future_history.sh && rm -f /tmp/strip_future_history.sh
+# Some original images carry a build-time HTTP proxy in their ENV that is not reachable elsewhere.
+ENV http_proxy="" https_proxy="" HTTP_PROXY="" HTTPS_PROXY="" no_proxy="" NO_PROXY="" all_proxy="" ALL_PROXY=""
+WORKDIR /testbed
+RUN mkdir -p /logs
+# List the image's own untracked files (build outputs etc.) in .git/info/exclude and mark the image's own edits
+# to tracked files (e.g. a rewritten .bazelversion) skip-worktree, so `git status`, `git add -A` and patch
+# collection only show what an agent changes. HEAD and file contents are unchanged.
+RUN cd /testbed && git ls-files --others --exclude-standard >> .git/info/exclude \
+ && git diff --name-only -z | xargs -0 -r git update-index --skip-worktree

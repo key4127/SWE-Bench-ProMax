@@ -1,0 +1,14 @@
+# Adds the system packages that agents installed inside the task container (e.g. Harbor's mini-swe-agent,
+# codex, claude-code) check for before installing themselves: curl, and gcc + make. Applied on top of the
+# cleaned image (Dockerfile.clean) for the 15 instances listed in agent_deps.txt; nothing under /testbed
+# changes. APT_MIRROR (optional) points apt at a mirror for this one step only; sources are restored after.
+ARG BASE
+FROM ${BASE}
+ARG PKGS
+ARG APT_MIRROR=""
+RUN set -e; mkdir -p /tmp/apt-orig; \
+    for f in /etc/apt/sources.list /etc/apt/sources.list.d/*; do [ -f "$f" ] && cp --parents "$f" /tmp/apt-orig/; done; \
+    if [ -n "$APT_MIRROR" ]; then for f in /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; do \
+      [ -f "$f" ] && sed -i -E "s#https?://(archive|security)\.ubuntu\.com/ubuntu/?#${APT_MIRROR}/ubuntu/#g; s#https?://deb\.debian\.org/debian-security/?#${APT_MIRROR}/debian-security/#g; s#https?://deb\.debian\.org/debian/?#${APT_MIRROR}/debian/#g" "$f"; done; fi; \
+    apt-get update -qq; DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends ${PKGS}; \
+    cp -a /tmp/apt-orig/etc/apt/. /etc/apt/; rm -rf /tmp/apt-orig /var/lib/apt/lists/*
