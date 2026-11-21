@@ -25,6 +25,11 @@ under `--network none`.
 3. **Build-site HTTP proxy settings are cleared** from the image ENV (some original images carried an
    unreachable proxy), the working directory is `/testbed`, and `/logs` exists (used by Harbor).
 
+4. **`git status` is clean in a fresh container.** The image's own untracked files are listed in
+   `.git/info/exclude` (19 images ship build outputs or generated files), and the image's own edits to
+   tracked files are marked skip-worktree (2 Bazel images rewrite `.bazelversion`). A candidate patch
+   collected with `git add -A` / `git diff` then contains only what the agent changed.
+
 ## Rebuild
 
 ```bash
