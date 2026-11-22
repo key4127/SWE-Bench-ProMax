@@ -9,7 +9,7 @@ For every instance:
   1. start the task image (`image_name`) with `--network none` (12 GB / 4 CPUs by default, the same caps
      test_run.py uses), working directory /testbed;
   2. run mini-swe-agent with its default `mini` config (the same config `mini-swe-agent -c mini`
-     uses), in yolo mode with no cost limit and a wall-clock limit (default 3600 s);
+     uses), in yolo mode with no cost limit, at most 250 steps and a wall-clock limit (default 7200 s);
   3. collect everything the agent changed relative to the base commit
      (`git add -N . && git diff --binary <base>`), whether or not the agent submitted;
   4. append the patch to <output>/preds.json and save the trajectory.
@@ -152,8 +152,8 @@ def main() -> None:
     ap.add_argument("--instance-ids", type=Path, default=None, help="file with one instance id per line")
     ap.add_argument("--output", type=Path, required=True)
     ap.add_argument("--workers", type=int, default=1)
-    ap.add_argument("--time-limit", type=int, default=3600, help="agent wall-clock limit per instance (s)")
-    ap.add_argument("--step-limit", type=int, default=0, help="0 = no limit (mini default)")
+    ap.add_argument("--time-limit", type=int, default=7200, help="agent wall-clock limit per instance (s)")
+    ap.add_argument("--step-limit", type=int, default=250, help="max agent steps; 0 = no limit")
     ap.add_argument("--cost-limit", type=float, default=0.0, help="0 = no limit")
     ap.add_argument("--memory", default="12g", help="memory cap of the task container (same as test_run.py)")
     ap.add_argument("--cpus", default="4", help="CPU cap of the task container (same as test_run.py)")

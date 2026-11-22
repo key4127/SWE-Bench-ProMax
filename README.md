@@ -92,7 +92,7 @@ print(eval_metadata[first_instance_id]["eval_script"])
 
 `src/inference/run_mini_swe_agent.py` runs [mini-swe-agent](https://github.com/SWE-agent/mini-swe-agent) on the benchmark and writes a `preds.json` the evaluator reads directly. The agent runs on the host and executes its commands in the task container with `docker exec`. The container has **no network** (`--network none`), so the agent cannot download the upstream fix; only the model calls leave the host. The task container is capped at 12 GB memory and 4 CPUs, the same as during evaluation.
 
-For each instance the script starts the task image, gives the agent the issue text (with one line saying the repository is at `/testbed` and existing tests should not be modified), runs mini-swe-agent's default `mini` config without a cost limit and with a one-hour wall-clock limit, then saves everything the agent changed relative to the base commit (`git diff --binary`, new files included) as the instance's `model_patch`.
+For each instance the script starts the task image, gives the agent the issue text (with one line saying the repository is at `/testbed` and existing tests should not be modified), runs mini-swe-agent's default `mini` config without a cost limit, with at most 250 steps and a two-hour wall-clock limit, then saves everything the agent changed relative to the base commit (`git diff --binary`, new files included) as the instance's `model_patch`.
 
 ```bash
 pip install mini-swe-agent==2.4.6
