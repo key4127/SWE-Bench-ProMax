@@ -9,7 +9,7 @@ For every instance:
   1. start the task image (`image_name`) with `--network none` (12 GB / 4 CPUs by default, the same caps
      test_run.py uses), working directory /testbed;
   2. run mini-swe-agent with its default `mini` config (the same config `mini-swe-agent -c mini`
-     uses), in yolo mode with no step or cost limit and a wall-clock limit (default 7200 s);
+     uses), in yolo mode with a wall-clock limit (default 7200 s);
   3. collect everything the agent changed relative to the base commit
      (`git add -N . && git diff --binary <base>`), whether or not the agent submitted;
   4. append the patch to <output>/preds.json and save the trajectory.
